@@ -1,0 +1,16 @@
+extends layout
+
+block content
+	.reset
+		input(type="button", value="Reset")
+	.die
+		span You Just Died!
+	.viewport
+		canvas#game
+		canvas#debug
+	script(src="/socket.io/socket.io.js")
+	script(src='/lib/createjs.js')
+	script(src="/lib/requirejs.js")
+	script(src="/lib/requirejsconfig.js")
+	script(src='/js/main.js')
+
