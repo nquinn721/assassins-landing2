@@ -8,41 +8,59 @@ function setupRequire (requirejs, io) {
 		'core/ticker',
 		'core/body',
 		'core/emitter',
-		'core/instance',
-		'game/character/characterManager',
+		'game/instance/instanceManager',
+		'game/gameManager',
 		'core/props'
 
 	],
-	function (ticker, body, emitter, instance, characterManager, props) {
+	function (ticker, body, emitter, instanceManager, gameManager, props) {
+		var instance = instanceManager.createInstance(); 
 		io.on('connection', function (socket) {
-			if(totalSockets >= 2 && !created){
-				instance.createInstance();
-				currentInstance++;
-				created = true;
+
+			if(totalSockets % 2 === 0 && totalSockets !== 0){
+				console.log('create');
+				instance = instanceManager.createInstance();
 			}
-			socket.instance = instance.get(currentInstance);
-			console.log(currentInstance);
+			socket.instance = instance;
 			socket.join(socket.instance.id);
 
-			socket.instance.b2d.rect({w : props.canvas.w, h : 20, x : 0, y : props.canvas.h - 20, type : 'static'});
-			socket.instance.b2d.rect({w : props.canvas.w, h : 20, x : 0, y : 0, type : 'static'});
-			socket.instance.b2d.rect({w : 20, h : props.canvas.h, x : 0, y : 0, type : 'static'});
-			socket.instance.b2d.rect({w : 20, h : props.canvas.h, x : props.canvas.w - 20, y : 0, type : 'static'});
+			
 			socket.on('login', function () {
 				totalSockets++;
 				ticker.start();
 				emitter.emit('createUser', socket);
+				emitter.emit('createMap', socket);
+				socket.emit('map' , socket.instance.map);
 			});
+
+
+			socket.on('keyup', function (keyCode) {
+				if(socket.player){
+					socket.player.keyUp(keyCode);
+					socket.broadcast.to(socket.instance.id).emit('keyup',{player : socket.user, keyCode : keyCode});
+				}
+			});
+			socket.on('keydown', function (keyCode) {
+				if(socket.player){
+					socket.player.keyDown(keyCode);
+					socket.broadcast.to(socket.instance.id).emit('keydown',{player : socket.user, keyCode : keyCode});
+				}
+
+			});
+
 			socket.on('disconnect', function () {
 				if(socket.user){
 					io.in(socket.instance.id).emit('destroyPlayer', socket.user);
+					socket.instance.removePlayer(socket.user);
 					emitter.emit('destroyPlayer', socket.user);
 					totalSockets--;
 				}
 			});
 		});
-		characterManager.init();
-		characterManager.initServer();
+
+		gameManager.init();
+		gameManager.initServer();
+		
 	});
 }
 

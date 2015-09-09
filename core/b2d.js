@@ -1,6 +1,3 @@
-if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
 define("core/b2d", [
 	'core/lib/box2d', 
 	'core/body', 
@@ -170,7 +167,7 @@ define("core/b2d", [
 				linearDamping : 0,
 				fixedRotation : false
 			}, opts);
-
+			
 			var bodyDef = new b2BodyDef();
 			bodyDef.type = b2Body['b2_' + options.type.toLowerCase() + 'Body'];
 			bodyDef.position.x = ((options.x + options.w) - (options.w / 2)) / this.SCALE;

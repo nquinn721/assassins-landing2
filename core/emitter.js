@@ -1,7 +1,3 @@
-if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
-
 define("core/emitter", [], function () {
 	function  Emitter() {
 		this.events = {};

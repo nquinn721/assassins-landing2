@@ -1,7 +1,3 @@
-if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
-
 define("game/character/characterManager",[
 	'game/character/npc/npcManager', 
 	'game/character/player/playerManager',

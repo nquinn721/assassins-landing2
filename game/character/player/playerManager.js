@@ -1,6 +1,3 @@
-if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
 define("game/character/player/playerManager", [
 	'game/character/player/player', 
 	'core/lib/underscore', 

@@ -1,8 +1,4 @@
-if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
-
-define("game/character/player/player", [], function () {
+define("game/character/player/player", ['core/emitter'], function (emitter) {
 	function Player (obj) {
 		this.x = 10;
 		this.y = 10;
@@ -10,6 +6,7 @@ define("game/character/player/player", [], function () {
 		this.h = 100;
 		this.id = 'player';
 		this.speed = 5;
+		this.fixedRotation = true;
 
 
 		// Client Classes
@@ -48,9 +45,24 @@ define("game/character/player/player", [], function () {
 
 			for(var i in this.client)
 				if(this.client[i].tick)this.client[i].tick(this);
+
+			if(this.right)
+				this.moveRight();
+			if(this.left)
+				this.moveLeft();
+
+			if(this.left || this.right)
+				emitter.emit('playerCoords', {x : this.x, y : this.y});
+
+
 		},
-		move : function (dir) {
-			this.body.move(dir);
+		moveRight : function () {
+			this.directionFacing = 'right';
+			this.body.move('right');
+		},
+		moveLeft : function () {
+			this.directionFacing = 'left';
+			this.body.move('left');
 		},
 		jump : function () {
 			this.body.ap
@@ -65,8 +77,38 @@ define("game/character/player/player", [], function () {
 				w : this.w,
 				h : this.h,
 				id : this.id,
-				speed : this.speed
+				speed : this.speed,
+				fixedRotation : this.fixedRotation
 			}
+		},
+		keyDown : function (keyCode) {
+			var key = this.keys(keyCode);
+
+			if(key === 'jumping'){
+				if(this.jumpAvailable)
+					this[key] = true;
+			}else{
+				this[key] = true;
+			}
+		},
+		keyUp : function (keyCode) {
+			var key = this.keys(keyCode);
+
+			if(key === 'jumping'){
+				// this[key] = false;
+			}else{
+				this[key] = false;
+			}
+		},
+		keys : function (key) {
+			var keys = {
+				37 : 'left',
+				38 : 'jumping',
+				39 : 'right',
+				40 : 'duck',
+				32 : 'shooting'
+			}
+			return keys[key];
 		}
 	}
 	return Player;

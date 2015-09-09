@@ -29,5 +29,6 @@ requirejs.config({
     }
 });
 
+global.define = require('amdefine')(module);
 
 require('./server/lib/main')(requirejs, io);

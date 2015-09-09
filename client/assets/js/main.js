@@ -4,15 +4,15 @@ require([
 	'core/b2d',
 	'core/shapes',
 	'js/createjs',
-	'game/character/characterManager',
+	'game/gameManager',
 	'core/emitter',
 	'core/props'
 	], 
-	function (canvas, b2d, shapes, createjs, characterManager, emitter, props) {
+	function (canvas, b2d, shapes, createjs, gameManager, emitter, props) {
 		var socket = io.connect();
 
-		characterManager.init();
-		characterManager.initClient();
+		gameManager.init();
+		gameManager.initClient();
 
 
 		socket.emit('login');
@@ -21,23 +21,43 @@ require([
 		var b2d = new b2d;
 
 		b2d.debugDraw(canvas.debugctx);
-		b2d.rect({w : props.canvas.w, h : 20, x : 0, y : props.canvas.h - 20, type : 'static'});
-		b2d.rect({w : props.canvas.w, h : 20, x : 0, y : 0, type : 'static'});
-		b2d.rect({w : 20, h : props.canvas.h, x : 0, y : 0, type : 'static'});
-		b2d.rect({w : 20, h : props.canvas.h, x : props.canvas.w - 20, y : 0, type : 'static'});
+
+		socket.user = {
+			b2d : b2d
+		}
 
 		socket.on('createUser', function(player){
 			createjs.ticker();
-			emitter.emit('createUser', {player : player, b2d : b2d});
+			socket.user.player = player;
+			emitter.emit('createUser', socket.user);
+		});
+		socket.on('map', function (map) {
+			emitter.emit('createMap', {b2d : b2d, map : map, user : socket.user.player});
 		});
 		socket.on('createPlayer', function (player) {
 			emitter.emit('createPlayer', {player : player, b2d : b2d});
-		})
+		});
 
 		socket.on('destroyPlayer', function (player) {
-			console.log('destroyPlayer', player.id);
 			emitter.emit('destroyPlayer', player);
 		});
+		
+		socket.on('keydown', function (obj) {
+			emitter.emit('keydown', obj);
+		});
+		socket.on('keyup', function (obj) {
+			emitter.emit('keyup', obj);
+		});
+
+		$(document).on('keydown', function (e) {
+			socket.emit('keydown', e.keyCode);
+			socket.user.player.keyDown(e.keyCode);
+		});
+
+		$(document).on('keyup', function (e) {
+			socket.emit('keyup', e.keyCode);
+			socket.user.player.keyUp(e.keyCode);
+		})
 
 
 });

@@ -1,7 +1,3 @@
-if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
-
 define("core/shapes", ['core/lib/underscore'], function (_) {
 	function Shapes (b2d) {
 		this.SCALE = 30;

@@ -1,6 +1,3 @@
-if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
 define("core/body", [], function (require) {
 
 	function Body (bodyFixture, b2Vec2, opts) {
