@@ -24,7 +24,7 @@ define("game/map/mapManagerServer", [
 			socket.emit('map', socket.instance.mapName);
 		},
 		destroyMap : function (map) {
-			map.destroy();
+			// map.destroy();
 		}
 	}
 	return new MapManagerServer;

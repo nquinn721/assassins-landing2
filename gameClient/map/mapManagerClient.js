@@ -1,4 +1,4 @@
-define("game/map/mapManagerClient", [
+define("gameClient/map/mapManagerClient", [
 		'require', 
 		'game/map/map', 
 		'core/emitter'

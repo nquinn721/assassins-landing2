@@ -1,4 +1,4 @@
-define('gameServer/db/models/account', ['mongoose', 'mongoose-bcrypt'], function (mongoose, bcrypt) {
+define('game/db/models/account', ['mongoose', 'mongoose-bcrypt'], function (mongoose, bcrypt) {
 	var Schema = mongoose.Schema;
 	var model = new Schema({
 		username : String,

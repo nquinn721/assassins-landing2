@@ -1,4 +1,4 @@
-define("gameServer/character/player/playerManagerServer", [
+define("game/character/player/playerManagerServer", [
 	'core/emitter'
 	], 
 	function (emitter) {
@@ -47,10 +47,10 @@ define("gameServer/character/player/playerManagerServer", [
 		serverTick : function (io) {
 			this.serverFrames++;
 
-			for(var i = 0; i < this.pm.players.length; i++){
-				var p = this.pm.players[i];
-				io.in(p.instanceId).emit('playerCoords', {x : p.obj().x, y : p.obj().y, id : p.obj().id});
-			}
+			// for(var i = 0; i < this.pm.players.length; i++){
+			// 	var p = this.pm.players[i];
+			// 	io.in(p.instanceId).emit('playerCoords', {x : p.obj().x, y : p.obj().y, id : p.obj().id});
+			// }
 		}
 
 	}

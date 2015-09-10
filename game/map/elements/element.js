@@ -20,7 +20,8 @@ define("game/map/elements/element", function () {
 				w : this.w,
 				h : this.h,
 				id : this.id,
-				type : this.type
+				type : this.type,
+				speed : this.speed
 			}
 		}
 	}

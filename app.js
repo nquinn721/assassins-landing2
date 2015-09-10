@@ -46,7 +46,7 @@ app.set('views', __dirname + '/client/');
 require('./server/lib/main')(requirejs, io);
 
 app.get('/game', function (req, res) {
-	// res.cookie('asc', "55f0eca776ef93f3359c1af7");
+	res.cookie('asc', "55f0eca776ef93f3359c1af7");
 	res.render('game');
 });
 

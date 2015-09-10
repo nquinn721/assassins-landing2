@@ -8,7 +8,7 @@ define("game/map/mapManager", [], function () {
 		},
 		initClient : function () {
 			var self = this;
-			require(['game/map/mapManagerClient'], function  (mm) {
+			require(['gameClient/map/mapManagerClient'], function  (mm) {
 				self.mm = mm;
 				self.mm.init(self);
 			});

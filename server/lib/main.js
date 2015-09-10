@@ -5,10 +5,10 @@ function setupRequire (requirejs, io) {
 		'core/ticker',
 		'core/body',
 		'core/emitter',
-		'gameServer/instance/instanceManager',
+		'game/instance/instanceManager',
 		'game/gameManager',
 		'core/props',
-		'gameServer/db/connection',
+		'game/db/connection',
 
 	],
 	function (ticker, body, emitter, instanceManager, gameManager, props, connection) {

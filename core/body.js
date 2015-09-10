@@ -61,7 +61,12 @@ define("core/body", [], function (require) {
 
 			if(dir === 'left')
 				this.body.SetPosition({x : (x - this.speed) / this.SCALE, y : y / this.SCALE});
-			else this.body.SetPosition({x : (x + this.speed) / this.SCALE, y : y / this.SCALE});
+			else if(dir === 'right')
+				this.body.SetPosition({x : (x + this.speed) / this.SCALE, y : y / this.SCALE});
+			else if(dir === 'up')
+				this.body.SetPosition({x : x  / this.SCALE, y : (y - this.speed) / this.SCALE});
+			else if(dir === 'down')
+				this.body.SetPosition({x : x  / this.SCALE, y : (y + this.speed) / this.SCALE});
 
 			
 			if(!this.body.IsAwake())

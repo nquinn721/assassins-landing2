@@ -24,7 +24,7 @@ define("game/character/player/playerManager", [
 			});
 		},
 		initServer : function  () {
-			this.pm = require('gameServer/character/player/playerManagerServer');
+			this.pm = require('game/character/player/playerManagerServer');
 			this.pm.init(this);
 		},
 		events : function () {

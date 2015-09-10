@@ -1,4 +1,4 @@
-define("gameServer/instance/instance", ["core/emitter"], function (emitter) {
+define("game/instance/instance", ["core/emitter"], function (emitter) {
 	function Instance (instanceManager, obj) {
 		this.b2d = obj.b2d;
 		this.mapName = obj.mapName;

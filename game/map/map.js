@@ -1,4 +1,8 @@
-define("game/map/map", ['core/emitter', 'core/props'], function (emitter, props) {
+define("game/map/map", [
+		'core/emitter', 
+		'core/props', 
+		'game/map/elements/element'
+	], function (emitter, props, Element) {
 	function Map() {
 		this.map;
 	}
@@ -7,14 +11,26 @@ define("game/map/map", ['core/emitter', 'core/props'], function (emitter, props)
 			this.map = map;
 			this.user = user;
 			this.b2d = b2d;
+			this.element = new Element;
+
 			this.create();
 			this.createWalls();
 
 			emitter.on('playerCoords', this.update.bind(this));
 		},
+		extendItemsWithElement : function (item) {
+			for(var i in this.element)
+				item[i] = this.element[i];
+		},
 		create : function () {
+			if(this.map.init)this.map.init();
+
 			for(var i = 0; i < this.map.items.length; i++){
 				var item = this.map.items[i];
+
+				this.extendItemsWithElement(item);
+
+				if(item.init)item.init();
 
 				if(this.isWithinDistance(item)){
 					item.show(this.b2d);

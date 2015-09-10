@@ -1,4 +1,4 @@
-define("gameServer/db/connection", [
+define("game/db/connection", [
 		'fs'
 	], function (fs) {
 
@@ -19,11 +19,11 @@ define("gameServer/db/connection", [
 			console.log('DB connected!');
 		},
 		setupModels : function () {
-			var models = fs.readdirSync('./gameServer/db/models');
+			var models = fs.readdirSync('./game/db/models');
 
 			// for(var i = 0; i < models.length; i++)
-			// 	require('gameServer/db/models/' + models[i]);
-			require('gameServer/db/models/account');
+			// 	require('game/db/models/' + models[i]);
+			require('game/db/models/account');
 
 		},
 		createAccount : function () {

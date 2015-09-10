@@ -1,6 +1,6 @@
-define("gameServer/instance/instanceManager", [
+define("game/instance/instanceManager", [
 		'core/b2d', 
-		'gameServer/instance/instance', 
+		'game/instance/instance', 
 		'core/props',
 		'core/emitter'
 	], 
