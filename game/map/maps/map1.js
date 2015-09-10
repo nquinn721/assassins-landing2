@@ -10,10 +10,12 @@ define("game/map/maps/map1", [
 			x : props.canvas.w / 2,
 			y : props.canvas.h / 2,
 			w : 200,
+			id : 'floor1'
 		}),new Floor({
 			x : 50,
 			y : 300,
-			w : 100,
+			w : 130,
+			id : 'floor2'
 		})];
 
 	}

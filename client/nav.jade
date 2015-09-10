@@ -18,6 +18,6 @@ nav.navbar.navbar-default
     // /.navbar-collapse
   // /.container-fluid
 script.
-  //- var page = window.location.pathname.split('/').slice(-1)[0];
-  //- $('li').removeClass('active');
-  //- $('[href="' + page + '"]').parent().addClass('active');
+  var page = window.location.pathname.match(/\w+/)[0];
+  $('li').removeClass('active');
+  $('[href="/' + page + '"]').parent().addClass('active');

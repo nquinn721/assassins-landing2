@@ -1,5 +1,10 @@
-define("game/instance/instanceManager", ['core/b2d', 'game/instance/instance', 'core/props'], 
-	function (b2d, Instance, props) {
+define("gameServer/instance/instanceManager", [
+		'core/b2d', 
+		'gameServer/instance/instance', 
+		'core/props',
+		'core/emitter'
+	], 
+	function (b2d, Instance, props, emitter) {
 
 
 	function InstanceManager () {
@@ -12,8 +17,10 @@ define("game/instance/instanceManager", ['core/b2d', 'game/instance/instance', '
 			var b = new b2d,
 				instance;
 
-				
+
 			b.init();
+			b.contact(this.contact.bind(this));
+
 
 			// Check if an instance has fewer players
 			// If so return that one instead of a new one
@@ -25,7 +32,7 @@ define("game/instance/instanceManager", ['core/b2d', 'game/instance/instance', '
 			instance = new Instance(this, {
 		    	b2d : b, 
 		    	id : 'instance' + this.totalInstances, 
-		    	map : 'map' + (this.totalInstances + 1 > 2 ? 2 : 1)
+		    	mapName : 'map' + (this.totalInstances + 1 > 2 ? 2 : 1)
 		    });
 
 		    this.instances.push(instance);
@@ -33,9 +40,29 @@ define("game/instance/instanceManager", ['core/b2d', 'game/instance/instance', '
 
 			return instance;
 		},
+		contact : function (contact) {
+			var one = contact.GetFixtureA().GetBody().GetUserData(),
+			  	two = contact.GetFixtureB().GetBody().GetUserData();
+			emitter.emit('contact', {one : one, two : two});
+			// one = this.getById(one.id);
+			// two = this.getById(two.id);
+
+			// if(one instanceof Array)one = one[0];
+			// if(two instanceof Array)two = two[0];
+
+			// // console.log(one, two);
+			// if(one && one.contact && !one.hasContact){
+			// 	one.hasContact = true;
+			// 	one.contact(two);
+			// }
+			// if(two && two.contact && !two.hasContact){
+			// 	two.hasContact = true;
+			// 	two.contact(one);
+			// }
+		},
 		destroyInstance : function (instance) {
-			for(var i = 0; i < this.insances.length; i++)
-				if(this.instances[i].id === instnace.id)
+			for(var i = 0; i < this.instances.length; i++)
+				if(this.instances[i].id === instance.id)
 					this.instances.splice(i, 1);
 			this.totalInstances--;
 		}

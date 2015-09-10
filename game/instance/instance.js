@@ -1,7 +1,7 @@
-define("game/instance/instance", function () {
+define("gameServer/instance/instance", ["core/emitter"], function (emitter) {
 	function Instance (instanceManager, obj) {
 		this.b2d = obj.b2d;
-		this.map = obj.map;
+		this.mapName = obj.mapName;
 		this.id = obj.id;
 
 		// Players
@@ -16,7 +16,6 @@ define("game/instance/instance", function () {
 		addPlayer : function (player) {
 			this.players.push(player);
 			this.totalPlayers++;
-			console.log(this.id, this.totalPlayers);
 		},
 		removePlayer : function (player) {
 			for(var i = 0; i < this.players.length; i++)
@@ -25,8 +24,10 @@ define("game/instance/instance", function () {
 
 			this.totalPlayers--;
 
-			if(this.totalPlayers === 0)
+			if(this.totalPlayers === 0){
+				emitter.emit('destroyMap', this.map);
 				this.instanceManager.destroyInstance(this);
+			}
 		}
 	}
 

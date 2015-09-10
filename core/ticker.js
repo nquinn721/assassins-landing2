@@ -3,9 +3,10 @@ define("core/ticker", ['core/emitter'], function (emitter) {
 	}
 
 	Ticker.prototype = {
-		start : function () {
+		start : function (io) {
          	setInterval(function () {
            		emitter.emit('tick');
+           		emitter.emit('serverTick', io);
          	}, 1000 / 60);
       	}
 	}

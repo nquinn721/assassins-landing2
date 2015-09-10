@@ -47,8 +47,8 @@ define("core/shapes", ['core/lib/underscore'], function (_) {
 					{x : coords.x, y : coords.y + coords.h}
 				]),
 				facingLeft = this.buildPoints([
-					{x : coords.x, y : coords.y},
 					{x : coords.x - coords.w, y : coords.y + coords.h - 5},
+					{x : coords.x, y : coords.y},
 					{x : coords.x, y : coords.y + coords.h - 5}
 				]),
 				options = _.extend({

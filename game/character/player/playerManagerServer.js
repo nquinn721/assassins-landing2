@@ -1,11 +1,11 @@
-define("game/character/player/playerManagerServer", [
+define("gameServer/character/player/playerManagerServer", [
 	'core/emitter'
 	], 
 	function (emitter) {
 
 
 	function PlayerManagerServer () {
-		
+		this.serverFrames = 0;
 	}
 
 	PlayerManagerServer.prototype = {
@@ -15,6 +15,7 @@ define("game/character/player/playerManagerServer", [
 		},
 		events : function () {
 			emitter.on('createUser', this.createUser.bind(this));
+			emitter.on('serverTick', this.serverTick.bind(this));
 		},
 		createUser : function (socket) {
 			var player = this.pm.createPlayer({instanceId : socket.instance.id, socketId : socket.id});
@@ -28,7 +29,8 @@ define("game/character/player/playerManagerServer", [
 
 		},
 		sendUserToClient : function (socket) {
-			socket.emit('createUser', socket.user);
+			socket.emit('createUser', {user : socket.user, account : socket.account});
+			socket.emit('start');
 			this.emitPlayersToClient(socket);
 
 		},
@@ -40,6 +42,14 @@ define("game/character/player/playerManagerServer", [
 				if(this.pm.players[i].id !== socket.user.id && this.pm.players[i].instanceId === socket.instance.id){
 					socket.emit('createPlayer', this.pm.players[i].obj());
 				}
+			}
+		},
+		serverTick : function (io) {
+			this.serverFrames++;
+
+			for(var i = 0; i < this.pm.players.length; i++){
+				var p = this.pm.players[i];
+				io.in(p.instanceId).emit('playerCoords', {x : p.obj().x, y : p.obj().y, id : p.obj().id});
 			}
 		}
 

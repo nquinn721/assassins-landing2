@@ -1,6 +1,6 @@
 define("core/props", [], function () {
 	return {
-		mapShowingDistance : 100,
+		mapShowingDistance : 200,
 		playersAloudInInstance : 2,
 
 		canvas : {

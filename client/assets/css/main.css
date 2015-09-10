@@ -1,4 +1,4 @@
-.viewport, .die{
+.viewport, .menu{
 	height:400px;
 	width:800px;
 	border: 1px solid black;
@@ -6,6 +6,18 @@
 	left : 50%;
 	margin-left: -400px;
 	overflow: hidden;
+}
+.menu{
+    padding: 75px;
+    z-index: 1;
+    background-color: #47638A;
+    color: white;
+}
+.error {
+    width:800px;
+    margin:auto;
+    margin-bottom:20px;
+    display: none;
 }
 canvas{
 	position: absolute;
@@ -27,4 +39,23 @@ canvas{
     margin-left: -150px;
     top: 50%;
     margin-top: -20px;
+}
+
+.show{
+    display: block !important;
+}
+.none{
+    display: none;
+}
+.left {
+    float: left;
+}
+.right {
+    float: right;
+}
+.accountInfo{
+    height: 80%;
+}
+.start-game{
+    float: right;
 }

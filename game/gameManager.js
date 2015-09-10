@@ -16,7 +16,6 @@ define("game/gameManager", [
 	}
 	GameManager.prototype = {
 		init : function () {
-			
 		},
 		initServer : function () {
 			for (var i = managerClasses.length - 1; i >= 0; i--) {

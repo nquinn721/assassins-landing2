@@ -18,13 +18,13 @@ define("game/character/player/playerManager", [
 		},
 		initClient : function () {
 			var self = this;
-			require(['game/character/player/playerManagerClient'], function  (pm) {
+			require(['gameClient/character/player/playerManagerClient'], function  (pm) {
 				self.pm = pm;
 				self.pm.init(self);
 			});
 		},
 		initServer : function  () {
-			this.pm = require('game/character/player/playerManagerServer');
+			this.pm = require('gameServer/character/player/playerManagerServer');
 			this.pm.init(this);
 		},
 		events : function () {
@@ -49,6 +49,7 @@ define("game/character/player/playerManager", [
 
 			this.players.push(player);
 			this.totalPlayers++;
+			
 			return player;
 		},
 		

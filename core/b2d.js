@@ -33,25 +33,49 @@ define("core/b2d", [
 
 	B2D.prototype = {
 		init : function () {
-			this.shapes = new Shapes(this);	
+			this.shapes = new Shapes(this);
+			this.contactListener();
 		},
 		ticker : function () {
 			this.ownTicker = true;
 			this.tick();
 		},
-		contact : function (c) {
+		contactListener : function (c) {
 			var self = this;
 
 
 
 			var contact = new Box2D.Dynamics.b2ContactListener;
-			// contact.BeginContact = c.BeginContact;
-			// contact.EndContact = c.BeginContact;
-			// contact.PreSolve = c.BeginContact;
-			contact.PostSolve = c.BeginContact;
+			contact.BeginContact = this.contact;
+			// contact.EndContact = this.contact;
+			// contact.PreSolve = this.contact;
+			// contact.PostSolve = this.contact;
 
 			this.world.SetContactListener(contact);
 
+		},
+		contact : function (contact) {
+			if(!contact.GetFixtureA)return;
+			var one = contact.GetFixtureA().GetBody(),
+			  	two = contact.GetFixtureB().GetBody(),
+			  	oneData = one.GetUserData(),
+			  	twoData = two.GetUserData();
+
+			var contact_point = contact.GetManifold().m_points[0].m_localPoint;
+
+			oneData.hit = {};
+			oneData.hit.x = one.GetWorldPoint(contact_point).x * 30;
+			oneData.hit.y = one.GetWorldPoint(contact_point).y * 30;
+
+			twoData.hit = {};
+			twoData.hit.x = two.GetWorldPoint(contact_point).x * 30;
+			twoData.hit.y = two.GetWorldPoint(contact_point).y * 30;
+
+			emitter.emit('contact', {one : oneData, two : twoData});
+			// console.log(twoData.id);
+			// emitter.emit('hit', {id : oneData.id, 'hitx' : Math.round(oneData.hit.x), 'hity' : Math.round(oneData.hit.y), 'x' : Math.round(oneData.x), 'y' : Math.round(oneData.y)});
+			// emitter.emit('hit', {id : twoData.id, 'hitx' : Math.round(twoData.hit.x), 'hity' : Math.round(twoData.hit.y), 'x' : Math.round(twoData.x), 'y' : Math.round(twoData.y)});
+	
 		},
 		joint : function (opts, opts1, type) {
 			var options = _.extend({

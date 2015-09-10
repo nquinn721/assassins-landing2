@@ -18,11 +18,12 @@ define("game/map/map", ['core/emitter', 'core/props'], function (emitter, props)
 
 				if(this.isWithinDistance(item)){
 					item.show(this.b2d);
-					// var body = this.b2d.rect(item);
-					// item.body = body;
-					// item.displayed = true;
 				}			
 			}
+		},
+		destroy : function () {
+			for(var i = 0; i < this.map.items.length; i++)
+				this.map.items[i].hide();
 		},
 		update : function () {
 			for(var i = 0; i < this.map.items.length; i++){
@@ -30,14 +31,9 @@ define("game/map/map", ['core/emitter', 'core/props'], function (emitter, props)
 				if(!item.displayed){
 					if(this.isWithinDistance(item)){
 						item.show(this.b2d);
-						// var body = this.b2d.rect(item);
-						// item.displayed = true;
-						// item.body = body;
 					}
 				}else{
 					if(!this.isWithinDistance(item)){
-						// item.body.destroy();
-						// item.displayed = false;
 						item.hide();
 					}
 				}
@@ -54,7 +50,7 @@ define("game/map/map", ['core/emitter', 'core/props'], function (emitter, props)
 			return false;
 		},
 		createWalls : function () {
-			this.b2d.rect({w : props.canvas.w, h : 20, x : 0, y : props.canvas.h - 20, type : 'static'});
+			this.b2d.rect({w : props.canvas.w, h : 20, x : 0, y : props.canvas.h - 20, type : 'static', id : 'floor'});
 			this.b2d.rect({w : props.canvas.w, h : 20, x : 0, y : 0, type : 'static'});
 			this.b2d.rect({w : 20, h : props.canvas.h, x : 0, y : 0, type : 'static'});
 			this.b2d.rect({w : 20, h : props.canvas.h, x : props.canvas.w - 20, y : 0, type : 'static'});

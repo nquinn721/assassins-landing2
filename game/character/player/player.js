@@ -19,16 +19,17 @@ define("game/character/player/player", ['core/emitter'], function (emitter) {
 
 
 		this.frames = 0;
+
+		this.jumpAvailable = true;
 	}
 
 	Player.prototype = {
 		init : function (b2d) {
-			this.body = b2d.rect({
-				x : this.x,
-				y : this.y,
-				w : this.w,
-				h : this.h
-			});
+			this.body = b2d.rect(this.obj());
+			this.events();
+		},
+		events : function () {
+			emitter.on('contact', this.contact.bind(this));	
 		},
 		initClient : function (obj) {
 			for(var i in obj)
@@ -54,7 +55,18 @@ define("game/character/player/player", ['core/emitter'], function (emitter) {
 			if(this.left || this.right)
 				emitter.emit('playerCoords', {x : this.x, y : this.y});
 
+		},
+		contact : function (item) {
+			if(!item || !item.two.id)return;
 
+			if(item.two.id.match('floor') || item.two.id.match('player') && this.y + (this.h / 2) - 5 < item.two.y)
+				this.jumpAvailable = true;
+			
+			
+		},
+		setCoords : function (obj) {
+			this.body.setX(obj.x);
+			this.body.setY(obj.y);
 		},
 		moveRight : function () {
 			this.directionFacing = 'right';
@@ -65,7 +77,7 @@ define("game/character/player/player", ['core/emitter'], function (emitter) {
 			this.body.move('left');
 		},
 		jump : function () {
-			this.body.ap
+			this.body.applyImpulse('up',5);
 		},
 		destroy : function  () {
 			this.body.destroy();
@@ -85,8 +97,10 @@ define("game/character/player/player", ['core/emitter'], function (emitter) {
 			var key = this.keys(keyCode);
 
 			if(key === 'jumping'){
-				if(this.jumpAvailable)
-					this[key] = true;
+				if(this.jumpAvailable){
+					this.jumpAvailable = false;
+					this.jump();
+				}
 			}else{
 				this[key] = true;
 			}

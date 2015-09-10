@@ -1,36 +1,63 @@
 function setupRequire (requirejs, io) {
-	var url = '../server/lib/',
-		currentInstance = 0,
-		totalSockets = 0,
-		created;
-	
+	var totalSockets = 0;
+	var cookie = require('cookie');
 	requirejs([
 		'core/ticker',
 		'core/body',
 		'core/emitter',
-		'game/instance/instanceManager',
+		'gameServer/instance/instanceManager',
 		'game/gameManager',
-		'core/props'
+		'core/props',
+		'gameServer/db/connection',
 
 	],
-	function (ticker, body, emitter, instanceManager, gameManager, props) {
+	function (ticker, body, emitter, instanceManager, gameManager, props, connection) {
 		var instance = instanceManager.createInstance(); 
+		ticker.start(io);
+	
+		connection.init();
+
 		io.on('connection', function (socket) {
+			var user = cookie.parse(socket.handshake.headers.cookie).asc;
 
 			if(totalSockets % 2 === 0 && totalSockets !== 0){
-				console.log('create');
 				instance = instanceManager.createInstance();
 			}
 			socket.instance = instance;
 			socket.join(socket.instance.id);
 
-			
-			socket.on('login', function () {
+			// if(typeof socketAccounts[user] !== 'undefined'){
+			if(user){
+				connection.loginId(user.replace(socketAccounts[user], ''), login);
+			}else{
+				socket.emit('notLoggedIn');
+			}
+
+			socket.on('login', function (obj) {
+				connection.login(obj.username, obj.password, login, function () {
+					socket.emit('failedLogin');
+				});
+			});
+			function login (acc) {
+				var rand = '',//Math.random(),
+					cookie =  acc._id + rand;
+				
+				acc.cookie = cookie;
+
+				socket.account = acc;
+				// socketAccounts[cookie] = rand;
 				totalSockets++;
-				ticker.start();
-				emitter.emit('createUser', socket);
-				emitter.emit('createMap', socket);
-				socket.emit('map' , socket.instance.map);
+				socket.emit('loggedIn', acc);
+
+			}
+
+			socket.on('start', function () {
+				if(socket.account){
+					emitter.emit('createUser', socket);
+					emitter.emit('createMap', socket);
+				}else{
+					socket.emit('notLoggedIn');
+				}
 			});
 
 
@@ -60,7 +87,6 @@ function setupRequire (requirejs, io) {
 
 		gameManager.init();
 		gameManager.initServer();
-		
 	});
 }
 
