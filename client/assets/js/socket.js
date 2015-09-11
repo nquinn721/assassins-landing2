@@ -4,9 +4,13 @@ define("js/socket", [
 	'js/io', 
 	'js/canvas',
 	'js/createjs',
-	'js/menu'
-	], function (emitter, B2D, io, canvas, createjs, menu) {
+	'js/menu',
+	'js/viewport',
+	'js/responsive'
+	], function (emitter, B2D, io, canvas, createjs, menu, Viewport, Responsive) {
 
+		var responsive = new Responsive(this.b2d);
+		responsive.resize();
 	
 		function Socket(){
 
@@ -25,6 +29,11 @@ define("js/socket", [
 				this.b2d = new B2D;
 				this.b2d.init();
 				this.b2d.debugDraw(canvas.debugctx);
+
+				responsive.init();
+				$(window).on('resize', function () {
+					responsive.resize();
+				});
 			},
 			startGame : function () {
 				menu.showGame();
@@ -52,15 +61,20 @@ define("js/socket", [
 
 			createUser : function(obj){
 				createjs.ticker();
-				this.player = obj.player;
+				this.player = obj.user;
 				emitter.emit('createUser', this);
+
+
 			},
 			map : function (map) {
+				var viewport = new Viewport(this.player);
+				viewport.init();	
+
 				this.map = map;
 				emitter.emit('createMap', this);
 			},
 			createPlayer : function (player) {
-				emitter.emit('createPlayer', this);
+				emitter.emit('createPlayer', {b2d : this.b2d, player : player});
 			},
 
 			destroyPlayer : function (player) {
@@ -73,8 +87,12 @@ define("js/socket", [
 			keyup : function (obj) {
 				emitter.emit('keyup', obj);
 			},
-			playerCoords : function (obj) {
-				emitter.emit('playerCoords', obj);
+			coords : function (obj) {
+				emitter.emit('playerCoords', obj.players);
+				emitter.emit('mapCoords', obj.mapItems);
+			},
+			ping : function (ping) {
+				emitter.emit('clientPing', {socket : this, ping : ping});	
 			},
 
 			start : function () {

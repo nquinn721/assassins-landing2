@@ -34,9 +34,11 @@ define("gameClient/character/player/playerManagerClient",
 
 		},
 		setPlayerCoords : function (obj) {
-			var player = this.pm.getPlayer(obj);
-			if(player)
-				player.setCoords(obj);
+			for(var i = 0; i < obj.length; i++){
+				var player = this.pm.getPlayer(obj[i]);
+				if(player)
+					player.setCoords(obj[i]);
+			}
 		},
 		createPlayer : function (obj) {
 			var player = this.pm.createPlayer(obj.player);

@@ -15,15 +15,17 @@ define("game/character/player/playerManagerServer", [
 		},
 		events : function () {
 			emitter.on('createUser', this.createUser.bind(this));
-			emitter.on('serverTick', this.serverTick.bind(this));
 		},
 		createUser : function (socket) {
-			var player = this.pm.createPlayer({instanceId : socket.instance.id, socketId : socket.id});
+			var player = this.pm.createPlayer({instanceId : socket.instance.id, socketId : socket.id, username : socket.account.username});
 			player.init(socket.instance.b2d);
 
 			socket.user = player.obj();
+			socket.user.username = socket.account.username;
 			socket.player = player;
-			socket.instance.addPlayer(player);
+			socket.instance.join(player);
+
+
 			this.sendUserToClient(socket);
 			this.emitPlayerToOthers(socket);
 
@@ -43,14 +45,6 @@ define("game/character/player/playerManagerServer", [
 					socket.emit('createPlayer', this.pm.players[i].obj());
 				}
 			}
-		},
-		serverTick : function (io) {
-			this.serverFrames++;
-
-			// for(var i = 0; i < this.pm.players.length; i++){
-			// 	var p = this.pm.players[i];
-			// 	io.in(p.instanceId).emit('playerCoords', {x : p.obj().x, y : p.obj().y, id : p.obj().id});
-			// }
 		}
 
 	}

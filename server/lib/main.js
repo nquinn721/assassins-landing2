@@ -1,6 +1,6 @@
 function setupRequire (requirejs, io) {
-	var totalSockets = 0;
 	var cookie = require('cookie');
+
 	requirejs([
 		'core/ticker',
 		'core/body',
@@ -9,23 +9,19 @@ function setupRequire (requirejs, io) {
 		'game/gameManager',
 		'core/props',
 		'game/db/connection',
+		'core/ping'
 
 	],
-	function (ticker, body, emitter, instanceManager, gameManager, props, connection) {
+	function (ticker, body, emitter, instanceManager, gameManager, props, connection, ping) {
 		var instance = instanceManager.createInstance(); 
 		ticker.start(io);
-	
-		connection.init();
+		ping.initServer();
 
+	
 		io.on('connection', function (socket) {
 			var user = cookie.parse(socket.handshake.headers.cookie).asc;
 
-			if(totalSockets % 2 === 0 && totalSockets !== 0){
-				instance = instanceManager.createInstance();
-			}
-			socket.instance = instance;
-			socket.join(socket.instance.id);
-
+			
 			// if(typeof socketAccounts[user] !== 'undefined'){
 			if(user){
 				connection.loginId(user.replace(socketAccounts[user], ''), login);
@@ -46,13 +42,21 @@ function setupRequire (requirejs, io) {
 
 				socket.account = acc;
 				// socketAccounts[cookie] = rand;
-				totalSockets++;
 				socket.emit('loggedIn', acc);
+
+				
 
 			}
 
 			socket.on('start', function () {
 				if(socket.account){
+					
+					if(instance.full())
+						instance = instanceManager.createInstance();
+					
+					socket.instance = instance;
+					socket.join(socket.instance.id);
+
 					emitter.emit('createUser', socket);
 					emitter.emit('createMap', socket);
 				}else{
@@ -75,12 +79,15 @@ function setupRequire (requirejs, io) {
 
 			});
 
+			socket.on('ping', function (obj) {
+				emitter.emit('ping', obj);
+			});
+
 			socket.on('disconnect', function () {
 				if(socket.user){
 					io.in(socket.instance.id).emit('destroyPlayer', socket.user);
-					socket.instance.removePlayer(socket.user);
+					socket.instance.leave(socket.user);
 					emitter.emit('destroyPlayer', socket.user);
-					totalSockets--;
 				}
 			});
 		});

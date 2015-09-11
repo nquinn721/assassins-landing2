@@ -44,9 +44,11 @@ define("game/character/player/playerManager", [
 				for(var i in obj)
 					playerObj[i] = obj[i];
 			
+			if(playerObj.x < 20)playerObj.x = 20;
+			if(playerObj.x > props.canvas.w - 70)playerObj.x = props.canvas.w - 70;
 
 			player = new Player(playerObj);
-
+			
 			this.players.push(player);
 			this.totalPlayers++;
 			

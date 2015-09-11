@@ -1,10 +1,10 @@
 .viewport, .menu{
-	height:400px;
-	width:800px;
+    bottom: 50px;
+    top : 150px;
+    left:50px;
+    right:50px;
 	border: 1px solid black;
 	position: absolute;
-	left : 50%;
-	margin-left: -400px;
 	overflow: hidden;
 }
 .menu{
@@ -62,4 +62,7 @@ canvas{
 .loader-icon{
     margin-top:50px;
     display: block;
+}
+.canvas-controls input{
+    margin:10px;
 }

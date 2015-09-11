@@ -1,15 +1,10 @@
 define("game/gameManager", [
 	"game/character/characterManager",
 	"game/map/mapManager"
-	], function () {
+	], function (characterManager, mapManager) {
 
-
-	var managerClasses = [];
-
-	for(var i in arguments)
-		managerClasses.push(arguments[i]);
-
-
+	var serverManagerClasses = [characterManager, mapManager],
+		clientManagerClasses = [characterManager];
 
 	function GameManager() {
 
@@ -18,15 +13,15 @@ define("game/gameManager", [
 		init : function () {
 		},
 		initServer : function () {
-			for (var i = managerClasses.length - 1; i >= 0; i--) {
-				managerClasses[i].init();
-				managerClasses[i].initServer();
+			for (var i = serverManagerClasses.length - 1; i >= 0; i--) {
+				serverManagerClasses[i].init();
+				serverManagerClasses[i].initServer();
 			};
 		},
 		initClient : function () {
-			for (var i = managerClasses.length - 1; i >= 0; i--) {
-				managerClasses[i].init();
-				managerClasses[i].initClient();
+			for (var i = clientManagerClasses.length - 1; i >= 0; i--) {
+				clientManagerClasses[i].init();
+				clientManagerClasses[i].initClient();
 			};	
 		}
 	}

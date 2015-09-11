@@ -5,12 +5,12 @@ define("game/db/connection", [
 
 	function DB () {
 		this.db = db;
-		this.connection = db.connection;
+		// this.connection = db.connection;
 	}
 
 	DB.prototype = {
 		init : function () {
-			this.connection.on('error', this.dbFailed.bind(this));
+			// this.connection.on('error', this.dbFailed.bind(this));
 			// this.connection.once('open', this.connected.bind(this));
 			this.setupModels();
 			// this.createAccount();
@@ -28,11 +28,11 @@ define("game/db/connection", [
 		},
 		createAccount : function () {
 			var account = new Account({
-				username : 'nate',
-				password : 'nate123',
-				firstName : 'Nate',
-				lastName : 'Quinn',
-				email : 'natethepcspecialist@gmail.com'
+				username : 'bob',
+				password : 'bob123',
+				firstName : 'Bob',
+				lastName : 'Bobart',
+				email : 'bobbydonuts@gmail.com'
 			});
 
 			account.save(function (err) {
@@ -76,5 +76,7 @@ define("game/db/connection", [
 		 	console.error.bind(console, 'connection error:');
 		}
 	}
-	return new DB();
+	var db = new DB();
+	db.init();
+	return db;
 });

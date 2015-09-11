@@ -12,7 +12,7 @@ define("gameClient/character/player/playerSprite", [
 	PlayerSprite.prototype = {
 		tick : function () {
 			canvas.ctx.font = "12px Arial";
-			canvas.ctx.fillText(this.account.username, this.player.x - 20, this.player.y - 60);
+			canvas.ctx.fillText(this.player.username , this.player.x - 20, this.player.y - 60);
 
 
 			canvas.ctx.fillStyle = 'rgba(0,0,0)';

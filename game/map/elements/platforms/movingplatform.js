@@ -1,4 +1,4 @@
-define("game/map/elements/platforms/elevator", function () {
+define("game/map/elements/platforms/movingplatform", function () {
 	function Elevator (obj) {
 		this.x = 10;
 		this.y = 10;
@@ -8,13 +8,12 @@ define("game/map/elements/platforms/elevator", function () {
 		this.type = 'kinematic';
 		this.speed = 2;
 		this.moveBounds = 300;
+		this.friction = 50;
 
 		this.originalX = obj.x;
 		this.originalY = obj.y;
 
 		for(var i in obj)this[i] = obj[i];
-
-
 		this.frames = 0;
 
 		this.direction = true;
@@ -33,10 +32,12 @@ define("game/map/elements/platforms/elevator", function () {
 
 	 		this.frames++;
 
-	 		if(this.y >= this.originalY + 10 || this.y <= this.originalY - this.moveBounds)
+
+	 		if(this.x > this.originalX + 65 || this.x < this.originalX - this.moveBounds)
 	 			this.direction = !this.direction;
 
-	 		this.body.move(this.direction ? 'up' : 'down');
+	 		this.body.move(this.direction ? 'left' : 'right');
+
 	 	}
 	}
 

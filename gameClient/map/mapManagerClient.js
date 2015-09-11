@@ -1,6 +1,5 @@
 define("gameClient/map/mapManagerClient", [
 		'require', 
-		'game/map/map', 
 		'core/emitter'
 	], function (require, Map, emitter) {
 
@@ -10,13 +9,16 @@ define("gameClient/map/mapManagerClient", [
 	}
 	MapManagerClient.prototype = {
 		init : function () {
-			emitter.on('createMap', this.createMap.bind(this));
 		},
-		createMap : function (socket) {
-			require(['game/map/maps/' + socket.map], function (m) {
-				var map = new Map;
-				map.init(m, socket.b2d, socket.player);
-			});
+		createFloor : function (socket) {
+		},
+		udpateMapItemCoords : function (mapItems) {
+			if(!this.map)return;
+			
+			for(var i = 0; i < mapItems.length; i++){
+				var item = this.map.getById(mapItems[i].id);
+				item.updateCoords(mapItems[i]);
+			}
 		}
 	}
 	return new MapManagerClient;

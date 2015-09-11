@@ -193,7 +193,7 @@ define("core/b2d", [
 			}, opts);
 			
 			var bodyDef = new b2BodyDef();
-			bodyDef.type = b2Body['b2_' + options.type.toLowerCase() + 'Body'];
+			bodyDef.type = options.type ? b2Body['b2_' + options.type.toLowerCase() + 'Body'] : b2Body.staticBody;
 			bodyDef.position.x = ((options.x + options.w) - (options.w / 2)) / this.SCALE;
 			bodyDef.position.y = (options.y + (options.h / 2)) / this.SCALE;
 			bodyDef.fixedRotation = options.fixedRotation;

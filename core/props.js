@@ -4,8 +4,8 @@ define("core/props", [], function () {
 		playersAloudInInstance : 2,
 
 		canvas : {
-			w : 800,
-			h : 400
+			w : 1600,
+			h : 800
 		}
 	}
 });

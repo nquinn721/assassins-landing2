@@ -13,6 +13,11 @@ define("game/map/elements/element", function () {
 			this.body = body;
 			this.displayed = true;
 		},
+		updateCoords : function (obj) {
+			if(!this.body)return;
+			this.body.setX(obj.x);
+			this.body.setY(obj.y);	
+		},
 		obj : function () {
 			return {
 				x : this.x,
@@ -21,8 +26,16 @@ define("game/map/elements/element", function () {
 				h : this.h,
 				id : this.id,
 				type : this.type,
-				speed : this.speed
+				speed : this.speed,
+				friction : this.friction,
+				restitution : this.restitution
 			}
+		},
+		tick : function () {
+			if(!this.body)return;
+			if(this.tickItem)this.tickItem();
+			this.x = this.body.getX();
+			this.y = this.body.getY();
 		}
 	}
 	return Element;

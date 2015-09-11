@@ -1,10 +1,9 @@
 define("game/instance/instanceManager", [
 		'core/b2d', 
 		'game/instance/instance', 
-		'core/props',
 		'core/emitter'
 	], 
-	function (b2d, Instance, props, emitter) {
+	function (b2d, Instance, emitter) {
 
 
 	function InstanceManager () {
@@ -25,7 +24,7 @@ define("game/instance/instanceManager", [
 			// Check if an instance has fewer players
 			// If so return that one instead of a new one
 			for(var i = 0; i < this.instances.length; i++)
-				if(this.instances[i].totalPlayers < props.playersAloudInInstance)
+				if(!this.instances[i].full())
 					return this.instances[i];
 				
 
@@ -34,6 +33,8 @@ define("game/instance/instanceManager", [
 		    	id : 'instance' + this.totalInstances, 
 		    	mapName : 'map' + (this.totalInstances + 1 > 2 ? 2 : 1)
 		    });
+			
+			instance.init();
 
 		    this.instances.push(instance);
 			this.totalInstances++;

@@ -7,6 +7,7 @@ define("game/character/player/player", ['core/emitter'], function (emitter) {
 		this.id = 'player';
 		this.speed = 5;
 		this.fixedRotation = true;
+		this.username = '';
 
 
 		// Client Classes
@@ -59,7 +60,7 @@ define("game/character/player/player", ['core/emitter'], function (emitter) {
 		contact : function (item) {
 			if(!item || !item.two.id)return;
 
-			if(item.two.id.match('floor') || item.two.id.match('player') && this.y + (this.h / 2) - 5 < item.two.y)
+			if(item.two.id.match(/floor|elevator/) || item.two.id.match('player') && this.y + (this.h / 2) - 5 < item.two.y)
 				this.jumpAvailable = true;
 			
 			
@@ -90,7 +91,8 @@ define("game/character/player/player", ['core/emitter'], function (emitter) {
 				h : this.h,
 				id : this.id,
 				speed : this.speed,
-				fixedRotation : this.fixedRotation
+				fixedRotation : this.fixedRotation,
+				username : this.username
 			}
 		},
 		keyDown : function (keyCode) {
