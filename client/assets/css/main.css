@@ -59,3 +59,7 @@ canvas{
 .start-game{
     float: right;
 }
+.loader-icon{
+    margin-top:50px;
+    display: block;
+}

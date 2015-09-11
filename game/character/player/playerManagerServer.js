@@ -29,7 +29,7 @@ define("game/character/player/playerManagerServer", [
 
 		},
 		sendUserToClient : function (socket) {
-			socket.emit('createUser', {user : socket.user, account : socket.account});
+			socket.emit('createUser', {user : socket.user});
 			socket.emit('start');
 			this.emitPlayersToClient(socket);
 

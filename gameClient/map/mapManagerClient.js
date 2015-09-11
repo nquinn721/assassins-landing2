@@ -12,10 +12,10 @@ define("gameClient/map/mapManagerClient", [
 		init : function () {
 			emitter.on('createMap', this.createMap.bind(this));
 		},
-		createMap : function (obj) {
-			require(['game/map/maps/' + obj.map], function (m) {
+		createMap : function (socket) {
+			require(['game/map/maps/' + socket.map], function (m) {
 				var map = new Map;
-				map.init(m, obj.b2d, obj.user);
+				map.init(m, socket.b2d, socket.player);
 			});
 		}
 	}

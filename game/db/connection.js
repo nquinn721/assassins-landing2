@@ -34,39 +34,43 @@ define("game/db/connection", [
 				lastName : 'Quinn',
 				email : 'natethepcspecialist@gmail.com'
 			});
-			console.log(account);
+
 			account.save(function (err) {
 				if(err)throw new Error(err);
 			});
 		},
 		login : function (username, password, cb, failcb) {
+			var self = this;
 			Account.findOne({username : username}, function (err, acc) {
+            	if (err) throw err;
 				if(acc)
 					acc.verifyPassword(password, function(err, isMatch) {
-						var account = {
-							username : true,
-							firstName : true,
-							lastName : true,
-							gold : true,
-							xp : true,
-							email : true,
-							_id : true
-						}
-			            if (err) throw err;
-			            if(!isMatch)failcb();
-			            else {
-			            	for(var i in account)
-			            		account[i] = acc[i];
-			            	cb(account);
-			            }
+						if(!isMatch)failcb();
+						else
+							self.sendAccount(acc, cb, failcb);
 			        });
 			});
 		},
 		loginId : function (id, cb) {
+			var self = this;
 			Account.findOne({_id : id}, function (err, acc) {
 				if(err)throw new Error;
-				else cb(acc);
+				else self.sendAccount(acc, cb);
 			})	
+		},
+		sendAccount : function (acc, cb) {
+			var account = {
+				username : true,
+				firstName : true,
+				lastName : true,
+				gold : true,
+				xp : true,
+				email : true,
+				_id : true
+			}
+        	for(var i in account)
+        		account[i] = acc[i];
+        	cb(account);
 		},
 		dbFailed : function () {
 		 	console.error.bind(console, 'connection error:');
