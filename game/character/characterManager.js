@@ -11,21 +11,21 @@ define("game/character/characterManager",[
 
 	CharacterManager.prototype = {
 		init : function () {
-			npcManager.init();
+			// npcManager.init();
 			playerManager.init();
 			this.setupEvents();
 		},
 		initServer : function () {
-			npcManager.initServer();
+			// npcManager.initServer();
 			playerManager.initServer();
 		},
 		initClient : function () {
-			npcManager.initClient();
+			// npcManager.initClient();
 			playerManager.initClient();
 		},
 		setupEvents : function () {
 			emitter.on('tick', function () {
-				npcManager.tick();
+				// npcManager.tick();
 				playerManager.tick();
 			});
 		}

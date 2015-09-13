@@ -6,11 +6,11 @@ define("js/socket", [
 	'js/createjs',
 	'js/menu',
 	'js/viewport',
-	'js/responsive'
-	], function (emitter, B2D, io, canvas, createjs, menu, Viewport, Responsive) {
+	'core/props',
+	'core/wallsAndFloors'
+	], function (emitter, B2D, io, canvas, createjs, menu, Viewport, props, wallsAndFloors) {
 
-		var responsive = new Responsive(this.b2d);
-		responsive.resize();
+		
 	
 		function Socket(){
 
@@ -30,10 +30,9 @@ define("js/socket", [
 				this.b2d.init();
 				this.b2d.debugDraw(canvas.debugctx);
 
-				responsive.init();
-				$(window).on('resize', function () {
-					responsive.resize();
-				});
+				// for(var i = 0; i < wallsAndFloors.length; i++)
+				// 	this.b2d.rect(wallsAndFloors[i]);
+				
 			},
 			startGame : function () {
 				menu.showGame();
@@ -88,7 +87,6 @@ define("js/socket", [
 				emitter.emit('keyup', obj);
 			},
 			coords : function (obj) {
-				emitter.emit('playerCoords', obj.players);
 				emitter.emit('mapCoords', obj.mapItems);
 			},
 			ping : function (ping) {
@@ -112,6 +110,12 @@ define("js/socket", [
 			},
 			emit : function (event, data) {
 				io.emit(event, data);
+			},
+			createElement : function (obj) {
+				emitter.emit('createElement', {b2d: this.b2d, obj : obj});	
+			},
+			destroyElement : function (id) {
+				emitter.emit('destroyElement', id);
 			},
 			disconnect : function () {
 

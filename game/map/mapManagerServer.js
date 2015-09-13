@@ -19,9 +19,13 @@ define("game/map/mapManagerServer", [
 			}
 
 			var m = require("game/map/maps/" + socket.instance.mapName);
-			socket.instance.map = new Map;
-			socket.instance.map.init(m, socket.instance.b2d, socket.user);
+			socket.instance.map = new Map(socket);
+			socket.instance.map.init(m, socket.instance.b2d, socket);
 			socket.emit('map', socket.instance.mapName);
+		},
+		extendItemsWithElement : function (item) {
+			for(var i in this.element)
+				item[i] = this.element[i];
 		},
 		destroyMap : function (map) {
 			// map.destroy();

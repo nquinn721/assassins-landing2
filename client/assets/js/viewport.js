@@ -21,7 +21,7 @@ define('js/viewport', ['core/emitter', 'core/props'], function (emitter, props) 
 		focus : function () {
 			var user = this.user;
 
-			if(user.x < this.w / 2)
+			if(user.x < this.width / 2)
 				this.canvas.css('left', -(user.x - this.width / 2));
 
 			var left = Math.abs(parseInt(this.canvas.css('left')));
@@ -39,7 +39,6 @@ define('js/viewport', ['core/emitter', 'core/props'], function (emitter, props) 
 				top = Math.abs(parseInt(canvas.css('top'))),
 				left = Math.abs(parseInt(canvas.css('left')));
 
-			console.log(user.x, user.y, canvasHeight);
 			// Move canvas left and right
 			if(user.x > viewWidth / 2 && user.x  < canvasWidth - (viewWidth / 2))
 			 	canvas.css('left', -(user.x - viewWidth / 2));

@@ -6,8 +6,11 @@ define("game/map/elements/platforms/elevator", function () {
 		this.h = 20;
 		this.id = 'floor';
 		this.type = 'kinematic';
+		this.policies = ['floor', 'elevator'];
 		this.speed = 2;
 		this.moveBounds = 300;
+		this.b2delement = 'rect';
+		this.elementName = 'elevator';
 
 		this.originalX = obj.x;
 		this.originalY = obj.y;
@@ -29,7 +32,6 @@ define("game/map/elements/platforms/elevator", function () {
 	 	},
 	 	tickItem : function () {
 	 		if(!this.body)return;
-
 
 	 		this.frames++;
 

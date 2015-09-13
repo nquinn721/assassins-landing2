@@ -1,36 +1,43 @@
 define("game/map/map", [
 		'core/emitter', 
-		'core/props', 
+		'core/props',
+		'core/wallsAndFloors',
 		'game/map/elements/element',
 		'game/map/matrix',
 		'game/map/elements/platforms/floor',
+		'game/map/elements/platforms/wall',
+		'game/map/elements/platforms/ceiling',
 		'game/map/elements/platforms/elevator',
 		'game/map/elements/platforms/movingplatform'
-	], function (emitter, props, Element, Matrix, floor, elevator, movingplatform) {
-	function Map() {
+	], function (emitter, props, wallsAndFloors, Element, Matrix, floor, wall, ceiling, elevator, movingplatform) {
+	function Map(socket) {
 		this.map;
+		this.socket = socket;
+		this.frames = 0;
 	}
 	Map.prototype = {
 		init : function (map, b2d, user) {
 			this.elements = {
 				floor : floor,
+				wall : wall,
+				ceiling : ceiling,
 				elevator : elevator,
 				movingplatform : movingplatform
 			}
 			this.map = map;
-			this.user = user;
+			this.user = user.player;
 			this.b2d = b2d;
 			this.element = new Element;
 			this.matrix = new Matrix(this.elements);
 
 			this.readMatrix();
 
-			this.create();
 			this.createWalls();
+
+			this.create();
 			this.events();
 		},
 		events : function () {
-			emitter.on('playerCoords', this.update.bind(this));
 			emitter.on('tick', this.tick.bind(this));
 		},
 		extendItemsWithElement : function (item) {
@@ -47,8 +54,10 @@ define("game/map/map", [
 
 				if(item.init)item.init();
 
-				if(this.isWithinDistance(item)){
-					item.show(this.b2d);
+				item.create(this.b2d);
+
+				if(this.userIsWithinDistance(item)){
+					item.show(this.socket);
 				}			
 			}
 		},
@@ -57,21 +66,22 @@ define("game/map/map", [
 				this.map.items[i].hide();
 		},
 		update : function () {
+			
 			for(var i = 0; i < this.map.items.length; i++){
 				var item = this.map.items[i];
-				if(!item.displayed){
-					if(this.isWithinDistance(item)){
-						item.show(this.b2d);
-					}
-				}else{
-					if(!this.isWithinDistance(item)){
-						item.hide();
-					}
+
+				if(!item.isVisible){
+					if(this.userIsWithinDistance(item)){
+						item.show(this.socket);
+					} 
+				} else if(!this.userIsWithinDistance(item)){
+					item.hide(this.socket);
 				}
 
 			}
+			this.frames++;
 		},
-		isWithinDistance : function (item) {
+		userIsWithinDistance : function (item) {
 			if(
 				item.x + item.w >= this.user.x - props.mapShowingDistance && 
 				item.x <= this.user.x + props.mapShowingDistance && 
@@ -81,10 +91,8 @@ define("game/map/map", [
 			return false;
 		},
 		createWalls : function () {
-			this.b2d.rect({w : props.canvas.w, h : 20, x : 0, y : props.canvas.h - 20, type : 'static', id : 'floor'});
-			this.b2d.rect({w : props.canvas.w, h : 20, x : 0, y : 0, type : 'static'});
-			this.b2d.rect({w : 20, h : props.canvas.h, x : 0, y : 0, type : 'static'});
-			this.b2d.rect({w : 20, h : props.canvas.h, x : props.canvas.w - 20, y : 0, type : 'static'});
+			// for(var i = 0; i < wallsAndFloors.length; i++)
+			// 	this.b2d.rect(wallsAndFloors[i]);
 		},
 
 		getById : function (id) {
@@ -99,6 +107,7 @@ define("game/map/map", [
 
 		},
 		tick : function () {
+			this.update();
 			for(var i = 0; i < this.map.items.length; i++)
 				if(this.map.items[i].tick)this.map.items[i].tick();
 		}

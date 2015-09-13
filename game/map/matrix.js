@@ -18,14 +18,16 @@ define("game/map/matrix", ["core/props", "core/lib/underscore"], function (props
 			var width = props.canvas.w / matrix[0].length,
 				height = props.canvas.h / matrix.length,
 				item, i, j, k, h;
+
+			console.log(width, height, props.canvas.h, props.canvas.w);
 			for(i = 0; i < matrix.length; i++){
 				for(j = 0; j < matrix[i].length; j++){
 					var segment = matrix[i][j];
 
-
 					// Continue if it equals zero
 					if(segment === 0){
 						if(item){
+							console.log(item);
 							this.items.push(item);
 							item = undefined;
 						}
@@ -46,15 +48,8 @@ define("game/map/matrix", ["core/props", "core/lib/underscore"], function (props
 						item.w += width;
 					}
 
-
-					// Search down
-					for(h = i; h < matrix.length - i; h++){
-						if(matrix[h][j] === 0)break;
-						if(matrix[h][j] === segment){
-							item.h += height;
-							matrix[h][j] = 0;
-						}
-					}
+					// if(i > 0)
+					// 	if(segment === matrix[i - 1][j])item.h += height;
 
 
 
@@ -62,6 +57,8 @@ define("game/map/matrix", ["core/props", "core/lib/underscore"], function (props
 
 				}
 			}
+
+			if(item)this.items.push(item);
 		},
 		getItemCount : function (id) {
 			var total = 0;

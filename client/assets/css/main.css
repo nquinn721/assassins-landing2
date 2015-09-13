@@ -1,8 +1,13 @@
 .viewport, .menu{
-    bottom: 50px;
+    /*bottom: 50px;
     top : 150px;
     left:50px;
-    right:50px;
+    right:50px;*/
+    width: 800px;
+    height: 400px;
+    left : 50%;
+    margin-left:-400px;
+    top : 150px;
 	border: 1px solid black;
 	position: absolute;
 	overflow: hidden;

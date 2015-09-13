@@ -4,14 +4,16 @@ define("game/map/elements/element", function () {
 	}
 
 	Element.prototype = {
-		hide : function () {
-			this.body.destroy();
-			this.displayed = false;
+		hide : function (socket) {
+			this.isVisible = false;
+			socket.emit('destroyElement', this.id);
 		},
-		show : function (b2d) {
-			var body = b2d.rect(this.obj());
-			this.body = body;
-			this.displayed = true;
+		show : function (socket) {
+			this.isVisible = true;
+			socket.emit('createElement', this.obj());
+		},
+		create : function (b2d) {
+			this.body = b2d.rect(this.obj());
 		},
 		updateCoords : function (obj) {
 			if(!this.body)return;
@@ -27,8 +29,11 @@ define("game/map/elements/element", function () {
 				id : this.id,
 				type : this.type,
 				speed : this.speed,
+				b2delement : this.b2delement,
 				friction : this.friction,
-				restitution : this.restitution
+				restitution : this.restitution,
+				policies : this.policies,
+				elementName : this.elementName
 			}
 		},
 		tick : function () {

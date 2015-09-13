@@ -9,6 +9,9 @@ define("game/map/elements/platforms/movingplatform", function () {
 		this.speed = 2;
 		this.moveBounds = 300;
 		this.friction = 50;
+		this.policies = ['floor', 'movingplatform'];
+		this.b2delement = 'rect';
+		this.elementName = 'movingplatform';
 
 		this.originalX = obj.x;
 		this.originalY = obj.y;

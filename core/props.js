@@ -3,9 +3,13 @@ define("core/props", [], function () {
 		mapShowingDistance : 800,
 		playersAloudInInstance : 2,
 
+		// canvas : {
+		// 	w : 1600,
+		// 	h : 800
+		// }
 		canvas : {
-			w : 1600,
-			h : 800
+			w : 800,
+			h : 400
 		}
 	}
 });

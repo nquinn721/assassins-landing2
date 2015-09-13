@@ -46,15 +46,21 @@ define("core/b2d", [
 
 
 			var contact = new Box2D.Dynamics.b2ContactListener;
-			contact.BeginContact = this.contact;
-			// contact.EndContact = this.contact;
+			contact.BeginContact = this.beginContact.bind(this);
+			contact.EndContact = this.endContact.bind(this);
 			// contact.PreSolve = this.contact;
 			// contact.PostSolve = this.contact;
 
 			this.world.SetContactListener(contact);
 
 		},
-		contact : function (contact) {
+		beginContact : function (contact) {
+			this.contact(contact, 'contact');
+		},
+		endContact : function (contact) {
+			this.contact(contact, 'endContact');
+		},
+		contact : function (contact, event) {
 			if(!contact.GetFixtureA)return;
 			var one = contact.GetFixtureA().GetBody(),
 			  	two = contact.GetFixtureB().GetBody(),
@@ -70,11 +76,14 @@ define("core/b2d", [
 			twoData.hit = {};
 			twoData.hit.x = two.GetWorldPoint(contact_point).x * 30;
 			twoData.hit.y = two.GetWorldPoint(contact_point).y * 30;
+			twoData.sides = {
+				left : twoData.x,
+				right : twoData.x + twoData.w,
+				top : twoData.y,
+				bottom : twoData.y + twoData.h
+			}
 
-			emitter.emit('contact', {one : oneData, two : twoData});
-			// console.log(twoData.id);
-			// emitter.emit('hit', {id : oneData.id, 'hitx' : Math.round(oneData.hit.x), 'hity' : Math.round(oneData.hit.y), 'x' : Math.round(oneData.x), 'y' : Math.round(oneData.y)});
-			// emitter.emit('hit', {id : twoData.id, 'hitx' : Math.round(twoData.hit.x), 'hity' : Math.round(twoData.hit.y), 'x' : Math.round(twoData.x), 'y' : Math.round(twoData.y)});
+			emitter.emit(event, {one : oneData, two : twoData});
 	
 		},
 		joint : function (opts, opts1, type) {
@@ -210,7 +219,7 @@ define("core/b2d", [
 
 			var debugDraw = new b2DebugDraw();
 			debugDraw.SetSprite(debugCanvas);
-			debugDraw.SetFillAlpha(0.5);
+			debugDraw.SetFillAlpha(0.3);
 			debugDraw.SetDrawScale(this.SCALE);
 			debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
 			this.world.SetDebugDraw(debugDraw);
