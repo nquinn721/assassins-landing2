@@ -1,5 +1,5 @@
 require([
-	'game/gameManager',
+	'gameClient/gameManagerClient',
 	'js/socket',
 	'core/ping',
 	'js/canvas',
@@ -7,7 +7,7 @@ require([
 	'gameClient/map/mapManagerClient',
 	'js/responsive'
 	], 
-	function (gameManager, socket, ping, canvas, canvasControls, mapManager, responsive) {
+	function (gameManagerClient, socket, ping, canvas, canvasControls, mapManager, responsive) {
 		mapManager.init();
 		
 		// responsive.init();
@@ -17,8 +17,7 @@ require([
 
 
 		ping.initClient();
-		gameManager.init();
-		gameManager.initClient();
+		gameManagerClient.init();
 		
 });
 

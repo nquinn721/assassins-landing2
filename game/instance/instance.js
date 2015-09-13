@@ -8,7 +8,8 @@ define("game/instance/instance", [
 		this.b2d = obj.b2d;
 		this.mapName = obj.mapName;
 		this.id = obj.id;
-
+		this.map = obj.map;
+		
 		// Players
 		this.totalPlayers = 0;
 		this.players = [];
@@ -37,7 +38,6 @@ define("game/instance/instance", [
 			this.totalPlayers--;
 
 			if(this.totalPlayers === 0){
-				emitter.emit('destroyMap', this.map);
 				this.instanceManager.destroyInstance(this);
 			}
 		},
@@ -46,8 +46,9 @@ define("game/instance/instance", [
 
 			var playerCoords = [],
 				itemCoords = [],
-				items = this.map.map.items,
+				items = this.map.items,
 				players = this.players;
+
 
 			// for(var i = 0; i < items.length; i++){
 			// 	var item = items[i];
@@ -64,7 +65,41 @@ define("game/instance/instance", [
 
 			// io.in(this.id).emit('coords', {players : playerCoords, mapItems : itemCoords});
 
+			this.sendMapItemsToPlayersWithinRange(io, players, items);
 
+		},
+		sendMapItemsToPlayersWithinRange : function(io, players, items) {
+			for(var i = 0; i < players.length; i++){
+				var player = players[i];
+
+				for(var j = 0; j < items.length; j++){
+					var item = items[j];
+
+					if(!item.isVisible()){
+						if(this.checkIfItemIsInRange(player, item)){
+							item.show();
+							this.emitToPlayer(io, players[i], 'createElement', items[j].obj());
+						}
+					}else if(item.isVisible()){
+						if(!this.checkIfItemIsInRange(player, item)){
+							item.hide();
+							this.emitToPlayer(io, players[i], 'destroyElement', items[j].obj());
+						}
+					}
+				}
+			}
+		},
+		emitToPlayer : function (io, player, event, data) {
+			io.sockets.connected[player.socketId].emit(event, data);
+		},
+		checkIfItemIsInRange : function (player, item) {
+			if(
+				item.x + item.w >= player.x - props.mapShowingDistance && 
+				item.x <= player.x + props.mapShowingDistance && 
+				item.y + item.h >= player.y - props.mapShowingDistance && 
+				item.y <= player.y + props.mapShowingDistance
+			)return true;
+			return false;
 		}
 	}
 

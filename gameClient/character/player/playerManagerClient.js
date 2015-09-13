@@ -3,17 +3,17 @@ define("gameClient/character/player/playerManagerClient",
 	[
 		'core/emitter', 
 		'gameClient/character/player/playerSprite',
+		'game/character/player/playerManager',
 		'js/canvas'
 	], 
-	function (emitter, PlayerSprite, canvas) {
+	function (emitter, PlayerSprite, playerManager, canvas) {
 
 	function PlayerManagerClient () {
 
 	}
 
 	PlayerManagerClient.prototype = {
-		init : function (pm) {
-			this.pm = pm;
+		init : function () {
 			this.events();
 		},
 		events : function () {
@@ -24,7 +24,7 @@ define("gameClient/character/player/playerManagerClient",
 			emitter.on('playerCoords', this.setPlayerCoords.bind(this));
 		},
 		createUser : function (socket) {
-			var player = this.pm.createPlayer(socket.player);
+			var player = playerManager.createPlayer(socket.player);
 			player.init(socket.b2d);
 			player.initClient({
 				sprite : new PlayerSprite(player, socket.account)
@@ -35,13 +35,13 @@ define("gameClient/character/player/playerManagerClient",
 		},
 		setPlayerCoords : function (obj) {
 			for(var i = 0; i < obj.length; i++){
-				var player = this.pm.getPlayer(obj[i]);
+				var player = playerManager.getPlayer(obj[i]);
 				if(player)
 					player.setCoords(obj[i]);
 			}
 		},
 		createPlayer : function (obj) {
-			var player = this.pm.createPlayer(obj.player);
+			var player = playerManager.createPlayer(obj.player);
 			player.init(obj.b2d);
 			player.initClient({
 				sprite : new PlayerSprite(player)
@@ -51,11 +51,11 @@ define("gameClient/character/player/playerManagerClient",
 			canvas.ctx.clearRect(0, 0, canvas.canvas.width, canvas.canvas.height);
 		},
 		keyup : function (obj) {
-			var p = this.pm.getPlayer(obj.player);
+			var p = playerManager.getPlayer(obj.player);
 			p.keyUp(obj.keyCode);
 		},
 		keydown : function (obj) {
-			var p = this.pm.getPlayer(obj.player);
+			var p = playerManager.getPlayer(obj.player);
 			p.keyDown(obj.keyCode);
 		}
 

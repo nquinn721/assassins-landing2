@@ -22,6 +22,9 @@ define("gameClient/map/mapManagerClient", [
 	}
 	MapManagerClient.prototype = {
 		init : function () {
+			this.events();
+		},
+		events : function () {
 			emitter.on('createElement', this.createElement.bind(this));
 			emitter.on('destroyElement', this.destroyElement.bind(this));
 			emitter.on('tick', this.tick.bind(this));

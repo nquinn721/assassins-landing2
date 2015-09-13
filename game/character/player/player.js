@@ -10,6 +10,10 @@ define("game/character/player/player", ['core/emitter'], function (emitter) {
 		this.username = '';
 
 
+		this.previousX = 10;
+		this.previousY = 10;
+
+
 		// Client Classes
 		this.client = {};
 
@@ -48,8 +52,14 @@ define("game/character/player/player", ['core/emitter'], function (emitter) {
 			
 		},
 		tick : function () {
-			this.x = this.body.getX();
-			this.y = this.body.getY();
+			// Update Previous Position
+			this.previousY = this.y;
+			this.previousX = this.x;
+
+			
+			// Determing if falling
+			if(this.previousY > this.y)this.falling = true;
+			else this.falling = false;
 			
 			this.frames++;
 
@@ -61,6 +71,20 @@ define("game/character/player/player", ['core/emitter'], function (emitter) {
 			if(this.left)
 				this.moveLeft();
 
+
+			// Update Current Position
+			this.x = this.body.getX() - this.w / 2;
+			this.y = this.body.getY() - this.h / 2;
+
+		},
+		moving : function (dir) {
+			return this[dir];
+		},
+		isFalling : function () {
+			return this.falling;
+		},
+		isJumping : function  () {
+			return 	this.jumping;
 		},
 		contact : function (item) {
 			if(!item || !item.two.policies)return;
@@ -69,8 +93,10 @@ define("game/character/player/player", ['core/emitter'], function (emitter) {
 				policies = item.two.policies.join('');
 
 			if(policies.match('floor'))
-				if(this.sides.bottom < colide.top && (this.sides.left < colide.right - 5 || this.sides.right > colide.left + 5) )
+				if(this.sides.bottom < colide.top && (this.sides.left < colide.right - 5 || this.sides.right > colide.left + 5) ){
 					this.jumpAvailable = true;
+					this.currentlyJumping = false;
+				}
 
 			if(policies.match(/floor|wall/))
 				if(colide.top < this.sides.bottom && colide.bottom > this.sides.top)
@@ -96,9 +122,11 @@ define("game/character/player/player", ['core/emitter'], function (emitter) {
 			this.body.move('left');
 		},
 		jump : function () {
+			this.currentlyJumping = true;
 			this.body.applyImpulse('up',5);
 		},
 		smallJump : function () {
+			this.currentlyJumping = true;
 			this.body.applyImpulse('up', 3);
 		},
 		destroy : function  () {
@@ -119,7 +147,8 @@ define("game/character/player/player", ['core/emitter'], function (emitter) {
 		keyDown : function (keyCode) {
 			var key = this.keys(keyCode);
 
-			if(key === 'jumping'){
+			if(key === 'jumping' && !this.jumped){
+				this.jumped = true;
 				if(this.smallJumpAvailable && !this.jumpAvailable){
 					this.smallJumpAvailable = false;
 					this.smallJump();
@@ -137,7 +166,7 @@ define("game/character/player/player", ['core/emitter'], function (emitter) {
 			var key = this.keys(keyCode);
 
 			if(key === 'jumping'){
-				// this[key] = false;
+				this.jumped = false;
 			}else{
 				this[key] = false;
 			}

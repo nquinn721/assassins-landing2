@@ -13,7 +13,7 @@ function setupRequire (requirejs, io) {
 
 	],
 	function (ticker, body, emitter, instanceManager, gameManager, props, connection, ping) {
-		var instance = instanceManager.createInstance(); 
+		gameManager.init();
 		ticker.start(io);
 		ping.initServer();
 
@@ -50,15 +50,19 @@ function setupRequire (requirejs, io) {
 
 			socket.on('start', function () {
 				if(socket.account){
-					
-					if(instance.full())
-						instance = instanceManager.createInstance();
-					
+					// var instance = instanceManager.createInstance(); 
+					// if(instance.full())
+
+					/**
+					 * FUTURE:: FIX THIS CREATES A NEW INSTANCE EVERY SOCKET LOGIN
+					 */
+					instance = instanceManager.createInstance();
 					socket.instance = instance;
+
 					socket.join(socket.instance.id);
 
 					emitter.emit('createUser', socket);
-					emitter.emit('createMap', socket);
+					// socket.emit('map', socket.instance.mapName);
 				}else{
 					socket.emit('notLoggedIn');
 				}
@@ -92,8 +96,6 @@ function setupRequire (requirejs, io) {
 			});
 		});
 
-		gameManager.init();
-		gameManager.initServer();
 	});
 }
 

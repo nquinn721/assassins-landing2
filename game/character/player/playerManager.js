@@ -2,7 +2,7 @@ define("game/character/player/playerManager", [
 	'game/character/player/player', 
 	'core/lib/underscore', 
 	'core/emitter', 
-	'core/props'
+	'core/props',
 	], 
 	function (Player, _, emitter, props) {
 
@@ -14,21 +14,11 @@ define("game/character/player/playerManager", [
 
 	PlayerManager.prototype = {
 		init : function () {
-			this.events();	
-		},
-		initClient : function () {
-			var self = this;
-			require(['gameClient/character/player/playerManagerClient'], function  (pm) {
-				self.pm = pm;
-				self.pm.init(self);
-			});
-		},
-		initServer : function  () {
-			this.pm = require('game/character/player/playerManagerServer');
-			this.pm.init(this);
+			this.events();
 		},
 		events : function () {
 			emitter.on('destroyPlayer', this.destroyPlayer.bind(this));
+			emitter.on('tick', this.tick.bind(this));
 		},
 		createPlayer : function (obj) {
 			var playerObj = {
@@ -51,7 +41,6 @@ define("game/character/player/playerManager", [
 			
 			this.players.push(player);
 			this.totalPlayers++;
-			
 			return player;
 		},
 		
@@ -76,11 +65,12 @@ define("game/character/player/playerManager", [
 					return this.players[i];
 		},
 		tick : function () {
-			if(this.pm.tick)this.pm.tick();
 			for(var i = 0; i < this.players.length; i++)
 				this.players[i].tick();
 		}
 	}
 
-	return new PlayerManager;
+	var pm = new PlayerManager;
+	pm.init();
+	return pm;
 });

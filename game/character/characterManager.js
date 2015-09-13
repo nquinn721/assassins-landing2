@@ -1,9 +1,7 @@
 define("game/character/characterManager",[
-	'game/character/npc/npcManager', 
-	'game/character/player/playerManager',
-	'core/emitter'
+	'game/character/player/playerManagerServer',
 	], 
-	function (npcManager, playerManager, emitter) {
+	function (playerManagerServer) {
 	
 	function CharacterManager() {
 
@@ -11,23 +9,7 @@ define("game/character/characterManager",[
 
 	CharacterManager.prototype = {
 		init : function () {
-			// npcManager.init();
-			playerManager.init();
-			this.setupEvents();
-		},
-		initServer : function () {
-			// npcManager.initServer();
-			playerManager.initServer();
-		},
-		initClient : function () {
-			// npcManager.initClient();
-			playerManager.initClient();
-		},
-		setupEvents : function () {
-			emitter.on('tick', function () {
-				// npcManager.tick();
-				playerManager.tick();
-			});
+			playerManagerServer.init();
 		}
 	}
 

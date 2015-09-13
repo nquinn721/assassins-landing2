@@ -7,8 +7,7 @@ define("js/socket", [
 	'js/menu',
 	'js/viewport',
 	'core/props',
-	'core/wallsAndFloors'
-	], function (emitter, B2D, io, canvas, createjs, menu, Viewport, props, wallsAndFloors) {
+	], function (emitter, B2D, io, canvas, createjs, menu, Viewport, props) {
 
 		
 	
@@ -28,10 +27,8 @@ define("js/socket", [
 			setup : function () {
 				this.b2d = new B2D;
 				this.b2d.init();
-				this.b2d.debugDraw(canvas.debugctx);
+				// this.b2d.debugDraw(canvas.debugctx);
 
-				// for(var i = 0; i < wallsAndFloors.length; i++)
-				// 	this.b2d.rect(wallsAndFloors[i]);
 				
 			},
 			startGame : function () {

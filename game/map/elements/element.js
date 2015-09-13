@@ -1,19 +1,24 @@
 define("game/map/elements/element", function () {
 	function Element(){
-		this.displayed = false;
+		this.visible = false;
 	}
 
 	Element.prototype = {
+		initItem : function (b2d) {
+			if(this.init)this.init();
+			this.create(b2d);
+		},
 		hide : function (socket) {
-			this.isVisible = false;
-			socket.emit('destroyElement', this.id);
+			this.visible = false;
 		},
 		show : function (socket) {
-			this.isVisible = true;
-			socket.emit('createElement', this.obj());
+			this.visible = true;
 		},
 		create : function (b2d) {
 			this.body = b2d.rect(this.obj());
+		},
+		isVisible : function () {
+			return this.visible;
 		},
 		updateCoords : function (obj) {
 			if(!this.body)return;
@@ -36,12 +41,18 @@ define("game/map/elements/element", function () {
 				elementName : this.elementName
 			}
 		},
+		
 		tick : function () {
 			if(!this.body)return;
 			if(this.tickItem)this.tickItem();
-			this.x = this.body.getX();
-			this.y = this.body.getY();
+			this.x = this.body.getX() - this.w / 2;
+			this.y = this.body.getY() - this.h / 2;
+		},
+		extend : function (item) {
+			for(var i in this)
+				item[i] = this[i];
+			return item;
 		}
 	}
-	return Element;
+	return new Element;
 });

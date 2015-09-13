@@ -1,25 +1,48 @@
-define("game/map/matrix", ["core/props", "core/lib/underscore"], function (props, _) {
+define("game/map/matrix", [
+		"core/props", 
+		'game/map/elements/platforms/floor',
+		'game/map/elements/platforms/wall',
+		'game/map/elements/platforms/ceiling',
+		'game/map/elements/platforms/elevator',
+		'game/map/elements/platforms/movingplatform'
+	], function (props, floor, wall, ceiling, elevator, movingplatform) {
 	
-	function Matrix (elements) {
-		var element = 1;
-		this.mapper = {};
+	function Matrix () {
+		this.elements = {
+			1 : {
+				el : floor,
+				id : 'floor'
+			},
+			2 : {
+				el : wall,
+				id : 'wall'
+			},
+			3 : {
+				el : ceiling,
+				id : 'ceiling'
+			},
+			4 : {
+				el : elevator,
+				id : 'elevator'
+			},
+			5 : {
+				el : movingplatform,
+				id : 'movingplatform'
+			}
+		};
 
 
-		for(var i in elements){
-			this.mapper[element] = i;
-			element++;
-		}
 		
-		this.items = [];
 	}
 
 	Matrix.prototype = {
 		map : function (matrix) {
 			var width = props.canvas.w / matrix[0].length,
 				height = props.canvas.h / matrix.length,
-				item, i, j, k, h;
+				item, id, i, j, k, h;
 
-			console.log(width, height, props.canvas.h, props.canvas.w);
+			this.items = [];
+
 			for(i = 0; i < matrix.length; i++){
 				for(j = 0; j < matrix[i].length; j++){
 					var segment = matrix[i][j];
@@ -27,7 +50,6 @@ define("game/map/matrix", ["core/props", "core/lib/underscore"], function (props
 					// Continue if it equals zero
 					if(segment === 0){
 						if(item){
-							console.log(item);
 							this.items.push(item);
 							item = undefined;
 						}
@@ -36,14 +58,14 @@ define("game/map/matrix", ["core/props", "core/lib/underscore"], function (props
 					}
 
 					if(!item){ 
-						item = {
-							id : this.mapper[segment] + (this.getItemCount(this.mapper[segment]) || 0),
-							element : this.mapper[segment],
+						id = this.elements[segment].id
+						item = new this.elements[segment].el({
+							id : id + this.getItemCount(id),
 							w : width,
 							h : height,
 							x : j * width,
 							y : i * height,
-						}
+						});
 					}else{
 						item.w += width;
 					}
@@ -59,18 +81,16 @@ define("game/map/matrix", ["core/props", "core/lib/underscore"], function (props
 			}
 
 			if(item)this.items.push(item);
+
+			return this.items;
 		},
 		getItemCount : function (id) {
 			var total = 0;
 			for(var i = 0; i < this.items.length; i++)
 				if(this.items[i].id.match(id))total++;
 			return total;
-		},
-		getById : function (id) {
-			return _.findWhere(this.items, {id : id});
 		}
 	}
 
-
-	return Matrix;
+	return new Matrix;
 })

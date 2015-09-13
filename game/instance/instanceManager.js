@@ -1,9 +1,10 @@
 define("game/instance/instanceManager", [
 		'core/b2d', 
-		'game/instance/instance', 
+		'game/instance/instance',
+		'game/map/map',
 		'core/emitter'
 	], 
-	function (b2d, Instance, emitter) {
+	function (B2D, Instance, Map, emitter) {
 
 
 	function InstanceManager () {
@@ -13,53 +14,42 @@ define("game/instance/instanceManager", [
 
 	InstanceManager.prototype = {
 		createInstance : function () {
-			var b = new b2d,
-				instance;
+			var b2d = new B2D,
+				instance,
+				mapName = 'map1';
 
 
-			b.init();
-			b.contact(this.contact.bind(this));
+			b2d.init();
+			b2d.contact(this.contact.bind(this));
 
 
 			// Check if an instance has fewer players
 			// If so return that one instead of a new one
-			for(var i = 0; i < this.instances.length; i++)
-				if(!this.instances[i].full())
-					return this.instances[i];
+			// for(var i = 0; i < this.instances.length; i++)
+			// 	if(!this.instances[i].full())
+			// 		return this.instances[i];
 				
-
-			instance = new Instance(this, {
-		    	b2d : b, 
-		    	id : 'instance' + this.totalInstances, 
-		    	mapName : 'map' + (this.totalInstances + 1 > 2 ? 2 : 1)
-		    });
+			var map = new Map(mapName, b2d);
+			map.init();
 			
+			instance = new Instance(this, {
+		    	b2d : b2d, 
+		    	id : 'instance' + this.totalInstances, 
+		    	mapName : mapName, // FUTURE:: UPDATE TO MAP CHOSEN
+		    	map : map
+		    });
+
+
 			instance.init();
 
 		    this.instances.push(instance);
 			this.totalInstances++;
-
 			return instance;
 		},
 		contact : function (contact) {
 			var one = contact.GetFixtureA().GetBody().GetUserData(),
 			  	two = contact.GetFixtureB().GetBody().GetUserData();
 			emitter.emit('contact', {one : one, two : two});
-			// one = this.getById(one.id);
-			// two = this.getById(two.id);
-
-			// if(one instanceof Array)one = one[0];
-			// if(two instanceof Array)two = two[0];
-
-			// // console.log(one, two);
-			// if(one && one.contact && !one.hasContact){
-			// 	one.hasContact = true;
-			// 	one.contact(two);
-			// }
-			// if(two && two.contact && !two.hasContact){
-			// 	two.hasContact = true;
-			// 	two.contact(one);
-			// }
 		},
 		destroyInstance : function (instance) {
 			for(var i = 0; i < this.instances.length; i++)
