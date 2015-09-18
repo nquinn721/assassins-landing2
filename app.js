@@ -13,20 +13,19 @@ var express = require('express'),
 
 // DB Connection
 mongoose.connect('mongodb://localhost/assassins');
-global.db = mongoose;
 global.define = require('amdefine')(module);
 global.socketAccounts = {};
 
 requirejs.config({
     nodeRequire: require,
-    baseUrl: __dirname + '/',
+    baseUrl: __dirname + '/main/',
     paths : {
     	_ : 'underscore'
     }
 });
 
 app.use(express.static(__dirname + '/client/assets'));
-app.use(express.static(__dirname + '/'));
+app.use(express.static(__dirname + '/main'));
 app.set('view engine', 'jade');
 app.set('views', __dirname + '/client/');
 // app.use(session({
@@ -42,8 +41,11 @@ app.set('views', __dirname + '/client/');
 // 	next();
 // });
 
+var DB = require('./lib/db/connection.js');
+var db = new DB(mongoose);
+db.init();
 
-require('./server/lib/main')(requirejs, io);
+require('./server/lib/main')(requirejs, io, db);
 
 app.get('/game', function (req, res) {
 	res.cookie('asc', "55f0eca776ef93f3359c1af7");

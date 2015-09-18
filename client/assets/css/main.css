@@ -7,7 +7,7 @@
     height: 400px;
     left : 50%;
     margin-left:-400px;
-    top : 150px;
+    top : 70px;
 	border: 1px solid black;
 	position: absolute;
 	overflow: hidden;
@@ -27,6 +27,7 @@
 canvas{
 	position: absolute;
 	top : 0;
+    left : 0;
 }
 .die {
     background-color: rgba(0,0,0,0.5);
@@ -70,4 +71,17 @@ canvas{
 }
 .canvas-controls input{
     margin:10px;
+}
+.characters img{
+    background: #16245C;
+    width:60px;
+    height: 110px;
+    margin-right:10px;
+    padding:5px;
+    border:1px solid black;
+    cursor: pointer;
+    margin-top:10px;
+}
+.characters img.selected {
+    border: 1px solid white !important;
 }

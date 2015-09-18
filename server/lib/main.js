@@ -1,21 +1,23 @@
-function setupRequire (requirejs, io) {
+function setupRequire (requirejs, io, connection) {
 	var cookie = require('cookie');
 
 	requirejs([
+		'require',
 		'core/ticker',
 		'core/body',
 		'core/emitter',
 		'game/instance/instanceManager',
 		'game/gameManager',
 		'core/props',
-		'game/db/connection',
 		'core/ping'
 
 	],
-	function (ticker, body, emitter, instanceManager, gameManager, props, connection, ping) {
+	function (require, ticker, body, emitter, instanceManager, gameManager, props, ping) {
 		gameManager.init();
 		ticker.start(io);
 		ping.initServer();
+		var spriteSheets = ['assassin', 'brute'],
+			totalSockets = 0;
 
 	
 		io.on('connection', function (socket) {
@@ -36,33 +38,30 @@ function setupRequire (requirejs, io) {
 			});
 			function login (acc) {
 				var rand = '',//Math.random(),
-					cookie =  acc._id + rand;
+					cookie =  acc._id + rand
+
 				
 				acc.cookie = cookie;
 
 				socket.account = acc;
-				// socketAccounts[cookie] = rand;
-				socket.emit('loggedIn', acc);
 
-				
+				// socketAccounts[cookie] = rand;
+				socket.emit('loggedIn', socket.account);
+				totalSockets++;
 
 			}
 
-			socket.on('start', function () {
+			socket.on('start', function (character) {
 				if(socket.account){
-					// var instance = instanceManager.createInstance(); 
-					// if(instance.full())
+					var instance = instanceManager.getInstance(); 
+					var Class = new require("game/character/classes/" + character);;
+					socket.account.characterClass = new Class;
 
-					/**
-					 * FUTURE:: FIX THIS CREATES A NEW INSTANCE EVERY SOCKET LOGIN
-					 */
-					instance = instanceManager.createInstance();
 					socket.instance = instance;
 
 					socket.join(socket.instance.id);
 
 					emitter.emit('createUser', socket);
-					// socket.emit('map', socket.instance.mapName);
 				}else{
 					socket.emit('notLoggedIn');
 				}

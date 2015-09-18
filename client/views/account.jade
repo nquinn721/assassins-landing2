@@ -6,7 +6,13 @@
 				span.username 
 			.accountEmail
 				| Email: 
-				span.email 
+				span.email
+			br
+			br
+			.characters Choose a class
+				br
+				img#assassin(src="/img/mario-standstill.png")
+				img#brute(src="/img/deadpool-standstill.png")
 		.right
 			.accountName
 				| Name: 
@@ -20,5 +26,5 @@
 				| Gold: 
 				span.gold 
 	.start-game
-		input.start.btn.btn-danger(type="button", value="Start Game")
+		input.start.btn.btn-danger(type="button", value="Start Game", disabled)
 		

@@ -4,8 +4,8 @@ define('js/viewport', ['core/emitter', 'core/props'], function (emitter, props) 
 		this.canvas = $('canvas');
 		this.user = user;
 
-		this.width = 800;
-		this.height = 400;
+		this.w = 800;
+		this.h = 400;
 	}
 
 	Viewport.prototype = {
@@ -15,23 +15,38 @@ define('js/viewport', ['core/emitter', 'core/props'], function (emitter, props) 
 			emitter.on('changeSize', this.updateSize.bind(this));
 		},
 		updateSize : function (obj) {
-			this.width = obj.w;
-			this.height = obj.h;
+			this.w = obj.w;
+			this.h = obj.h;
 		},
 		focus : function () {
 			var user = this.user;
 
-			if(user.x < this.width / 2)
-				this.canvas.css('left', -(user.x - this.width / 2));
+			if(user.x > this.w / 2)
+				this.canvasLeft(user.x - this.w / 2);
 
-			var left = Math.abs(parseInt(this.canvas.css('left')));
+			if(user.y > this.h / 2)
+				this.canvasTop(user.y - this.h / 2);
+			
+			this.canvasBounds();
 
-			if(left + this.width > props.canvas.w)
-				this.canvas.css('left', -(props.canvas.w - this.width));
+		},
+		canvasTop : function (num) {
+			if(typeof num !== 'undefined')this.canvas.css('top', -num);
+			return parseInt(this.canvas.css('top'))
+		},
+		canvasLeft : function (num) {
+			if(typeof num !== 'undefined')this.canvas.css('left', -num);
+			return parseInt(this.canvas.css('left'));
+		},
+		canvasBounds : function () {
+			if(this.canvasTop() > 0)this.canvasTop(0);
+			if(Math.abs(this.canvasTop()) > props.canvas.h - this.h)this.canvasTop(props.canvas.h - this.h);
+			if(this.canvasLeft() > 0)this.canvasLeft(0);
+			if(Math.abs(this.canvasLeft()) > props.canvas.w - this.w)this.canvasLeft(props.canvas.w - this.w);
 		},
 		followUser : function () {
-			var viewWidth = this.width,
-				viewHeight = this.height,
+			var viewWidth = this.w,
+				viewHeight = this.h,
 				canvasWidth = props.canvas.w,
 				canvasHeight = props.canvas.h,
 				user = this.user,
@@ -40,15 +55,12 @@ define('js/viewport', ['core/emitter', 'core/props'], function (emitter, props) 
 				left = Math.abs(parseInt(canvas.css('left')));
 
 			// Move canvas left and right
-			if(user.x > viewWidth / 2 && user.x  < canvasWidth - (viewWidth / 2))
-			 	canvas.css('left', -(user.x - viewWidth / 2));
+		 	canvas.css('left', -(user.x - viewWidth / 2));
 			// Move canvas up and down
-			if(user.y + user.h > viewHeight / 2 && user.y < canvasHeight - viewHeight / 2)
-			   	canvas.css('top', -(user.y - viewHeight / 2));
+		   	canvas.css('top', -(user.y - viewHeight / 2));
 
-			if(top > canvasHeight - viewHeight - 20 && user.y > canvasHeight - viewHeight / 2)
-				canvas.css('top', -(canvasHeight - viewHeight));
 
+			this.canvasBounds();
 	   	},
 	   	tick : function () {
 	   		this.followUser();

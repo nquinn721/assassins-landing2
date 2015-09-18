@@ -35,6 +35,7 @@ define('js/menu', ['core/emitter'], function (emitter) {
 		showAccount : function () {
 			this.hideMenus();
 			this.accountMenu.show();
+			this.accountMenu.find('input').focus();
 		},
 		showGame : function () {
 			this.hideMenus();
@@ -42,7 +43,7 @@ define('js/menu', ['core/emitter'], function (emitter) {
 		},
 		showLogin : function () {
 			this.hideMenus();
-			this.loginMenu.show();	
+			this.loginMenu.show().find('input').eq(0).focus();
 		},
 		setAccountInfo : function (obj) {
 			this.accountMenu.find('.email').text(obj.email);

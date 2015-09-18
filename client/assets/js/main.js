@@ -4,11 +4,9 @@ require([
 	'core/ping',
 	'js/canvas',
 	'js/canvasControls',
-	'gameClient/map/mapManagerClient',
 	'js/responsive'
 	], 
-	function (gameManagerClient, socket, ping, canvas, canvasControls, mapManager, responsive) {
-		mapManager.init();
+	function (gameManagerClient, socket, ping, canvas, canvasControls, responsive) {
 		
 		// responsive.init();
 		// $(window).on('resize', function () {

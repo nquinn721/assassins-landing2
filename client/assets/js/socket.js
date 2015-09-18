@@ -7,9 +7,13 @@ define("js/socket", [
 	'js/menu',
 	'js/viewport',
 	'core/props',
-	], function (emitter, B2D, io, canvas, createjs, menu, Viewport, props) {
+	'js/accountMenu',
+	'gameClient/background/background'
+	], function (emitter, B2D, io, canvas, createjs, menu, Viewport, props, AccountMenu, background) {
 
-		
+		var accountMenu = new AccountMenu(this.account);
+		accountMenu.init();
+			background.init();
 	
 		function Socket(){
 
@@ -27,13 +31,13 @@ define("js/socket", [
 			setup : function () {
 				this.b2d = new B2D;
 				this.b2d.init();
-				// this.b2d.debugDraw(canvas.debugctx);
+				this.b2d.debugDraw(canvas.debugctx);
 
 				
 			},
 			startGame : function () {
 				menu.showGame();
-				this.emit('start');	
+				this.emit('start', accountMenu.character);	
 			},
 			login : function (obj) {
 				this.emit('login', {
@@ -44,6 +48,7 @@ define("js/socket", [
 			loggedIn : function (acc) {
 				this.account = acc;
 				menu.setAccountInfo(acc);
+				
 				// if(acc.cookie)
 				// 	document.cookie = 'asc=' + acc.cookie;
 				menu.showAccount();
@@ -56,23 +61,16 @@ define("js/socket", [
 			},
 
 			createUser : function(obj){
+
 				createjs.ticker();
 				this.player = obj.user;
 				emitter.emit('createUser', this);
 
 
 			},
-			map : function (map) {
-				var viewport = new Viewport(this.player);
-				viewport.init();	
-
-				this.map = map;
-				emitter.emit('createMap', this);
-			},
 			createPlayer : function (player) {
 				emitter.emit('createPlayer', {b2d : this.b2d, player : player});
 			},
-
 			destroyPlayer : function (player) {
 				emitter.emit('destroyPlayer', player);
 			},
@@ -85,6 +83,7 @@ define("js/socket", [
 			},
 			coords : function (obj) {
 				emitter.emit('mapCoords', obj.mapItems);
+				emitter.emit('playerCoords', obj.players);
 			},
 			ping : function (ping) {
 				emitter.emit('clientPing', {socket : this, ping : ping});	
@@ -92,18 +91,26 @@ define("js/socket", [
 
 			start : function () {
 				var self = this;
-
+				var viewport = new Viewport(this.player);
+				viewport.init();
 
 
 				$(document).on('keydown', function (e) {
 					self.emit('keydown', e.keyCode);
 					self.player.keyDown(e.keyCode);
+					emitter.emit('keydown', {player : self.player, keyCode : e.keyCode});
 				});
 
 				$(document).on('keyup', function (e) {
 					self.emit('keyup', e.keyCode);
 					self.player.keyUp(e.keyCode);
+					emitter.emit('keyup', {player : self.player, keyCode : e.keyCode});
 				});
+			},
+			build : function (obj) {
+				console.log(obj.players);
+				emitter.emit('createPlayers', {b2d : this.b2d, players : obj.players});
+				emitter.emit('createMap', {map : obj.map, b2d : this.b2d});
 			},
 			emit : function (event, data) {
 				io.emit(event, data);
@@ -112,6 +119,7 @@ define("js/socket", [
 				emitter.emit('createElement', {b2d: this.b2d, obj : obj});	
 			},
 			destroyElement : function (id) {
+				console.log('destroy', id);
 				emitter.emit('destroyElement', id);
 			},
 			disconnect : function () {
