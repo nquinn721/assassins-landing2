@@ -1,9 +1,8 @@
 define("gameClient/map/mapManagerClient", [
 		'core/emitter',
-		'core/props',
 		'gameClient/map/map',
 		'gameClient/character/player/playerManagerClient'
-	], function (emitter, props, map, pm) {
+	], function (emitter, map, pm) {
 
 
 	function MapManagerClient() {
@@ -15,24 +14,26 @@ define("gameClient/map/mapManagerClient", [
 		},
 		events : function () {
 			emitter.on('createMap', this.createMap.bind(this));
-			// emitter.on('createElement', this.createElement.bind(this));
-			// emitter.on('destroyElement', this.destroyElement.bind(this));
 			emitter.on('mapCoords', this.udpateMapItemCoords.bind(this));
 			emitter.on('tick', this.tick.bind(this));
 		},
-		createElement : function (obj) {
-			var el = map.create(this.b2d, obj);
-			this.mapElements.push(el);
+		createElement : function (item) {
+			item.create(this.b2d);
+			this.user.addVisibleItem(item);
+		},
+		destroyElement : function (item) {
+			this.user.removeVisibleItem(item);
+			item.destroy();
 		},
 		createMap : function (obj) {
 			this.b2d = obj.b2d;
+			this.user = pm.getUser();
+
 			for(var i = 0; i < obj.map.length; i++){
-				this.createElement(obj.map[i]);
+				var el = map.create(obj.map[i]);
+				this.mapElements.push(el);
+				this.createElement(el);
 			}
-		},
-		destroyElement : function (item) {
-			item.destroy();
-			this.mapElements.splice(this.mapElements.indexOf(item), 1);
 		},
 		getById : function (id) {
 			for(var i = 0; i < this.mapElements.length; i++)
@@ -48,30 +49,26 @@ define("gameClient/map/mapManagerClient", [
 			}
 		},
 		tick : function () {
-			var user = pm.getUser();
 
 			for(var i = 0; i < this.mapElements.length; i++){
-				var item = this.mapElements[i],
-					inRange = user.checkIfItemIsInRange(item),
-					visible = user.hasVisibleItem(item);
-
+				var item = this.mapElements[i];
+				
 				if(item.tick)item.tick();
 				if(item.el.tickItem)item.el.tickItem();
 
 
-				
-
-				if(inRange && !visible){
-					console.log('create');
-					this.createElement(item);
-					user.addVisibleItem(item);
-				}else if(visible && !inRange){
-					console.log('destroy');
-					this.destroyElement(item)
-					user.removeVisibleItem(item);
-				}
+				this.checkLoadStatusOfItem(item);
 
 			}
+		},
+		checkLoadStatusOfItem : function (item) {
+			var inRange = this.user.checkIfItemIsInRange(item),
+				visible = this.user.hasVisibleItem(item);
+
+			if(inRange && !visible)
+				this.createElement(item);
+			else if(!inRange && visible)
+				this.destroyElement(item);
 		}
 	}
 	return new MapManagerClient;

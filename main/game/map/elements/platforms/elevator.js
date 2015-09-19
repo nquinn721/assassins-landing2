@@ -29,8 +29,9 @@ define("game/map/elements/platforms/elevator", function () {
 	 	tickItem : function () {
 	 		if(!this.body)return;
 
-	 		this.frames++;
 
+	 		this.frames++;
+	 		
 	 		if(this.y >= this.originalY + 10 || this.y <= this.originalY - this.moveBounds)
 	 			this.direction = !this.direction;
 

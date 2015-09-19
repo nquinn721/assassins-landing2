@@ -51,7 +51,7 @@ function setupRequire (requirejs, io, connection) {
 
 			}
 
-			socket.on('start', function (character) {
+			socket.on('load', function (character) {
 				if(socket.account){
 					var instance = instanceManager.getInstance(); 
 					var Class = new require("game/character/classes/" + character);;

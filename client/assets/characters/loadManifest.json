@@ -1,0 +1,6 @@
+{
+	"manifest" : [
+		{ "id" : "assassin-spritesheet", "src" : "/characters/assassin-spritesheet.png", "type" : "spritesheet"}
+		{ "id" : "brute-spritesheet", "src" : "/characters/brute-spritesheet.png", "type" : "spritesheet"}
+	]
+}

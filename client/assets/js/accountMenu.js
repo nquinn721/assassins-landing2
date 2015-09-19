@@ -1,4 +1,4 @@
-define(function () {
+define("js/accountMenu", ['js/createjs'], function (createjs) {
 	function AccountMenu (account) {
 		this.account = account;
 		this.menu = $('.account.menu');

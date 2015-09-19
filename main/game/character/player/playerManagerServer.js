@@ -40,12 +40,11 @@ define("game/character/player/playerManagerServer", [
 			socket.instance.join(player, socket);
 
 
-			this.sendUserToClient(socket);
+			// this.sendUserToClient(socket);
 
 		},
 		sendUserToClient : function (socket) {
-			socket.emit('createUser', {user : socket.user});
-			socket.emit('start');
+			
 
 		},
 		destroyPlayer : function (player) {

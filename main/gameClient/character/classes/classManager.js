@@ -14,8 +14,9 @@ define("gameClient/character/classes/classManager", [
 	ClassManager.prototype = {
 		create : function (cl) {
 			var characterClass = new this.classes[cl],
-				spriteSheet = new createjs.createjs.SpriteSheet(characterClass.data),
-				animation = new createjs.createjs.Sprite(spriteSheet, 'standLeft');
+				animation = createjs.spriteSheet(characterClass.data, 'standLeft');
+				// spriteSheet = new createjs.createjs.SpriteSheet(characterClass.data),
+				// animation = new createjs.createjs.Sprite(spriteSheet, 'standLeft');
 			
 			animation.scaleX = 50 / 16;
 			if(cl.match('assassin'))
@@ -23,7 +24,7 @@ define("gameClient/character/classes/classManager", [
 			else animation.scaleY = 100 / 25;
 			animation.regY = -1;
 			createjs.stage.addChild(animation);
-			return {characterClass : characterClass, animation : animation, spriteSheet : spriteSheet};
+			return {characterClass : characterClass, animation : animation};
 		}
 	}
 

@@ -19,11 +19,10 @@ define("gameClient/map/map", [
 	}
 
 	Map.prototype = {
-		create : function (b2d, obj) {
+		create : function (obj) {
 			var item = new this.mapElements[obj.elementName](obj);
 			this.element.extend(item);
-			item.create(b2d, obj);
-			item.init();
+			// item.init(b2d, obj);
 			return item;
 		}
 	}

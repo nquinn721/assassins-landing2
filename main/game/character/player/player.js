@@ -36,7 +36,7 @@ define("game/character/player/player", [
 
 		this.frames = 0;
 
-		this.jumpAvailable = false;
+		this.jumpAvailable = true;
 		this.smallJumpAvailable = false;
 
 

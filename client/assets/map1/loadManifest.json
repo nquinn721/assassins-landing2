@@ -1,0 +1,8 @@
+{
+	"manifest" : [
+		{ "id" : "floor", "src" : "/map1/img/floor.jpg"},
+		{ "id" : "wall", "src" : "/map1/img/wall.jpg"},
+		{ "id" : "elevator", "src" : "/map1/img/elevator.jpg"},
+		{ "id" : "background", "src" : "/map1/img/background.jpg"}
+	]
+}

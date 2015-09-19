@@ -6,43 +6,59 @@
 	}
 
 	Element.prototype = {
-		init : function () {
+		init : function (b2d, obj) {
 			
-	        this.events();
+	        this.create(b2d, obj);
 		},
-		create : function (b2d, obj) {
-			this.body = b2d.rect(obj);
-			// var text = createjs.text(obj.id, null, "#000");
+		create : function (b2d) {
+			var obj = this.obj();
 
-			// text.x = obj.x;
-			// text.y = obj.y - obj.h / 2 - 10;
-		},
-		events : function () {
-			emitter.on('destroyElement', this.remove.bind(this));	
-		},
-		onload : function () {
-			this.img = new createjs.createjs.Bitmap(this.image);
+			// B2D body
+			this.body = b2d.rect(obj);
+	        this.el.body = this.body;
+
+			// Sprite
+			this.img = createjs.image(obj.elementName);
 			this.img.x = this.x;
 			this.img.y = this.y;
-	        this.img.scaleY = this.h / this.image.height;
-	        this.img.scaleX = this.w / this.image.width;
-            createjs.stage.addChild(this.img);
+	        this.img.scaleY = this.h / this.img.image.height;
+	        this.img.scaleX = this.w / this.img.image.width;
+			
+	        // Header Text
+			// this.text = createjs.text(obj.id, null, "#000");
+			// this.text.x = obj.x;
+			// this.text.y = obj.y - obj.h / 2 - 10;
+
+
+		},
+		events : function () {
 		},
 		destroy : function () {
 			this.body.destroy();
-			createjs.stage.removeChild(this.img);
-		},
-		remove : function (id) {
-			if(this.id === id)
-				createjs.stage.removeChild(this.img);	
+			createjs.destroy(this.img);
+			createjs.destroy(this.text);
 		},
 		tick : function () {
 			if(!this.img)return;
-			if(this.img.x !== this.el.x){
-				this.img.x = this.el.x;
-				this.img.y = this.el.y;
-			}
+			this.img.x = this.el.x = this.el.body.getX();
+			this.img.y = this.el.y = this.el.body.getY();
  
+		},
+		obj : function () {
+			return {
+				x : this.x,
+				y : this.y,
+				w : this.w,
+				h : this.h,
+				id : this.id,
+				type : this.type,
+				speed : this.speed,
+				b2delement : this.b2delement,
+				friction : this.friction,
+				restitution : this.restitution,
+				policies : this.policies,
+				elementName : this.elementName
+			}
 		},
 		extend : function (item) {
 			for(var i in this)
