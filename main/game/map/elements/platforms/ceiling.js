@@ -11,8 +11,6 @@ define("game/map/elements/platforms/ceiling", [], function () {
 		this.b2delement = 'rect';
 		this.elementName = 'ceiling';
 
-		for(var i in obj)this[i] = obj[i];
-
 	}
 	return Ceiling;
 });

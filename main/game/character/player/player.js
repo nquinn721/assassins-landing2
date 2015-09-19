@@ -33,6 +33,10 @@ define("game/character/player/player", [
 		for(var i in obj)
 			this[i] = obj[i];
 
+		// Extend character class
+		for(var i in obj.characterClass)
+			this[i] = obj.characterClass[i];
+
 
 		this.frames = 0;
 
@@ -53,6 +57,7 @@ define("game/character/player/player", [
 		},
 		events : function () {
 			emitter.on('contact', this.contact.bind(this));	
+			emitter.on('contactPostSolve', this.contactPostSolve.bind(this));	
 			emitter.on('endContact', this.endContact.bind(this));	
 		},
 		initClient : function (obj) {
@@ -81,6 +86,11 @@ define("game/character/player/player", [
 				this.moveRight();
 			if(this.left)
 				this.moveLeft();
+			if(this.moveup)
+				this.moveUp();
+
+			if(this.gettingDamaged)
+				this.hp -= this.damageDealt || 1;
 
 
 			// Update Current Position
@@ -124,17 +134,38 @@ define("game/character/player/player", [
 					this.smallJumpAvailable = true;
 				}
 			}
+
+			if(policies.match('spikePit')){
+				this.gettingDamaged = true;
+				this.damageDealt = 5;
+			}
+
+		},
+		contactPostSolve : function (item) {
+			if(!item || !item.two.policies)return;
+
+			var colide = item.two.sides,
+				policies = item.two.policies.join('');
+
 			
-			
+
 		},
 		endContact : function (item) {
 			if(!item || !item.two.policies)return;
 
+			var policies = item.two.policies.join('');
+
 			this.smallJumpAvailable = false;
+
+			if(policies.match('spikePit'))
+				this.gettingDamaged = false;
 		},
 		setCoords : function (obj) {
 			this.body.setX(obj.x);
 			this.body.setY(obj.y);
+		},
+		moveUp : function () {
+			this.body.move('up', 10);
 		},
 		moveRight : function () {
 			this.directionFacing = 'right';
@@ -162,6 +193,7 @@ define("game/character/player/player", [
 				w : this.w,
 				h : this.h,
 				id : this.id,
+				characterClass : this.characterClass,
 				speed : this.speed,
 				fixedRotation : this.fixedRotation,
 				username : this.username,

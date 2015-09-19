@@ -7,7 +7,6 @@
 
 	Element.prototype = {
 		init : function (b2d, obj) {
-			
 	        this.create(b2d, obj);
 		},
 		create : function (b2d) {
@@ -18,11 +17,15 @@
 	        this.el.body = this.body;
 
 			// Sprite
-			this.img = createjs.image(obj.elementName);
-			this.img.x = this.x;
-			this.img.y = this.y;
-	        this.img.scaleY = this.h / this.img.image.height;
-	        this.img.scaleX = this.w / this.img.image.width;
+
+			if(this.setupSprite)this.setupSprite();
+			else{
+				this.img = createjs.image(this.sprite);
+				this.img.x = this.x;
+				this.img.y = this.y;
+		        this.img.scaleY = this.h / this.img.image.height;
+		        this.img.scaleX = this.w / this.img.image.width;
+			}
 			
 	        // Header Text
 			// this.text = createjs.text(obj.id, null, "#000");
@@ -35,8 +38,11 @@
 		},
 		destroy : function () {
 			this.body.destroy();
-			createjs.destroy(this.img);
-			createjs.destroy(this.text);
+			if(this.destroySprite)this.destroySprite();
+			else{
+				createjs.destroy(this.img);
+				createjs.destroy(this.text);
+			}
 		},
 		tick : function () {
 			if(!this.img)return;
@@ -57,12 +63,16 @@
 				friction : this.friction,
 				restitution : this.restitution,
 				policies : this.policies,
-				elementName : this.elementName
+				elementName : this.elementName,
+				heightItems : this.heightItems,
+				widthItems : this.widthItems
 			}
 		},
-		extend : function (item) {
+		extend : function (item, obj) {
 			for(var i in this)
 				item[i] = this[i];
+			for(var i in obj)
+				item[i] = obj[i];
 			return item;
 		}
 	}

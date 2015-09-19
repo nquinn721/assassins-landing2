@@ -28,6 +28,8 @@ define("game/map/elements/element", function () {
 				id : this.id,
 				type : this.type,
 				speed : this.speed,
+				widthItems : this.widthItems,
+				heightItems : this.heightItems,
 				b2delement : this.b2delement,
 				friction : this.friction,
 				restitution : this.restitution,
@@ -42,9 +44,14 @@ define("game/map/elements/element", function () {
 			this.y = this.body.getY();
 			if(this.tickItem)this.tickItem();
 		},
-		extend : function (item) {
+		extend : function (item, obj) {
+			var item = require('game/map/elements/' + item);
+			item = new item;
 			for(var i in this)
 				item[i] = this[i];
+
+			for(var i in obj)
+				item[i] = obj[i];
 			return item;
 		}
 	}

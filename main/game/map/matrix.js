@@ -1,34 +1,16 @@
 define("game/map/matrix", [
 		"core/props", 
-		'game/map/elements/platforms/floor',
-		'game/map/elements/platforms/wall',
-		'game/map/elements/platforms/ceiling',
-		'game/map/elements/platforms/elevator',
-		'game/map/elements/platforms/movingplatform'
-	], function (props, floor, wall, ceiling, elevator, movingplatform) {
+		'game/map/elements/element',
+	], function (props, element) {
 	
 	function Matrix () {
 		this.elements = {
-			1 : {
-				el : floor,
-				id : 'floor'
-			},
-			2 : {
-				el : wall,
-				id : 'wall'
-			},
-			3 : {
-				el : ceiling,
-				id : 'ceiling'
-			},
-			4 : {
-				el : elevator,
-				id : 'elevator'
-			},
-			5 : {
-				el : movingplatform,
-				id : 'movingplatform'
-			}
+			f : 'platforms/floor',
+			w : 'platforms/wall',
+			c : 'platforms/ceiling',
+			e : 'platforms/elevator',
+			m : 'platforms/movingplatform',
+			s : 'pits/spikePit'
 		};
 
 
@@ -66,8 +48,10 @@ define("game/map/matrix", [
 					if(!this.item){ 
 						this.createItem(currentRow, currentColumn, matrix, segment);
 						prevSegment = segment;	
-					}else if(prevSegment === segment){
+					}else if(segment === prevSegment){
+						prevSegment = segment;
 						this.item.w += this.width;
+						this.item.widthItems++;
 						// Clear next clumn height below item
 						for(var p = 0; p < this.item.heightItems; p++)
 							if(matrix[currentRow + p + 1])matrix[currentRow + p + 1][j] = 0;
@@ -75,6 +59,7 @@ define("game/map/matrix", [
 						this.items.push(this.item);
 						this.item = null;
 						this.createItem(currentRow, currentColumn, matrix, segment);
+						prevSegment = segment;	
 					}
 					
 				}
@@ -85,15 +70,17 @@ define("game/map/matrix", [
 			return this.items;
 		},
 		createItem : function (currentRow, currentColumn, matrix, segment) {
-			var id = this.elements[segment].id;
+			var item = this.elements[segment],
+				id = item.split('/')[1];
 
-			this.item = new this.elements[segment].el({
+			this.item = element.extend(item, {
 				id : id + this.getItemCount(id),
 				w : this.width,
 				h : 0,
 				x : currentColumn * this.width,
 				y : currentRow * this.height,
-				heightItems : 0
+				heightItems : 0,
+				widthItems : 0
 			});
 
 			// Get height from first column of item

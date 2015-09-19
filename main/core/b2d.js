@@ -48,8 +48,8 @@ define("core/b2d", [
 			var contact = new Box2D.Dynamics.b2ContactListener;
 			contact.BeginContact = this.beginContact.bind(this);
 			contact.EndContact = this.endContact.bind(this);
-			// contact.PreSolve = this.contact;
-			// contact.PostSolve = this.contact;
+			contact.PreSolve = this.contactPreSolve.bind(this);
+			contact.PostSolve = this.contactPostSolve.bind(this);
 
 			this.world.SetContactListener(contact);
 
@@ -59,6 +59,12 @@ define("core/b2d", [
 		},
 		endContact : function (contact) {
 			this.contact(contact, 'endContact');
+		},
+		contactPreSolve : function (contact) {
+			this.contact(contact, 'contactPreSolve');
+		},
+		contactPostSolve : function (contact) {
+			this.contact(contact, 'contactPostSolve');
 		},
 		contact : function (contact, event) {
 			if(!contact.GetFixtureA)return;

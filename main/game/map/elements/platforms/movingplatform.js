@@ -16,7 +16,6 @@ define("game/map/elements/platforms/movingplatform", function () {
 		this.originalX = obj.x;
 		this.originalY = obj.y;
 
-		for(var i in obj)this[i] = obj[i];
 		this.frames = 0;
 
 		this.direction = true;

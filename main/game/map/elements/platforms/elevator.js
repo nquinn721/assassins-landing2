@@ -12,11 +12,7 @@ define("game/map/elements/platforms/elevator", function () {
 		this.b2delement = 'rect';
 		this.elementName = 'elevator';
 
-		this.originalX = obj.x;
-		this.originalY = obj.y;
-
-		if(obj)
-			for(var i in obj)this[i] = obj[i];
+		
 
 
 		this.frames = 0;
@@ -26,6 +22,10 @@ define("game/map/elements/platforms/elevator", function () {
 		
 	}
 	Elevator.prototype = {
+		init : function () {
+			this.originalX = this.x;
+			this.originalY = this.y;
+		},
 	 	tickItem : function () {
 	 		if(!this.body)return;
 

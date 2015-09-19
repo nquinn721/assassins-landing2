@@ -25,24 +25,41 @@ define("game/map/map", [
 		},
 		events : function () {
 			emitter.on('tick', this.tick.bind(this));
+			emitter.on('contact', this.contact.bind(this));	
+			emitter.on('contactPostSolve', this.contactPostSolve.bind(this));	
+			emitter.on('endContact', this.endContact.bind(this));
 		},
 		create : function () {
 			if(this.map.init)this.map.init();
 
-			for(var i = 0; i < this.items.length; i++){
-				var item = element.extend(this.items[i]);
-
-				item.initItem(this.b2d);
-			}
+			for(var i = 0; i < this.items.length; i++)
+				this.items[i].initItem(this.b2d);
+			
 		},
 		
 
 		getById : function (id) {
-			for(var i = 0; i < this.map.items.length; i++)
-				if(this.map.items[i].id === id)return this.map.items[i];
+			for(var i = 0; i < this.items.length; i++)
+				if(this.items[i].id === id)return this.items[i];
 		},
 		readMatrix : function () {
 			this.items = matrix.map(this.map.matrix);
+		},
+		contact : function (obj) {
+			this.createContact(obj, 'contact');
+		},
+		contactPostSolve : function (obj) {
+			this.createContact(obj, 'contactPostSolve');
+		},
+		endContact : function (obj) {
+			this.createContact(obj, 'endContact');
+		},
+		createContact : function (obj, method) {
+			var a = this.getById(obj.one.id),
+				b = this.getById(obj.two.id);
+
+			if(a && a[method])a[method](b);
+			if(b && b[method])b[method](a);
 		},
 		tick : function () {
 			for(var i = 0; i < this.items.length; i++)

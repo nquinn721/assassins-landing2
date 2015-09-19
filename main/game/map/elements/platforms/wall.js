@@ -11,8 +11,6 @@ define("game/map/elements/platforms/wall", [], function () {
 		this.b2delement = 'rect';
 		this.elementName = 'wall';
 
-		for(var i in obj)this[i] = obj[i];
-
 	}
 	return Wall;
 });

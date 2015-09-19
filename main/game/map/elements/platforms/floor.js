@@ -11,9 +11,6 @@ define("game/map/elements/platforms/floor", [], function () {
 		this.b2delement = 'rect';
 		this.elementName = 'floor';
 
-		for(var i in obj)this[i] = obj[i];
-
-
 	}
 	return Floor;
 });

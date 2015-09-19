@@ -18,17 +18,36 @@ define("gameClient/character/player/playerSprite", [
 		this.animation = characterClass.animation;
 
 
-		this.nameBackground = createjs.box("rgb(112,112,112)", 75, 20);
-		this.name = createjs.text(player.account.username)
 	}
 
 	PlayerSprite.prototype = {
 		init : function () {
 			this.events();
 			this.player.sprite = this;	
+			this.setupPlayerInfo();
 		},
 		events : function () {
 			emitter.on('tick', this.tick.bind(this));
+		},
+		setupPlayerInfo : function () {
+			var username = this.player.account.username;
+
+			username = username.substr(0,1).toUpperCase() + username.substr(1);
+
+
+			this.nameBackground = createjs.box("#222", 75, 20);
+			this.name = createjs.text(username, "16px arial");
+			this.name.textAlign = "center";
+			this.hpbackgound = createjs.box('black', 75, 7);
+			this.hp = createjs.box("green", 73, 5);
+		},
+		tick : function () {
+			if(!this.player || !this.animation)return;
+			this.animation.x = this.player.x;
+			this.animation.y = this.player.y;
+			this.updateName();
+			this.updateHp();
+			
 		},
 		keyup : function (keyCode) {
 			if(keys[keyCode] === 'up')
@@ -64,15 +83,19 @@ define("gameClient/character/player/playerSprite", [
 				this[method]();
 			}
 		},
-		tick : function () {
-			if(!this.player || !this.animation)return;
-			this.animation.x = this.player.x;
-			this.animation.y = this.player.y;
+
+		updateName : function () {
 			this.nameBackground.x = this.player.x - 10;
 			this.nameBackground.y = this.player.y - 30;
-			this.name.x = this.player.x;
-			this.name.y = this.player.y - 32;
-
+			this.name.x = this.player.x + this.player.w / 2;
+			this.name.y = this.player.y - 28;
+		},
+		updateHp : function () {
+			this.hp.x = this.player.x - 9;
+			this.hp.y = this.player.y - 39;
+			this.hp.scaleX = this.player.hp / this.player.characterClass.hp;
+			this.hpbackgound.x = this.player.x - 10;
+			this.hpbackgound.y = this.player.y - 40;
 		},
 		lookLeft : function () {
 			this.lookingRight = false;

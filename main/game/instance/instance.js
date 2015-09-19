@@ -16,7 +16,7 @@ define("game/instance/instance", [
 		this.players = [];
 
 		// Emit Coords
-		this.emitCoords = true;
+		this.emitCoords = false;
 
 		// Parent
 		this.instanceManager = instanceManager;

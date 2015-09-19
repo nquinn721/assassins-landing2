@@ -24,7 +24,13 @@ define("game/character/player/playerManagerServer", [
 					mapItem = socket.instance.map.items[i];
 					break;
 				}
-			var player = playerManager.createPlayer({socketId : socket.id, username : socket.account.username, y : mapItem.y - 100, x : mapItem.x + mapItem.w / 2});
+			var player = playerManager.createPlayer({
+				socketId : socket.id, 
+				username : socket.account.username, 
+				y : mapItem.y - 100, 
+				x : mapItem.x + mapItem.w / 2,
+				characterClass : socket.account.characterClass
+			});
 			player.init(socket.instance.b2d);
 
 			// Player object for client

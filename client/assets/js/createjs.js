@@ -53,7 +53,11 @@ define("js/createjs", ['js/canvas', 'core/emitter'], function (canvas, emitter) 
             this.stage.addChild(el);
         },
         destroy : function (el) {
-            this.stage.removeChild(el);
+            if(el instanceof Array)
+                for(var i = 0; i < el.length; i++)
+                    this.stage.removeChild(el[i]);
+            else
+                this.stage.removeChild(el);
         }
 
 	}

@@ -28,7 +28,7 @@ define("gameClient/character/player/playerManagerClient",
 		createUser : function (socket) {
 			var player = playerManager.createPlayer(socket.player),
 				sprite = new PlayerSprite(player);
-
+				
 			sprite.init();
 			player.init(socket.b2d);
 			player.initClient({

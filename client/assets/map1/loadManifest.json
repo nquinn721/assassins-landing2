@@ -1,8 +1,11 @@
 {
+	"path" : "/map1/img/",
 	"manifest" : [
-		{ "id" : "floor", "src" : "/map1/img/floor.jpg"},
-		{ "id" : "wall", "src" : "/map1/img/wall.jpg"},
-		{ "id" : "elevator", "src" : "/map1/img/elevator.jpg"},
-		{ "id" : "background", "src" : "/map1/img/background.jpg"}
+		{ "id" : "floor", "src" : "floor.jpg"},
+		{ "id" : "wall", "src" : "wall.jpg"},
+		{ "id" : "elevator", "src" : "elevator.jpg"},
+		{ "id" : "background", "src" : "background.jpg"},
+		{ "id" : "spike", "src" : "spike.png"}
+
 	]
 }
