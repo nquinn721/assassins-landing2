@@ -1,5 +1,4 @@
 define("js/canvas", ['core/props'], function (props) {
-	
 	var width = props.canvas.w,
 		height = props.canvas.h,
 		canvas = document.getElementById('game'),

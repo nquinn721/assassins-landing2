@@ -1,13 +1,10 @@
 define("js/createjs", ['js/canvas', 'core/emitter'], function (canvas, emitter) {
 	function CreateJS () {
-      	this.stage = new createjs.Stage(document.getElementById('game'));
-        this.objs = [];
+      this.createjs = createjs;
+    	 this.stage = new createjs.Stage(document.getElementById('game'));
 	}
 
 	CreateJS.prototype = {
-    hit : function () {
-      
-    },
 		ticker : function () {
          	var self = this;
          	createjs.Ticker.addEventListener('tick', function () {
@@ -19,24 +16,32 @@ define("js/createjs", ['js/canvas', 'core/emitter'], function (canvas, emitter) 
          	// createjs.Ticker.useRAF = true;
       	},
 		tick : function () {
-			// this.stage.update();
+			this.stage.update();
 
+		},
+        box : function (color, w, h) {
+            var box = new createjs.Graphics().beginFill(color).drawRect(0, 0, w, h);
+                box = new createjs.Shape(box);
 
-      for(var i = 0; i < this.objs.length; i++){
-        var obj = this.objs[i];
-        canvas.ctx.fillStyle = 'black';
-        canvas.ctx.fillRect(obj.hitx - 2, obj.hity - 2, 5, 5);
-        canvas.ctx.fillRect(obj.x - 2, obj.y - 2, 5, 5);
-        
-      }
+            this.add(box);
+            return box;
+        },
+        text : function (txt, font, color) {
+            var text = new createjs.Text(txt, font || "20px Arial", color || "white");
 
-		}
+            this.add(text);
+            return text;
+        },
+        image : function (src, cb) {
+            this.image = new Image();
+            this.image.src = src;
+            this.image.onload = cb;
+        },
+        add : function (el) {
+          this.stage.addChild(el);
+        }
 
 	}
-var cjs = new CreateJS;
-      emitter.on('hit', function (obj) {
-        cjs.objs.push(obj);
-      });
 
-	return cjs;
+	return new CreateJS;
 });

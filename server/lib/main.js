@@ -1,31 +1,29 @@
-function setupRequire (requirejs, io) {
-	var totalSockets = 0;
+function setupRequire (requirejs, io, connection) {
 	var cookie = require('cookie');
+
 	requirejs([
+		'require',
 		'core/ticker',
 		'core/body',
 		'core/emitter',
-		'gameServer/instance/instanceManager',
+		'game/instance/instanceManager',
 		'game/gameManager',
 		'core/props',
-		'gameServer/db/connection',
+		'core/ping'
 
 	],
-	function (ticker, body, emitter, instanceManager, gameManager, props, connection) {
-		var instance = instanceManager.createInstance(); 
+	function (require, ticker, body, emitter, instanceManager, gameManager, props, ping) {
+		gameManager.init();
 		ticker.start(io);
-	
-		connection.init();
+		ping.initServer();
+		var spriteSheets = ['assassin', 'brute'],
+			totalSockets = 0;
 
+	
 		io.on('connection', function (socket) {
 			var user = cookie.parse(socket.handshake.headers.cookie).asc;
 
-			if(totalSockets % 2 === 0 && totalSockets !== 0){
-				instance = instanceManager.createInstance();
-			}
-			socket.instance = instance;
-			socket.join(socket.instance.id);
-
+			
 			// if(typeof socketAccounts[user] !== 'undefined'){
 			if(user){
 				connection.loginId(user.replace(socketAccounts[user], ''), login);
@@ -40,21 +38,30 @@ function setupRequire (requirejs, io) {
 			});
 			function login (acc) {
 				var rand = '',//Math.random(),
-					cookie =  acc._id + rand;
+					cookie =  acc._id + rand
+
 				
 				acc.cookie = cookie;
 
 				socket.account = acc;
+
 				// socketAccounts[cookie] = rand;
+				socket.emit('loggedIn', socket.account);
 				totalSockets++;
-				socket.emit('loggedIn', acc);
 
 			}
 
-			socket.on('start', function () {
+			socket.on('start', function (character) {
 				if(socket.account){
+					var instance = instanceManager.getInstance(); 
+					var Class = new require("game/character/classes/" + character);;
+					socket.account.characterClass = new Class;
+
+					socket.instance = instance;
+
+					socket.join(socket.instance.id);
+
 					emitter.emit('createUser', socket);
-					emitter.emit('createMap', socket);
 				}else{
 					socket.emit('notLoggedIn');
 				}
@@ -75,18 +82,19 @@ function setupRequire (requirejs, io) {
 
 			});
 
+			socket.on('ping', function (obj) {
+				emitter.emit('ping', obj);
+			});
+
 			socket.on('disconnect', function () {
 				if(socket.user){
 					io.in(socket.instance.id).emit('destroyPlayer', socket.user);
-					socket.instance.removePlayer(socket.user);
+					socket.instance.leave(socket.user);
 					emitter.emit('destroyPlayer', socket.user);
-					totalSockets--;
 				}
 			});
 		});
 
-		gameManager.init();
-		gameManager.initServer();
 	});
 }
 
