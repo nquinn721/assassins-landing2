@@ -1,6 +1,6 @@
 define(function () {
 	function Assassin () {
-		this.sprite = "assassin";
+		this.character = "assassin";
 		this.hp = 2000;
 		this.str = 100;
 		this.spd = 100;
@@ -9,7 +9,9 @@ define(function () {
 	}
 
 	Assassin.prototype = {
-
+		name :function  () {
+			return this.character.substr(0,1).toUpperCase() + this.character.substr(1);
+		}
 	}
 
 	return Assassin;

@@ -40,7 +40,7 @@ define("core/ping", ['core/emitter', 'core/lib/underscore'], function (emitter, 
 		tick : function (io) {
 			this.frames++;
 
-			if(this.frames % 100 === 0)
+			if(this.frames % 1 === 0)
 				this.pingClient(io);
 		}
 	}

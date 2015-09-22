@@ -1,10 +1,11 @@
 define("game/map/map", [
+		'require',
 		'core/emitter', 
 		'core/props',
 		'game/map/elements/element',
 		'game/map/matrix',
 		
-	], function (emitter, props, element, matrix) {
+	], function (require, emitter, props, element, matrix) {
 
 	
 

@@ -8,8 +8,9 @@ define("js/socket", [
 	'js/viewport',
 	'core/props',
 	'js/accountMenu',
-	'gameClient/background/background'
-	], function (emitter, B2D, io, canvas, createjs, menu, Viewport, props, AccountMenu, background) {
+	'gameClient/background/background',
+	'js/matchMaking'
+	], function (emitter, B2D, io, canvas, createjs, menu, Viewport, props, AccountMenu, background, matchMaking) {
 
 		var DEBUG_DRAW = false;
 
@@ -63,6 +64,10 @@ define("js/socket", [
 			notLoggedIn : function () {
 				menu.showLogin();
 			},
+			matchMaking : function (obj) {
+				menu.showMatchMaking();
+				matchMaking.showPlayers(obj);
+			},
 
 			createUser : function(obj){
 				emitter.emit('createUser', this);
@@ -90,40 +95,45 @@ define("js/socket", [
 
 			start : function (obj) {
 				var self = this;
-				menu.showLoader();
-				createjs.loadMap('map1', function (a) {
-					setTimeout(function () {
+				setTimeout(function () {
+					// console.log(obj);
+					menu.showLoader();
+					createjs.loadMap(obj.mapName, function (a) {
+						setTimeout(function () {
+							
+						menu.showGame();
+
+						background.init();
+
+						this.player = obj.user;
+
+						createjs.ticker();
 						
-					menu.showGame();
-
-					background.init();
-
-					this.player = obj.user;
-
-					createjs.ticker();
-					
-					emitter.emit('createPlayers', {b2d : this.b2d, players : obj.players});
-					emitter.emit('createUser', this);
-					emitter.emit('createMap', {map : obj.map, b2d : this.b2d});
+						emitter.emit('createUser', this);
+						emitter.emit('createPlayers', {b2d : this.b2d, players : obj.players});
+						emitter.emit('createMap', {map : obj.map, b2d : this.b2d});
+						emitter.emit('doneloading');
 
 
-					var viewport = new Viewport(this.player);
-					viewport.init();
+						var viewport = new Viewport(this.player);
+						viewport.init();
 
-					$(document).on('keydown', function (e) {
-						self.emit('keydown', e.keyCode);
-						self.player.keyDown(e.keyCode);
-						emitter.emit('keydown', {player : self.player, keyCode : e.keyCode});
-					});
+						$(document).on('keydown', function (e) {
+							self.emit('keydown', e.keyCode);
+							self.player.keyDown(e.keyCode);
+							emitter.emit('keydown', {player : self.player, keyCode : e.keyCode});
+						});
 
-					$(document).on('keyup', function (e) {
-						self.emit('keyup', e.keyCode);
-						self.player.keyUp(e.keyCode);
-						emitter.emit('keyup', {player : self.player, keyCode : e.keyCode});
-					});
-					}.bind(this), 1000);
-					
-				}.bind(this));
+						$(document).on('keyup', function (e) {
+							self.emit('keyup', e.keyCode);
+							self.player.keyUp(e.keyCode);
+							emitter.emit('keyup', {player : self.player, keyCode : e.keyCode});
+						});
+						}.bind(this), 1000);
+						
+					}.bind(this));
+				}.bind(this), 1000)
+
 			},
 			emit : function (event, data) {
 				io.emit(event, data);

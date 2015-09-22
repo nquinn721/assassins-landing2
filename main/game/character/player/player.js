@@ -14,7 +14,9 @@ define("game/character/player/player", [
 		this.speed = 5;
 		this.fixedRotation = true;
 		this.username = '';
-
+		this.groupId = -1;
+		this.team = 'team0';
+		this.base = 'base0';
 
 		this.previousX = 10;
 		this.previousY = 10;
@@ -36,6 +38,7 @@ define("game/character/player/player", [
 		// Extend character class
 		for(var i in obj.characterClass)
 			this[i] = obj.characterClass[i];
+		this.characterClass = obj.characterClass;
 
 
 		this.frames = 0;
@@ -53,19 +56,8 @@ define("game/character/player/player", [
 	Player.prototype = {
 		init : function (b2d) {
 			this.body = b2d.rect(this.obj());
-			this.events();
-		},
-		events : function () {
-			emitter.on('contact', this.contact.bind(this));	
-			emitter.on('contactPostSolve', this.contactPostSolve.bind(this));	
-			emitter.on('endContact', this.endContact.bind(this));	
-		},
-		initClient : function (obj) {
-			for(var i in obj)
-				this.client[i] = obj[i];
-		},
-		initServer : function () {
-			
+			this.body.setX(this.x);
+			this.body.setY(this.y);
 		},
 		tick : function () {
 			// Update Previous Position
@@ -79,9 +71,6 @@ define("game/character/player/player", [
 			
 			this.frames++;
 
-			for(var i in this.client)
-				if(this.client[i].tick)this.client[i].tick(this);
-
 			if(this.right)
 				this.moveRight();
 			if(this.left)
@@ -89,9 +78,9 @@ define("game/character/player/player", [
 			if(this.moveup)
 				this.moveUp();
 
-			if(this.gettingDamaged)
+			if(this.gettingDamaged){
 				this.hp -= this.damageDealt || 1;
-
+			}
 
 			// Update Current Position
 			this.x = this.body.getX();
@@ -118,10 +107,10 @@ define("game/character/player/player", [
 			return 	this.jumping;
 		},
 		contact : function (item) {
-			if(!item || !item.two.policies)return;
+			if(!item.policies)return;
 
-			var colide = item.two.sides,
-				policies = item.two.policies.join('');
+			var colide = item.sides,
+				policies = item.policies.join('');
 
 			if(policies.match('floor'))
 				if(this.sides.bottom < colide.top && (this.sides.left < colide.right - 5 || this.sides.right > colide.left + 5) ){
@@ -142,18 +131,16 @@ define("game/character/player/player", [
 
 		},
 		contactPostSolve : function (item) {
-			if(!item || !item.two.policies)return;
-
-			var colide = item.two.sides,
-				policies = item.two.policies.join('');
+			if(!item.policies)return;
+			var colide = item.sides,
+				policies = item.policies.join('');
 
 			
 
 		},
 		endContact : function (item) {
-			if(!item || !item.two.policies)return;
-
-			var policies = item.two.policies.join('');
+			if(!item.policies)return;
+			var policies = item.policies.join('');
 
 			this.smallJumpAvailable = false;
 
@@ -163,6 +150,16 @@ define("game/character/player/player", [
 		setCoords : function (obj) {
 			this.body.setX(obj.x);
 			this.body.setY(obj.y);
+			this.x = obj.x;
+			this.y = obj.y;
+		},
+		setY : function (y) {
+			// this.body.setY(y);
+			this.y = y;
+		},
+		setX : function (x) {
+			// this.body.setX(x);
+			this.x = x;
 		},
 		moveUp : function () {
 			this.body.move('up', 10);
@@ -197,8 +194,21 @@ define("game/character/player/player", [
 				speed : this.speed,
 				fixedRotation : this.fixedRotation,
 				username : this.username,
-				account : this.account
+				account : this.account,
+				groupId : this.groupId,
+				directionFacing : this.directionFacing,
+				team : this.team,
+				spawnPont : this.spawnPont
 			}
+		},
+		// Return everything except account
+		simpleObj : function () {
+			var obj = this.obj(),
+				newObj = {};
+			for(var i in obj)
+				if(i !== 'account')
+					newObj[i] = obj[i];
+			return 	newObj;
 		},
 		keyDown : function (keyCode) {
 			var key = keys[keyCode];
@@ -235,16 +245,20 @@ define("game/character/player/player", [
 		getVisiblePlayers : function () {
 			return this.visibleMapPlayers;
 		},
+		addVisiblePlayer : function (player) {
+			this.visibleMapPlayers.push(player);
+		},
+		removeVisiblePlayer : function (player) {
+			this.visibleMapPlayers.splice(this.visibleMapPlayers.indexOf(player), 1);	
+		},
+		hasVisiblePlayer : function (player) {
+			for(var i = 0; i < this.visibleMapPlayers.length; i++)
+				if(this.visibleMapPlayers[i].id === player.id)return true;	
+		},
 		addVisibleItem : function (item) {
-			if(item.id.match('player'))this.visibleMapPlayers.push(item);
-			else this.visibleMapItems.push(item);
-
 			this.visibleMapElements.push(item);
 		},
 		removeVisibleItem : function (item) {
-			if(item.id.match('player'))this.visibleMapPlayers.splice(this.visibleMapPlayers.indexOf(item), 1);
-			else this.visibleMapItems.splice(this.visibleMapItems.indexOf(item), 1);
-
 			this.visibleMapElements.splice(this.visibleMapElements.indexOf(item), 1);
 		},
 		hasVisibleItem : function (item) {
@@ -259,6 +273,12 @@ define("game/character/player/player", [
 				item.y <= this.y + props.mapShowingDistance
 			)return true;
 			return false;
+		},
+		setTeam : function (team) {
+			this.team = team;
+		},
+		setBase : function (base) {
+			this.base = base;
 		}
 	}
 	return Player;

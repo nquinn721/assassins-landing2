@@ -61,7 +61,7 @@ function setupRequire (requirejs, io, connection) {
 
 					socket.join(socket.instance.id);
 
-					emitter.emit('createUser', socket);
+					emitter.emit('createUser', {socket : socket, io : io});
 				}else{
 					socket.emit('notLoggedIn');
 				}
@@ -71,13 +71,13 @@ function setupRequire (requirejs, io, connection) {
 			socket.on('keyup', function (keyCode) {
 				if(socket.player){
 					socket.player.keyUp(keyCode);
-					socket.broadcast.to(socket.instance.id).emit('keyup',{player : socket.user, keyCode : keyCode});
+					socket.broadcast.to(socket.instance.id).emit('keyup',{player : socket.player.obj(), keyCode : keyCode});
 				}
 			});
 			socket.on('keydown', function (keyCode) {
 				if(socket.player){
 					socket.player.keyDown(keyCode);
-					socket.broadcast.to(socket.instance.id).emit('keydown',{player : socket.user, keyCode : keyCode});
+					socket.broadcast.to(socket.instance.id).emit('keydown',{player : socket.player.obj(), keyCode : keyCode});
 				}
 
 			});

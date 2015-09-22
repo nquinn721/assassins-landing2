@@ -78,6 +78,12 @@ define("core/b2d", [
 			oneData.hit = {};
 			oneData.hit.x = one.GetWorldPoint(contact_point).x * 30;
 			oneData.hit.y = one.GetWorldPoint(contact_point).y * 30;
+			oneData.sides = {
+				left : oneData.x,
+				right : oneData.x + oneData.w,
+				top : oneData.y,
+				bottom : oneData.y + oneData.h
+			}
 
 			twoData.hit = {};
 			twoData.hit.x = two.GetWorldPoint(contact_point).x * 30;
@@ -143,7 +149,7 @@ define("core/b2d", [
 				fixDef.restitution = options.restitution;
 				fixDef.density = options.density;
 				fixDef.friction = options.friction;
-
+				fixDef.filter.groupIndex = options.groupId;
 
 			if(options.shape === 'polygon'){
 				fixDef.shape = new b2PolygonShape();

@@ -6,15 +6,16 @@
 	}
 
 	Element.prototype = {
-		init : function (b2d, obj) {
-	        this.create(b2d, obj);
-		},
+		// init : function (b2d) {
+	 //        this.create(b2d);
+		// },
 		create : function (b2d) {
 			var obj = this.obj();
 
 			// B2D body
 			this.body = b2d.rect(obj);
 	        this.el.body = this.body;
+
 
 			// Sprite
 
@@ -26,6 +27,10 @@
 		        this.img.scaleY = this.h / this.img.image.height;
 		        this.img.scaleX = this.w / this.img.image.width;
 			}
+
+			if(this.img)
+				createjs.index(this.img, 1);
+
 			
 	        // Header Text
 			// this.text = createjs.text(obj.id, null, "#000");
@@ -43,6 +48,11 @@
 				createjs.destroy(this.img);
 				createjs.destroy(this.text);
 			}
+		},
+		updateCoords : function (obj) {
+			if(!this.body)return;
+			this.body.setX(obj.x);
+			this.body.setY(obj.y);	
 		},
 		tick : function () {
 			if(!this.img)return;
@@ -65,14 +75,19 @@
 				policies : this.policies,
 				elementName : this.elementName,
 				heightItems : this.heightItems,
-				widthItems : this.widthItems
+				widthItems : this.widthItems,
+				groupId : this.groupId
 			}
 		},
 		extend : function (item, obj) {
 			for(var i in this)
 				item[i] = this[i];
-			for(var i in obj)
+			for(var i in obj){
+				item.el[i] = obj[i];
 				item[i] = obj[i];
+			}
+	        if(item.el.init)item.el.init();
+
 			return item;
 		}
 	}

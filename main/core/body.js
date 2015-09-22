@@ -20,10 +20,10 @@ define("core/body", [], function (require) {
 			return this.body.GetPosition().y * this.SCALE - (this.h / 2);
 		},
 		setX : function (x) {
-			this.body.SetPosition({x : x / this.SCALE, y : this.getRealY() / this.SCALE});
+			this.body.SetPosition({x : (x + this.w / 2) / this.SCALE, y : this.getRealY() / this.SCALE});
 		},
 		setY : function (y) {
-			this.body.SetPosition({x : this.getRealX() / this.SCALE, y : y  / this.SCALE});
+			this.body.SetPosition({x : this.getRealX() / this.SCALE, y : (y + this.h / 2)  / this.SCALE});
 		},
 		getRealX : function () {
 			return this.body.GetPosition().x * this.SCALE;

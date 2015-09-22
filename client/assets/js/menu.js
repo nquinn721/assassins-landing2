@@ -3,11 +3,13 @@ define('js/menu', ['core/emitter'], function (emitter) {
 		this.loaderMenu = $('.loader');
 		this.loginMenu = $('.login');
 		this.accountMenu = $('.account');
-		this.gameMenu = $('.viewport');
+		this.characterStats = $('.character-stats');
+		this.game = $('.viewport');
 		this.error = $('.error');
 		this.menus = $('.menu');
 		this.loginForm = $('.login form');
 		this.startButton = $('.start');
+		this.matchMaking = $('.match-making');
 	}
 
 	Menu.prototype = {
@@ -39,7 +41,8 @@ define('js/menu', ['core/emitter'], function (emitter) {
 		},
 		showGame : function () {
 			this.hideMenus();
-			this.gameMenu.show();
+			this.characterStats.show();
+			this.game.show();
 		},
 		showLogin : function () {
 			this.hideMenus();
@@ -52,6 +55,10 @@ define('js/menu', ['core/emitter'], function (emitter) {
 			this.accountMenu.find('.lastName').text(obj.lastName);
 			this.accountMenu.find('.xp').text(obj.xp);
 			this.accountMenu.find('.gold').text(obj.gold);
+		},
+		showMatchMaking : function () {
+			this.hideMenus();
+			this.matchMaking.show();
 		},
 		showError : function (err) {
 			var self = this;

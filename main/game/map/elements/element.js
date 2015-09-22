@@ -11,9 +11,6 @@ define("game/map/elements/element", function () {
 		create : function (b2d) {
 			this.body = b2d.rect(this.obj());
 		},
-		isVisible : function () {
-			return this.visible;
-		},
 		updateCoords : function (obj) {
 			if(!this.body)return;
 			this.body.setX(obj.x);
@@ -34,7 +31,8 @@ define("game/map/elements/element", function () {
 				friction : this.friction,
 				restitution : this.restitution,
 				policies : this.policies,
-				elementName : this.elementName
+				elementName : this.elementName,
+				groupId : this.groupId
 			}
 		},
 		
@@ -52,6 +50,7 @@ define("game/map/elements/element", function () {
 
 			for(var i in obj)
 				item[i] = obj[i];
+
 			return item;
 		}
 	}

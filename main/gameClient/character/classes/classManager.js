@@ -12,11 +12,9 @@ define("gameClient/character/classes/classManager", [
 		}
 	}
 	ClassManager.prototype = {
-		create : function (cl) {
+		create : function (cl, player) {
 			var characterClass = new this.classes[cl],
-				animation = createjs.spriteSheet(characterClass.data, 'standLeft');
-				// spriteSheet = new createjs.createjs.SpriteSheet(characterClass.data),
-				// animation = new createjs.createjs.Sprite(spriteSheet, 'standLeft');
+				animation = createjs.spriteSheet(characterClass.data, player.directionFacing === 'left' ? 'standLeft' : 'standRight');
 			
 			animation.scaleX = 50 / 16;
 			if(cl.match('assassin'))

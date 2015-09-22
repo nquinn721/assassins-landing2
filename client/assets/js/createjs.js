@@ -2,13 +2,15 @@ define("js/createjs", ['js/canvas', 'core/emitter'], function (canvas, emitter) 
 	function CreateJS () {
     	this.stage = new createjs.Stage(document.getElementById('game'));
         this.queue = new createjs.LoadQueue(true);
+
+        this.frames = 0;
 	}
 
 	CreateJS.prototype = {
         init : function () {
         },
         loadMap : function (map, cb) {
-            this.queue.loadManifest("/" + map + "/loadManifest.json");
+            this.queue.loadManifest("/maps/" + map + "/loadManifest.json");
             this.queue.on("complete", cb, this);
         },
 		ticker : function () {
@@ -17,6 +19,7 @@ define("js/createjs", ['js/canvas', 'core/emitter'], function (canvas, emitter) 
            		emitter.emit('tick');
            		emitter.emit('clientTick');
            		self.tick();
+                self.frames++;
          	});
          	createjs.Ticker.setFPS(60);
          	// createjs.Ticker.useRAF = true;
@@ -43,14 +46,17 @@ define("js/createjs", ['js/canvas', 'core/emitter'], function (canvas, emitter) 
             this.add(bitmap);
             return bitmap;
         },
-        spriteSheet : function (data) {
+        spriteSheet : function (data, initialAnimation) {
             var spriteSheet = new createjs.SpriteSheet(data),
-                animation = new createjs.Sprite(spriteSheet, 'standLeft');
+                animation = new createjs.Sprite(spriteSheet, initialAnimation || 'standLeft');
             this.add(animation);
             return animation;
         },
         add : function (el) {
             this.stage.addChild(el);
+        },
+        index : function (child, zIndex) {
+            this.stage.setChildIndex(child, zIndex);
         },
         destroy : function (el) {
             if(el instanceof Array)

@@ -1,6 +1,6 @@
 define(function () {
 	function Brute () {
-		this.sprite = 'brute';
+		this.character = 'brute';
 		this.hp = 2500;
 		this.str = 120;
 		this.spd = 60;
@@ -9,7 +9,9 @@ define(function () {
 	}
 
 	Brute.prototype = {
-
+		name :function  () {
+			return this.character.substr(0,1).toUpperCase() + this.character.substr(1);
+		}
 	}
 
 	return Brute;

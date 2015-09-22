@@ -1,8 +1,9 @@
 define("game/instance/instance", [
 		"core/emitter", 
 		"core/props",
-		"core/ping"
-	], function (emitter, props, ping) {
+		"core/ping",
+		"core/lib/underscore"
+	], function (emitter, props, ping, _) {
 
 	function Instance (instanceManager, obj) {
 		this.b2d = obj.b2d;
@@ -14,9 +15,11 @@ define("game/instance/instance", [
 		// Players
 		this.totalPlayers = 0;
 		this.players = [];
+		this.playersAloud = 2;
+		this.waitingPlayers = [];
 
 		// Emit Coords
-		this.emitCoords = false;
+		this.emitCoords = true;
 
 		// Parent
 		this.instanceManager = instanceManager;
@@ -27,13 +30,38 @@ define("game/instance/instance", [
 			emitter.on('serverTick', this.tick.bind(this));
 		},
 		full : function () {
-			if(this.totalPlayers >= props.playersAloudInInstance)
+			if(this.totalPlayers >= this.playersAloud)
 				return true;
 		},
-		join : function (player, socket) {
-			this.updatePlayers(player, socket);
-			this.players.push(player);
+		matchMaking : function (io) {
+			io.in(this.id).emit('matchMaking', this.players.map(function(v){return { name : v.account.username, character : v.characterClass.character, team : v.team}}));
+
+			if(this.full()){
+				for(var i = 0; i < this.waitingPlayers.length; i++)
+					this.updatePlayers(this.waitingPlayers[i].socket, this.waitingPlayers[i].user);
+			}
+
+		},
+		join : function (socket, io) {
 			this.totalPlayers++;
+			var base, team;
+
+			if(this.totalPlayers > this.playersAloud / 2){
+				base = 'base1';
+				team = 'team2';
+			}else{
+				base = 'base0';
+				team = 'team1';
+			}
+
+			socket.player.setBase(base);
+			socket.player.setTeam(team);
+
+			this.setSpawnPoint(socket.player);
+			this.players.push(socket.player);
+			this.waitingPlayers.push({socket : socket, user : socket.player.obj()});
+			
+			this.matchMaking(io);
 		},
 		leave : function (player) {
 			for(var i = 0; i < this.players.length; i++)
@@ -46,31 +74,66 @@ define("game/instance/instance", [
 				this.instanceManager.destroyInstance(this);
 			}
 		},
-		updatePlayers : function (player, socket) {
-			var players = this.players.map(function(v){return v.obj()});
-				items = this.map.items.map(function(v){return v.obj()});
-			socket.emit('start', {map : items, players : players, user : socket.user});
-			socket.broadcast.to(this.id).emit('createPlayer', player.obj());
+		
+		updatePlayers : function (socket, user) {
+			var players = _.compact(this.players.map(function(v){if(v.id !== socket.player.id)return v.simpleObj()})),
+		 		items = this.map.items.map(function(v){return v.obj()});
+
+			socket.emit('start', {map : items, players : players, user : user, mapName : this.mapName});
+		},
+
+		setSpawnPoint : function (player) {
+			for(var i = 0; i < this.map.items.length; i++){
+				var item = this.map.items[i];
+				if(item.id ===  player.base){
+					var x = item.x + (item.w / 2) - (player.w / 2),
+						y = item.y + (item.h - player.h);
+					player.setCoords({x : x, y : y});
+					player.directionFacing = item.id === 'base0' ? 'right' : 'left';
+					player.spawnPoint = {
+						x : x,
+						y : y
+					}
+				}
+			}
 		},
 		tick : function (io) {
 			this.frames++;
 			
-			this.updateCoords(io, this.players, items);
+			if(this.emitCoords)
+				this.updateCoords(io, this.players, this.map.items);
+
 
 		},
 		updateCoords : function(io, players, items) {
-			if(!this.emitCoords)return;
+			var delta = (ping.average / 10 * 5);
 
 			var playerCoords = [];
 			for(var i = 0; i < players.length; i++){
 				var p = players[i];
 				if(!p)continue;
-				if(p.left)p.x -= ping.average / 1000;
-				if(p.right)p.x += ping.average / 1000;
-				if(p.jumping)p.y  -= ping.average / 1000;
-				playerCoords.push({x : p.x, y : p.y + 50, id : p.id});
+				if(p.left)p.x -= delta;
+				if(p.right)p.x += delta;
+				if(p.jumping)p.y  -= delta;
+				p.setX(p.x);
+				p.setY(p.y);
+				playerCoords.push({x : p.x, y : p.y, id : p.id});
+
 			}
-			io.in(this.id).emit('coords', {players : playerCoords});
+
+			var itemCoords = [];
+			for(var i = 0; i < items.length; i++){
+				if(items[i].type === 'kinematic'){
+					if(items[i].direction === 'up')
+						items[i].y -= delta;
+					else items[i].y += delta;
+					itemCoords.push({x : items[i].x, y : items[i].y, id : items[i].id});
+				}
+
+			}
+
+			io.in(this.id).emit('coords', {players : playerCoords, mapItems : itemCoords});
+
 
 		},
 		emitToPlayer : function (io, player, event, data) {

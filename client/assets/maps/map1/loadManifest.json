@@ -1,0 +1,12 @@
+{
+	"path" : "/maps/map1/img/",
+	"manifest" : [
+		{ "id" : "floor", "src" : "floor.jpg"},
+		{ "id" : "wall", "src" : "wall.jpg"},
+		{ "id" : "elevator", "src" : "elevator.jpg"},
+		{ "id" : "background", "src" : "background.jpg"},
+		{ "id" : "spike", "src" : "spike.png"},
+		{ "id" : "base", "src" : "base.png"}
+
+	]
+}

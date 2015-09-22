@@ -11,26 +11,23 @@ define("gameClient/character/player/playerSprite", [
 	function PlayerSprite(player) {
 		this.player = player;
 		this.lookingLeft = true;
-
-
-		var characterClass = classManager.create(player.account.characterClass.sprite);
-
-		this.animation = characterClass.animation;
-
-
 	}
 
 	PlayerSprite.prototype = {
 		init : function () {
 			this.events();
 			this.player.sprite = this;	
-			this.setupPlayerInfo();
+			// this.setupPlayerInfo();
 		},
 		events : function () {
 			emitter.on('tick', this.tick.bind(this));
+			emitter.on('doneloading', this.setup.bind(this));
 		},
-		setupPlayerInfo : function () {
-			var username = this.player.account.username;
+		setup : function () {
+			var username = this.player.username;
+			var characterClass = classManager.create(this.player.characterClass.character, this.player);
+
+			this.animation = characterClass.animation;
 
 			username = username.substr(0,1).toUpperCase() + username.substr(1);
 
@@ -38,8 +35,15 @@ define("gameClient/character/player/playerSprite", [
 			this.nameBackground = createjs.box("#222", 75, 20);
 			this.name = createjs.text(username, "16px arial");
 			this.name.textAlign = "center";
-			this.hpbackgound = createjs.box('black', 75, 7);
-			this.hp = createjs.box("green", 73, 5);
+
+			this.hpw = 75;
+			this.hph = 10;
+			this.hpx = 10;
+			this.hpy = 40;
+
+			this.hpbackgound1 = createjs.box('#222', this.hpw, this.hph);
+			this.hpbackgound = createjs.box('white', this.hpw - 2, this.hph - 2);
+			this.hp = createjs.box("green", this.hpw - 4, this.hph - 4);
 		},
 		tick : function () {
 			if(!this.player || !this.animation)return;
@@ -91,11 +95,13 @@ define("gameClient/character/player/playerSprite", [
 			this.name.y = this.player.y - 28;
 		},
 		updateHp : function () {
-			this.hp.x = this.player.x - 9;
-			this.hp.y = this.player.y - 39;
+			this.hp.x = this.player.x - (this.hpx - 2);
+			this.hp.y = this.player.y - (this.hpy - 2);
 			this.hp.scaleX = this.player.hp / this.player.characterClass.hp;
-			this.hpbackgound.x = this.player.x - 10;
-			this.hpbackgound.y = this.player.y - 40;
+			this.hpbackgound.x = this.player.x - (this.hpx - 1);
+			this.hpbackgound.y = this.player.y - (this.hpy - 1);
+			this.hpbackgound1.x = this.player.x - this.hpx;
+			this.hpbackgound1.y = this.player.y - this.hpy;
 		},
 		lookLeft : function () {
 			this.lookingRight = false;
@@ -124,8 +130,21 @@ define("gameClient/character/player/playerSprite", [
 			this.lookRight();
 			this.animation.gotoAndPlay('runRight');
 		},
+		create : function () {
+			createjs.add(this.animation);
+			createjs.add(this.nameBackground);
+			createjs.add(this.name);
+			createjs.add(this.hpbackgound1);
+			createjs.add(this.hpbackgound);
+			createjs.add(this.hp);
+		},
 		destroy : function () {
-			createjs.stage.removeChild(this.animation);
+			createjs.destroy(this.animation);
+			createjs.destroy(this.hp);
+			createjs.destroy(this.hpbackgound);
+			createjs.destroy(this.hpbackgound1);
+			createjs.destroy(this.nameBackground);
+			createjs.destroy(this.name);
 		}
 	}
 

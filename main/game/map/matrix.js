@@ -10,7 +10,8 @@ define("game/map/matrix", [
 			c : 'platforms/ceiling',
 			e : 'platforms/elevator',
 			m : 'platforms/movingplatform',
-			s : 'pits/spikePit'
+			s : 'pits/spikePit',
+			b : 'structures/base'
 		};
 
 
@@ -54,7 +55,7 @@ define("game/map/matrix", [
 						this.item.widthItems++;
 						// Clear next clumn height below item
 						for(var p = 0; p < this.item.heightItems; p++)
-							if(matrix[currentRow + p + 1])matrix[currentRow + p + 1][j] = 0;
+							if(matrix[currentRow + p])matrix[currentRow + p][j] = 0;
 					}else {
 						this.items.push(this.item);
 						this.item = null;

@@ -37,12 +37,13 @@ define("gameClient/map/mapManagerClient", [
 		},
 		getById : function (id) {
 			for(var i = 0; i < this.mapElements.length; i++)
-				if(this.mapElements[i].id === id)return {item : this.mapElements[i], index : i};
+				if(this.mapElements[i].id === id)
+					return this.mapElements[i];
 		},
 
 		udpateMapItemCoords : function (mapItems) {
-			if(!this.map)return;
-			
+			if(!this.mapElements.length)return;
+
 			for(var i = 0; i < mapItems.length; i++){
 				var item = this.getById(mapItems[i].id);
 				item.updateCoords(mapItems[i]);

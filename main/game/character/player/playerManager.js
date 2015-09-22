@@ -18,6 +18,26 @@ define("game/character/player/playerManager", [
 		},
 		events : function () {
 			emitter.on('tick', this.tick.bind(this));
+
+			emitter.on('contact', this.contact.bind(this));	
+			emitter.on('contactPostSolve', this.contactPostSolve.bind(this));	
+			emitter.on('endContact', this.endContact.bind(this));
+		},
+		contact : function(obj){
+			this.createContact(obj, 'contact');
+		},
+		contactPostSolve : function (obj) {
+			this.createContact(obj, 'contactPostSolve');
+		},
+		endContact : function (obj) {
+			this.createContact(obj, 'endContact');
+		},
+		createContact : function (obj, method) {
+			var a = this.getById(obj.one),
+				b = this.getById(obj.two);
+
+			if(a && a[method])a[method](b || obj.two);
+			if(b && b[method])b[method](a || obj.one);
 		},
 		createPlayer : function (obj) {
 			var playerObj = {
@@ -47,7 +67,7 @@ define("game/character/player/playerManager", [
 		destroyPlayer : function (obj) {
 			if(obj instanceof Player)
 				player = obj;
-			else player = this.getPlayer(obj);
+			else player = this.getById(obj);
 
 			if(player){
 				for(var i = 0; i < this.players.length; i++){
@@ -57,8 +77,9 @@ define("game/character/player/playerManager", [
 				}
 				player.destroy();
 			}
+			this.totalPlayers--;
 		},
-		getPlayer : function (obj) {
+		getById : function (obj) {
 			for(var i = 0; i < this.players.length; i++)
 				if(this.players[i].id === obj.id)
 					return this.players[i];

@@ -16,41 +16,30 @@ define("game/character/player/playerManagerServer", [
 		events : function () {
 			emitter.on('destroyPlayer', this.destroyPlayer.bind(this));
 			emitter.on('createUser', this.createUser.bind(this));
+
+			
 		},
-		createUser : function (socket) {
-			var mapItem;
-			for(var i = 0; i < socket.instance.map.items.length; i++)
-				if(socket.instance.map.items[i].id.match('floor0')){
-					mapItem = socket.instance.map.items[i];
-					break;
-				}
+
+
+		createUser : function (obj) {
+			var mapItem,
+				socket = obj.socket,
+				io = obj.io;
+
+
 			var player = playerManager.createPlayer({
 				socketId : socket.id, 
 				username : socket.account.username, 
-				y : mapItem.y - 100, 
-				x : mapItem.x + mapItem.w / 2,
 				characterClass : socket.account.characterClass
 			});
 			player.init(socket.instance.b2d);
-
-			// Player object for client
-			socket.user = player.obj();
-			socket.user.account = socket.account;
 
 			// Full player class
 			socket.player = player;
 			socket.player.account = {
 				username : socket.account.username,
-				characterClass : socket.account.characterClass
 			}
-			socket.instance.join(player, socket);
-
-
-			// this.sendUserToClient(socket);
-
-		},
-		sendUserToClient : function (socket) {
-			
+			socket.instance.join(socket, io);
 
 		},
 		destroyPlayer : function (player) {
