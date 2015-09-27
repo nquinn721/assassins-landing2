@@ -27,19 +27,14 @@ define("game/character/player/player", [
 			bottom : this.y + (this.h)
 		}
 
-		// Client Classes
-		this.client = {};
-
-
 		// Property overrides
 		for(var i in obj)
 			this[i] = obj[i];
 
 		// Extend character class
-		for(var i in obj.characterClass)
-			this[i] = obj.characterClass[i];
-		this.characterClass = obj.characterClass;
-
+		var characterObj = obj.characterClass;
+		for(var i in characterObj)
+			this[i] = characterObj[i];
 
 		this.frames = 0;
 
@@ -54,7 +49,13 @@ define("game/character/player/player", [
 	}
 
 	Player.prototype = {
-		init : function (b2d) {
+		init : function (b2d, characterClass) {
+			this.characterClass = characterClass;
+			this.characterClass.init(b2d);
+
+			this.create(b2d);
+		},
+		create : function (b2d) {
 			this.body = b2d.rect(this.obj());
 			this.body.setX(this.x);
 			this.body.setY(this.y);
@@ -127,6 +128,11 @@ define("game/character/player/player", [
 			if(policies.match('spikePit')){
 				this.gettingDamaged = true;
 				this.damageDealt = 5;
+				this.isDirty = true;
+			}
+			if(policies.match('bullet')){
+				this.hp -= 100;
+				this.isDirty = true;
 			}
 
 		},
@@ -154,12 +160,15 @@ define("game/character/player/player", [
 			this.y = obj.y;
 		},
 		setY : function (y) {
-			// this.body.setY(y);
+			this.body.setY(y);
 			this.y = y;
 		},
 		setX : function (x) {
-			// this.body.setX(x);
+			this.body.setX(x);
 			this.x = x;
+		},
+		setHP : function (hp) {
+			this.hp = hp;
 		},
 		moveUp : function () {
 			this.body.move('up', 10);
@@ -190,7 +199,7 @@ define("game/character/player/player", [
 				w : this.w,
 				h : this.h,
 				id : this.id,
-				characterClass : this.characterClass,
+				characterClass : this.characterClass.stats,
 				speed : this.speed,
 				fixedRotation : this.fixedRotation,
 				username : this.username,
@@ -209,6 +218,12 @@ define("game/character/player/player", [
 				if(i !== 'account')
 					newObj[i] = obj[i];
 			return 	newObj;
+		},
+		mouseDown : function (obj) {
+			this.characterClass.mouseDown(obj, {x : this.x, y : this.y, w : this.w, h : this.h, direction : this.directionFacing});
+		},
+		mouseUp : function () {
+			
 		},
 		keyDown : function (keyCode) {
 			var key = keys[keyCode];

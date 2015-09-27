@@ -231,7 +231,7 @@ define("core/b2d", [
 
 			var debugDraw = new b2DebugDraw();
 			debugDraw.SetSprite(debugCanvas);
-			debugDraw.SetFillAlpha(0.3);
+			debugDraw.SetFillAlpha(0.7);
 			debugDraw.SetDrawScale(this.SCALE);
 			debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
 			this.world.SetDebugDraw(debugDraw);

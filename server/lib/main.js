@@ -54,14 +54,14 @@ function setupRequire (requirejs, io, connection) {
 			socket.on('load', function (character) {
 				if(socket.account){
 					var instance = instanceManager.getInstance(); 
-					var Class = new require("game/character/classes/" + character);;
+					var Class = require("game/character/classes/" + character);
 					socket.account.characterClass = new Class;
 
 					socket.instance = instance;
 
 					socket.join(socket.instance.id);
+					socket.instance.join(socket, io);
 
-					emitter.emit('createUser', {socket : socket, io : io});
 				}else{
 					socket.emit('notLoggedIn');
 				}
@@ -79,7 +79,12 @@ function setupRequire (requirejs, io, connection) {
 					socket.player.keyDown(keyCode);
 					socket.broadcast.to(socket.instance.id).emit('keydown',{player : socket.player.obj(), keyCode : keyCode});
 				}
-
+			});
+			socket.on('mousedown', function (obj) {
+				if(socket.player){
+					socket.player.mouseDown(obj);
+					socket.broadcast.to(socket.instance.id).emit('mousedown', {player : socket.player.obj(), obj : obj});
+				}
 			});
 
 			socket.on('ping', function (obj) {

@@ -1,6 +1,6 @@
 define("game/gameManager", [
-	"game/character/characterManager",
-	"game/map/mapManagerServer"
+	// "game/character/characterManager",
+	// "game/map/mapManagerServer"
 	], function (characterManager, mapManagerServer) {
 
 
@@ -9,8 +9,8 @@ define("game/gameManager", [
 	}
 	GameManager.prototype = {
 		init : function () {
-			characterManager.init();
-			mapManagerServer.init();
+			// characterManager.init();
+			// mapManagerServer.init();
 		}
 	}
 	return new GameManager;

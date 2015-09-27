@@ -1,18 +1,24 @@
-
 define("gameClient/character/player/playerManagerClient", 
 	[
 		'core/emitter', 
 		'gameClient/character/player/playerSprite',
 		'js/playerStats',
 		'game/character/player/playerManager',
-		'js/canvas'
+		'js/canvas',
+		'game/character/classes/assassin',
+		'game/character/classes/brute'
 	], 
-	function (emitter, PlayerSprite, PlayerStats, playerManager, canvas) {
+	function (emitter, PlayerSprite, PlayerStats, playerManager, canvas, assassin, brute) {
 
 	function PlayerManagerClient () {
 		this.players = [];
 		this.user;
 		this.frames = 0;
+
+		this.classes = {
+			assassin : assassin,
+			brute : brute
+		}
 	}
 
 	PlayerManagerClient.prototype = {
@@ -28,16 +34,18 @@ define("gameClient/character/player/playerManagerClient",
 			emitter.on('destroyPlayer', this.destroyPlayer.bind(this));
 			emitter.on('playerCoords', this.setPlayerCoords.bind(this));
 			emitter.on('tick', this.tick.bind(this));
+			emitter.on('mousedown', this.mouseDown.bind(this));
 		},
 		createUser : function (socket) {
 			var player = playerManager.createPlayer(socket.player),
 				sprite = new PlayerSprite(player),
-				playerStats = new PlayerStats(player);
+				playerStats = new PlayerStats(player),
+				characterClass = new this.classes[socket.player.characterClass.character];
+
 
 			playerStats.init();
 			sprite.init();
-
-			player.init(socket.b2d);
+			player.init(socket.b2d, characterClass);
 			this.user = player;
 			socket.player = player;
 
@@ -49,19 +57,25 @@ define("gameClient/character/player/playerManagerClient",
 					player.setCoords(obj[i]);
 			}
 		},
+		mouseDown : function (player) {
+			var p = playerManager.getById(player.id);
+			p.sprite.mouseDown();
+		},
 		getUser : function  () {
 			return this.user;	
 		},
 		createPlayer : function (playerObj, addPlayer) {
 			if(addPlayer){
 				var player = playerManager.createPlayer(playerObj),
-					sprite = new PlayerSprite(player);
+					sprite = new PlayerSprite(player),
+					characterClass = new this.classes[playerObj.characterClass.character];
+
 				sprite.init();
 				player.sprite = sprite;
-				player.init(this.b2d);
+				player.init(this.b2d, characterClass);
 				this.players.push(player);
 			}else{
-				playerObj.init(this.b2d);
+				playerObj.create(this.b2d);
 				playerObj.sprite.create();
 			}
 
@@ -76,8 +90,6 @@ define("gameClient/character/player/playerManagerClient",
 		},
 		tick : function () {
 			this.frames++;
-			// if(this.frames < 100)
-			// 	console.log('time:', Date.now(), this.user.id, this.user.x);
 			for(var i = 0; i < this.players.length; i++)
 				if(this.players.id !== this.user.id)
 					this.checkLoadStatusOfPlayer(this.players[i]);

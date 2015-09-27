@@ -92,6 +92,9 @@ define("core/body", [], function (require) {
 			if(dir === 'downleft')
 				vec = new this.b2Vec2(-((speed1 || this.speed) * this.SCALE), (speed2 || this.speed) * this.SCALE);
 
+			// Custom
+			if(typeof dir === 'object')
+				vec = new this.b2Vec2(dir[0] * this.SCALE, dir[1] * this.SCALE);
 
 			return vec;
 		},

@@ -17,7 +17,6 @@ define("gameClient/character/player/playerSprite", [
 		init : function () {
 			this.events();
 			this.player.sprite = this;	
-			// this.setupPlayerInfo();
 		},
 		events : function () {
 			emitter.on('tick', this.tick.bind(this));
@@ -25,9 +24,10 @@ define("gameClient/character/player/playerSprite", [
 		},
 		setup : function () {
 			var username = this.player.username;
-			var characterClass = classManager.create(this.player.characterClass.character, this.player);
+			var characterClass = classManager.create(this.player.character, this.player);
 
 			this.animation = characterClass.animation;
+			this.characterClass = characterClass.characterClass;
 
 			username = username.substr(0,1).toUpperCase() + username.substr(1);
 
@@ -51,7 +51,25 @@ define("gameClient/character/player/playerSprite", [
 			this.animation.y = this.player.y;
 			this.updateName();
 			this.updateHp();
-			
+
+			var removeBullets = [];
+
+
+			for(var i = 0; i < this.characterClass.bullets.length; i++){
+				var bullet = this.characterClass.bullets[i];
+				if(bullet.bullet && bullet.bullet.body)
+					bullet.update();
+				else removeBullets.push(bullet);
+			}
+
+			for(var i = 0; i = removeBullets.length; i++){
+				var bullet = removeBullets[i];
+				this.characterClass.destroy(bullet, createjs);
+			}
+
+		},
+		mouseDown : function () {
+			this.characterClass.mouseDown(this.player.characterClass.shootBullet.bullets.slice(-1), createjs);
 		},
 		keyup : function (keyCode) {
 			if(keys[keyCode] === 'up')
@@ -97,7 +115,7 @@ define("gameClient/character/player/playerSprite", [
 		updateHp : function () {
 			this.hp.x = this.player.x - (this.hpx - 2);
 			this.hp.y = this.player.y - (this.hpy - 2);
-			this.hp.scaleX = this.player.hp / this.player.characterClass.hp;
+			this.hp.scaleX = this.player.hp / this.player.characterClass.stats.hp;
 			this.hpbackgound.x = this.player.x - (this.hpx - 1);
 			this.hpbackgound.y = this.player.y - (this.hpy - 1);
 			this.hpbackgound1.x = this.player.x - this.hpx;

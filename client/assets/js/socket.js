@@ -1,6 +1,6 @@
 define("js/socket", [
-	"core/emitter", 
-	"core/b2d", 
+	'core/emitter', 
+	'core/b2d', 
 	'js/io', 
 	'js/canvas',
 	'js/createjs',
@@ -89,46 +89,73 @@ define("js/socket", [
 				emitter.emit('mapCoords', obj.mapItems);
 				emitter.emit('playerCoords', obj.players);
 			},
+			setHP : function (player) {
+				console.log(player);
+				emitter.emit('setHP', player);
+			},
 			ping : function (ping) {
 				emitter.emit('clientPing', {socket : this, ping : ping});	
 			},
 
 			start : function (obj) {
 				var self = this;
+
 				setTimeout(function () {
-					// console.log(obj);
 					menu.showLoader();
 					createjs.loadMap(obj.mapName, function (a) {
+
+						/**
+						 * This setTimeout is for loading screen only
+						 */
 						setTimeout(function () {
+
 							
-						menu.showGame();
+							menu.showGame();
 
-						background.init();
+							background.init();
 
-						this.player = obj.user;
+							this.player = obj.user;
 
-						createjs.ticker();
-						
-						emitter.emit('createUser', this);
-						emitter.emit('createPlayers', {b2d : this.b2d, players : obj.players});
-						emitter.emit('createMap', {map : obj.map, b2d : this.b2d});
-						emitter.emit('doneloading');
+							createjs.ticker();
+							
+							emitter.emit('createUser', this);
+							emitter.emit('createPlayers', {b2d : this.b2d, players : obj.players});
+							emitter.emit('createMap', {map : obj.map, b2d : this.b2d});
+							emitter.emit('doneloading');
 
 
-						var viewport = new Viewport(this.player);
-						viewport.init();
+							var viewport = new Viewport(this.player);
+							viewport.init();
 
-						$(document).on('keydown', function (e) {
-							self.emit('keydown', e.keyCode);
-							self.player.keyDown(e.keyCode);
-							emitter.emit('keydown', {player : self.player, keyCode : e.keyCode});
-						});
-
-						$(document).on('keyup', function (e) {
-							self.emit('keyup', e.keyCode);
-							self.player.keyUp(e.keyCode);
-							emitter.emit('keyup', {player : self.player, keyCode : e.keyCode});
-						});
+							$(document).on('keydown', function (e) {
+								self.emit('keydown', e.keyCode);
+								self.player.keyDown(e.keyCode);
+								emitter.emit('keydown', {player : self.player, keyCode : e.keyCode, shift : e.shiftKey});
+							}).on('keyup', function (e) {
+								self.emit('keyup', e.keyCode);
+								self.player.keyUp(e.keyCode);
+								emitter.emit('keyup', {player : self.player, keyCode : e.keyCode});
+							})
+							$('.menu').css('pointer-events', 'none');
+							$('.viewport').on('mousedown', function (e) {
+								var obj = {
+									button : e.which, 
+									x : e.offsetX, 
+									y : e.offsetY
+								}
+								self.player.mouseDown(obj);
+								emitter.emit('mousedown', self.player);
+								self.emit('mousedown', obj);
+								return false;
+							}).on('mouseup', function (e) {
+								// self.emit('mouseup', {button : e.which});
+								// self.player.mouseUp();
+								return false;
+							}).on('contextmenu', function (e) {
+								// self.player.mouseDown();
+								// self.emit('mousedown', {button : e.which, x : e.pageX, y : e.pageY});
+								return false;
+							});
 						}.bind(this), 1000);
 						
 					}.bind(this));

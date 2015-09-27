@@ -22,6 +22,7 @@ define("game/character/player/playerManager", [
 			emitter.on('contact', this.contact.bind(this));	
 			emitter.on('contactPostSolve', this.contactPostSolve.bind(this));	
 			emitter.on('endContact', this.endContact.bind(this));
+			emitter.on('setHP', this.setPlayerHP.bind(this));
 		},
 		contact : function(obj){
 			this.createContact(obj, 'contact');
@@ -62,7 +63,14 @@ define("game/character/player/playerManager", [
 			this.totalPlayers++;
 			return player;
 		},
-		
+		setPlayerHP : function (players) {
+			for(var i = 0; i < players.length; i++){
+				var p = this.getById(players[i].id);
+				if(p)
+					p.setHP(players[i].hp);
+				
+			}
+		},
 		
 		destroyPlayer : function (obj) {
 			if(obj instanceof Player)
@@ -81,7 +89,7 @@ define("game/character/player/playerManager", [
 		},
 		getById : function (obj) {
 			for(var i = 0; i < this.players.length; i++)
-				if(this.players[i].id === obj.id)
+				if(this.players[i].id === (typeof obj === 'object' ? obj.id : obj))
 					return this.players[i];
 		},
 		tick : function () {

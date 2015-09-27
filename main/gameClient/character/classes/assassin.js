@@ -1,4 +1,6 @@
-define("gameClient/character/classes/assassin", function () {
+define("gameClient/character/classes/assassin", [
+	"gameClient/character/abilities/abilityManager"
+	], function (abilityManager, emitter) {
 	function Assassin () {
 		this.data = {
 		    images: ["/characters/assassin-spritesheet.png"],
@@ -19,9 +21,14 @@ define("gameClient/character/classes/assassin", function () {
 		        characterClass : [4]
 		    }
 		};
+
+		
 	}
 	Assassin.prototype = {
-		
+		init : function () {
+			this.abilities.bullet = abilityManager.get('bullet');
+		}
+
 	}
 
 	return Assassin;

@@ -18,12 +18,12 @@ define("js/playerStats", ["core/emitter"], function (emitter) {
 			emitter.on('tick', this.tick.bind(this));
 		},
 		initStats : function () {
-			var character = this.player.characterClass.character,
-				character = character.substr(0,1).toUpperCase() + character.substr(1);
-			this.totalhp.text(this.player.characterClass.hp);
+			var character = this.player.characterClass,
+				characterName = character.character.substr(0,1).toUpperCase() + character.character.substr(1);
+			this.totalhp.text(character.hp);
 			this.hp.text(this.player.hp);
-			this.character.text(character);
-			this.characterImg.attr('src', '/characters/' + this.player.characterClass.character + '-stats.png');
+			this.character.text(characterName);
+			this.characterImg.attr('src', '/characters/' + character.character + '-stats.png');
 
 		},
 		tick : function () {

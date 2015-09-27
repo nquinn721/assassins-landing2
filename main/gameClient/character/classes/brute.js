@@ -1,4 +1,7 @@
-define("gameClient/character/classes/brute",function () {
+define("gameClient/character/classes/brute",
+	["gameClient/character/abilities/abilityManager"],
+ 	function (abilityManager) {
+
 	function Brute () {
 		this.data = {
 		    images: ["/characters/brute-spritesheet.png"],
@@ -22,6 +25,9 @@ define("gameClient/character/classes/brute",function () {
 	}
 
 	Brute.prototype = {
+		init : function () {
+			this.abilities.bullet = abilityManager.get('bullet');
+		}
 
 	}
 

@@ -2,8 +2,9 @@ define("game/instance/instance", [
 		"core/emitter", 
 		"core/props",
 		"core/ping",
+		"game/character/player/playerManager",
 		"core/lib/underscore"
-	], function (emitter, props, ping, _) {
+	], function (emitter, props, ping, playerManager, _) {
 
 	function Instance (instanceManager, obj) {
 		this.b2d = obj.b2d;
@@ -19,7 +20,7 @@ define("game/instance/instance", [
 		this.waitingPlayers = [];
 
 		// Emit Coords
-		this.emitCoords = true;
+		this.emitCoords = false;
 
 		// Parent
 		this.instanceManager = instanceManager;
@@ -34,17 +35,19 @@ define("game/instance/instance", [
 				return true;
 		},
 		matchMaking : function (io) {
-			io.in(this.id).emit('matchMaking', this.players.map(function(v){return { name : v.account.username, character : v.characterClass.character, team : v.team}}));
+			io.in(this.id).emit('matchMaking', this.players.map(function(v){return { name : v.account.username, character : v.characterClass.stats.character, team : v.team}}));
 
 			if(this.full()){
 				for(var i = 0; i < this.waitingPlayers.length; i++)
-					this.updatePlayers(this.waitingPlayers[i].socket, this.waitingPlayers[i].user);
+					this.updatePlayersAndStartMatch(this.waitingPlayers[i].socket, this.waitingPlayers[i].user);
 			}
 
 		},
 		join : function (socket, io) {
 			this.totalPlayers++;
 			var base, team;
+
+			this.createUser(socket, io);
 
 			if(this.totalPlayers > this.playersAloud / 2){
 				base = 'base1';
@@ -63,6 +66,19 @@ define("game/instance/instance", [
 			
 			this.matchMaking(io);
 		},
+		createUser : function (socket, io) {
+			var player = playerManager.createPlayer({
+				socketId : socket.id, 
+				username : socket.account.username, 
+				characterClass : socket.account.characterClass.stats
+			});
+			player.init(this.b2d, socket.account.characterClass);
+			// Full player class
+			socket.player = player;
+			socket.player.account = {
+				username : socket.account.username,
+			}
+		},
 		leave : function (player) {
 			for(var i = 0; i < this.players.length; i++)
 				if(this.players[i].id === player.id)
@@ -75,11 +91,12 @@ define("game/instance/instance", [
 			}
 		},
 		
-		updatePlayers : function (socket, user) {
+		updatePlayersAndStartMatch : function (socket, user) {
 			var players = _.compact(this.players.map(function(v){if(v.id !== socket.player.id)return v.simpleObj()})),
 		 		items = this.map.items.map(function(v){return v.obj()});
 
 			socket.emit('start', {map : items, players : players, user : user, mapName : this.mapName});
+			this.matchStarted = true;
 		},
 
 		setSpawnPoint : function (player) {
@@ -98,8 +115,20 @@ define("game/instance/instance", [
 			}
 		},
 		tick : function (io) {
+			var hp = [],
+				player;
 			this.frames++;
 			
+			for(var i = 0; i < this.players.length; i++){
+				player = this.players[i];
+				if(!player.isDirty)continue;
+				console.log(player.id, player.hp);
+				hp.push({id : player.id, hp : player.hp});
+				player.isDirty = false;
+			}
+
+			if(hp.length)
+				io.in(this.id).emit('setHP', hp);
 			if(this.emitCoords)
 				this.updateCoords(io, this.players, this.map.items);
 
@@ -139,18 +168,6 @@ define("game/instance/instance", [
 		emitToPlayer : function (io, player, event, data) {
 			if(player && io.sockets.connected[player.socketId])
 				io.sockets.connected[player.socketId].emit(event, data);
-		},
-		checkIfItemIsVisibleAlready : function (player, item) {
-			return player.hasVisibleItem(item);
-		},
-		checkIfItemIsInRange : function (player, item) {
-			if(
-				item.x + item.w >= player.x - props.mapShowingDistance && 
-				item.x <= player.x + props.mapShowingDistance && 
-				item.y + item.h >= player.y - props.mapShowingDistance && 
-				item.y <= player.y + props.mapShowingDistance
-			)return true;
-			return false;
 		}
 	}
 
