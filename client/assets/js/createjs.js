@@ -41,14 +41,18 @@ define("js/createjs", ['js/canvas', 'core/emitter'], function (canvas, emitter) 
             this.add(text);
             return text;
         },
-        image : function (id) {
+        image : function (id, options) {
             var bitmap = new createjs.Bitmap(this.queue.getResult(id));
+
+            this.handleOptions(bitmap, options);
+
             this.add(bitmap);
             return bitmap;
         },
-        spriteSheet : function (data, initialAnimation) {
+        spriteSheet : function (data, initialAnimation, options) {
             var spriteSheet = new createjs.SpriteSheet(data),
                 animation = new createjs.Sprite(spriteSheet, initialAnimation || 'standLeft');
+            this.handleOptions(animation, options);
             this.add(animation);
             return animation;
         },
@@ -63,7 +67,38 @@ define("js/createjs", ['js/canvas', 'core/emitter'], function (canvas, emitter) 
                 for(var i = 0; i < el.length; i++)
                     this.stage.removeChild(el[i]);
             else
-                this.stage.removeChild(el);
+              this.stage.removeChild(el);
+        },
+        hitMarker : function (x, y, w, h) {
+            var hit = new createjs.Shape();
+            hit.graphics.beginRadialGradientFill(["rgba(0,0,0,0)", "red"], [0, 1], x + 400, y + 200, 300, x + 400, y + 200, 500);
+            hit.graphics.drawRect(x,y,w,h);
+
+             this.add(hit);
+             return hit;
+        },
+        handleOptions : function (bitmap, options) {
+              if(options){
+                for(var option in options)
+                    this[option](bitmap, options[option]);
+            }
+        },
+        filters : function  (el, filtersArray) {
+            var filters = [];
+            for(var i = 0; i < filtersArray.length; i++)
+                filters.push(this[filtersArray[i]]());
+            el.filters = filters;
+            el.cache(0, 0, el.image.width, el.image.height);
+        },
+        grayScale : function () {
+            
+            var Grayscale = new createjs.ColorMatrixFilter([
+                    0.30,0.30,0.30,0,0, // red component
+                    0.30,0.30,0.30,0,0, // green component
+                    0.30,0.30,0.30,0,0, // blue component
+                    0,0,0,1,0  // alpha
+            ]);
+            return Grayscale;
         }
 
 	}

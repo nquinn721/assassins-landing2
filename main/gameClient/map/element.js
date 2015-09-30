@@ -6,48 +6,40 @@
 	}
 
 	Element.prototype = {
-		// init : function (b2d) {
-	 //        this.create(b2d);
-		// },
-		create : function (b2d) {
+		create : function (b2d, opts) {
 			var obj = this.obj();
 
 			// B2D body
 			this.body = b2d.rect(obj);
 	        this.el.body = this.body;
 
-
-			// Sprite
-
-			if(this.setupSprite)this.setupSprite();
-			else{
-				this.img = createjs.image(this.sprite);
-				this.img.x = this.x;
-				this.img.y = this.y;
-		        this.img.scaleY = this.h / this.img.image.height;
-		        this.img.scaleX = this.w / this.img.image.width;
-			}
-
-			if(this.img)
-				createjs.index(this.img, 1);
-
-			
-	        // Header Text
-			// this.text = createjs.text(obj.id, null, "#000");
-			// this.text.x = obj.x;
-			// this.text.y = obj.y - obj.h / 2 - 10;
-
+	        if(this.init)this.init(createjs);
+			this.createSprite(opts);
 
 		},
 		events : function () {
 		},
 		destroy : function () {
 			this.body.destroy();
-			if(this.destroySprite)this.destroySprite();
+			this.destroySprite();
+		},
+		destroySprite : function () {
+			createjs.destroy(this.img);
+		},
+		createSprite : function (opts) {
+			if(this.setupSprite)this.setupSprite();
 			else{
-				createjs.destroy(this.img);
-				createjs.destroy(this.text);
+				this.img = createjs.image(this.sprite, opts);
+				this.img.x = this.x;
+				this.img.y = this.y;
+		        this.img.scaleY = this.h / this.img.image.height;
+		        this.img.scaleX = this.w / this.img.image.width;
+				createjs.index(this.img, 1);
+				
 			}
+		},
+		setHP :function (hp) {
+			this.el.hp = hp;
 		},
 		updateCoords : function (obj) {
 			if(!this.body)return;
@@ -56,6 +48,7 @@
 		},
 		tick : function () {
 			if(!this.img)return;
+			if(this.tickItem)this.tickItem();
 			this.img.x = this.el.x = this.el.body.getX();
 			this.img.y = this.el.y = this.el.body.getY();
  
@@ -76,7 +69,9 @@
 				elementName : this.elementName,
 				heightItems : this.heightItems,
 				widthItems : this.widthItems,
-				groupId : this.groupId
+				groupId : this.groupId,
+				categoryBits : this.categoryBits,
+				maskBits : this.maskBits
 			}
 		},
 		extend : function (item, obj) {

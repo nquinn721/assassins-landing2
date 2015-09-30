@@ -7,7 +7,6 @@ define("game/map/elements/platforms/ceiling", [], function () {
 		this.h = 20;
 		this.id = 'ceiling';
 		this.type = 'static';
-		this.groupId = 1;
 		this.policies = ['ceiling'];
 		this.b2delement = 'rect';
 		this.elementName = 'ceiling';

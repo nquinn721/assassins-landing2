@@ -5,12 +5,16 @@ define("game/character/abilities/shootBullet/bullet", function () {
 		this.w = 10;
 		this.h = 10;
 		this.type = 'dynamic';
-		this.speed = 10;
+		this.speed = 1;
 		this.groupId = -1;
 		this.policies = ['bullet'];
+		this.damageDealt = 400;
 
 		this.mousex = 10;
 		this.mousey = 10;
+		this.destroyed = false;
+		this.categoryBits = 0x0100;
+		this.maskBits = 0x0001;
 		for(var i in obj)this[i] = obj[i];
 
 	}
@@ -28,10 +32,16 @@ define("game/character/abilities/shootBullet/bullet", function () {
 			this.y = y;
 		},
 		destroy : function () {
-			// this.body.destroy();
+			this.destroyed = true;
+			this.body.destroy();
 		},
 		shoot : function () {
-			this.body.applyForce([this.step.x, this.step.y], 15);
+			var yBound = 6,
+				y = this.step.y > yBound ? yBound : this.step.y < -yBound ? -yBound : this.step.y;
+			this.body.applyForce([this.step.x < 0 ? -5 : 5, y], 15);
+		},
+		tick : function () {
+			this.body.applyForce('up', 0.25);	
 		},
 		obj : function () {
 			return {
@@ -43,7 +53,14 @@ define("game/character/abilities/shootBullet/bullet", function () {
 				type : this.type,
 				id : this.id,
 				isBullet : true,
-				policies : this.policies
+				policies : this.policies,
+				owner : this.owner,
+				base : this.base,
+				team : this.team,
+				isSensor : true,
+				categoryBits : this.categoryBits,
+				maskBits : this.maskBits,
+				damageDealt : this.damageDealt
 			}
 		}
 	}

@@ -6,10 +6,10 @@ define("gameClient/map/elements/pits/spikePit", ["game/map/elements/pits/spikePi
 	}
 
 	SpikePit.prototype = {
-		setupSprite : function () {
+		setupSprite : function (opts) {
 			var items = this.widthItems;
 			for(var i = 0; i < items; i++){
-				var img = createjs.image(this.sprite);
+				var img = createjs.image(this.sprite, opts);
 				img.x = this.x + (i * (this.w / items));
 				img.y = this.y - this.h;
 				img.scaleX = (this.w / items) / img.image.width;

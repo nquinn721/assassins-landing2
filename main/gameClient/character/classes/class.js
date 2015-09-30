@@ -1,22 +1,40 @@
-define("gameClient/character/classes/class", [], function () {
+define("gameClient/character/classes/class", ["core/emitter", "js/createjs"], function (emitter, createjs) {
 	function Class () {
 		this.abilities = {};
 		this.bullets = [];
 	}
 	Class.prototype = {
+		init : function () {
+			this.initClass();
+			emitter.on('tick', this.tick.bind(this));
+		},
 		extend : function (obj) {
 			for(var i in this)
 				obj[i] = this[i];
 			return obj;
 		},
-		mouseDown : function (obj, createjs) {
-			var bullet = new this.abilities.bullet;
-			bullet.create(obj, createjs);
+		mouseDown : function (obj) {
+			if(!obj)return;
+			var bullet = new this.abilities.bullet(obj);
+			bullet.create(createjs);
 			this.bullets.push(bullet);
 		},
-		destroy : function (createjs, bullet) {
-			createjs.remove(bullet);
-			this.bullets.splice(this.indexOf(bullet));
+		destroy : function (bullet) {
+			bullet.destroy(createjs);
+			this.bullets.splice(this.bullets.indexOf(bullet), 1);
+		},
+		tick : function () {
+			var removeBullets = [];
+
+
+			for(var i = 0; i < this.bullets.length; i++){
+				var bullet = this.bullets[i];
+				if(!bullet.bullet.destroyed)
+					bullet.update();
+				else this.destroy(bullet);
+			}
+
+			if(removeBullets.length)this.destroy(removeBullets);
 		}
 	}
 

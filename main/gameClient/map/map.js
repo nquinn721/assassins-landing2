@@ -20,6 +20,7 @@ define("gameClient/map/map", [
 			base : Base
 		}
 		this.element = new Element;
+		
 	}
 
 	Map.prototype = {

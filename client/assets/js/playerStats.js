@@ -16,6 +16,7 @@ define("js/playerStats", ["core/emitter"], function (emitter) {
 		},
 		events : function () {
 			emitter.on('tick', this.tick.bind(this));
+			emitter.on('revive', this.revive.bind(this));
 		},
 		initStats : function () {
 			var character = this.player.characterClass,
@@ -28,7 +29,13 @@ define("js/playerStats", ["core/emitter"], function (emitter) {
 		},
 		tick : function () {
 			this.hp.text(this.player.hp);
-			
+			if(this.player.hp <= 0 && !this.dead){
+				emitter.emit('death', this.player);
+				this.dead = true;
+			}
+		},
+		revive : function () {
+			this.dead = false;
 		}
 
 	}

@@ -1,20 +1,21 @@
 define("gameClient/character/abilities/bullet", function () {
-	function Bullet () {
+	function Bullet (obj) {
 		this.sprite = "fireball";
 
 		this.data = {
 		    images: ["/characters/fireball.png"],
-		    frames: [[0, 15, 18, 28]],
+		    frames: [[0, 15, 14, 20], [0,0,14,20]],
 		    animations: {
-		    	shoot : [0]
+		    	shoot : [0],
+		    	explode : [0, 1, 0]
 			}		
 		}  
 		this.frames = 0;
+		
+		this.bullet = obj;
 	}
 	Bullet.prototype = {
-		create : function (obj, createjs) {
-			if(!obj[0])return;
-			this.bullet = obj[0];
+		create : function (createjs) {
 			this.animation = createjs.spriteSheet(this.data, 'shoot');	
 			this.animation.x = this.bullet.x;
 			this.animation.y = this.bullet.y;
@@ -24,6 +25,15 @@ define("gameClient/character/abilities/bullet", function () {
 			this.frames++;
 			this.animation.x = this.bullet.body.getX();
 			this.animation.y = this.bullet.body.getY();
+			this.animation.rotation = this.bullet.step.spriteAngle;
+		},
+		destroy : function (createjs) {
+			var self = this;
+			this.animation.gotoAndPlay('explode');
+			setTimeout(function () {
+				createjs.destroy(self.animation);
+			}, 200)
+
 		}
 	}
 	return Bullet;

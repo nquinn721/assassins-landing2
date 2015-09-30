@@ -59,8 +59,8 @@ define("game/map/map", [
 			var a = this.getById(obj.one.id),
 				b = this.getById(obj.two.id);
 
-			if(a && a[method])a[method](b);
-			if(b && b[method])b[method](a);
+			if(a && a[method])a[method](b || obj.two);
+			if(b && b[method])b[method](a || obj.one);
 		},
 		tick : function () {
 			for(var i = 0; i < this.items.length; i++)

@@ -5,13 +5,13 @@ define("game/map/elements/platforms/elevator", function () {
 		this.w = 100;
 		this.h = 20;
 		this.id = 'floor';
-		this.groupId = 1;
 		this.type = 'kinematic';
 		this.policies = ['floor', 'elevator'];
 		this.speed = 2;
 		this.moveBounds = 300;
 		this.b2delement = 'rect';
 		this.elementName = 'elevator';
+		this.categoryBits = 0x0001;
 
 		
 

@@ -25,7 +25,7 @@ define("gameClient/character/classes/brute",
 	}
 
 	Brute.prototype = {
-		init : function () {
+		initClass : function () {
 			this.abilities.bullet = abilityManager.get('bullet');
 		}
 

@@ -135,3 +135,25 @@ canvas{
 .match-making .character{
     margin:auto;
 }
+.clear{
+    background:none !important;
+}
+.timer{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+.timer .num{
+    font-size: 100px;
+}
+.num {
+    background-color: #222;
+    padding: 0 28px;
+    height: 108px;
+    position: absolute;
+    top: 50%;
+    line-height: 100px;
+    margin-top: -50px;
+    box-shadow: 0 0 10px 4px;
+}

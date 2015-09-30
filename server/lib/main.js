@@ -83,7 +83,7 @@ function setupRequire (requirejs, io, connection) {
 			socket.on('mousedown', function (obj) {
 				if(socket.player){
 					socket.player.mouseDown(obj);
-					socket.broadcast.to(socket.instance.id).emit('mousedown', {player : socket.player.obj(), obj : obj});
+					socket.broadcast.to(socket.instance.id).emit('mousedown', {player : socket.player.obj(), mouse : obj});
 				}
 			});
 

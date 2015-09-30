@@ -5,7 +5,6 @@ define("core/b2d", [
 	'core/shapes', 
 	'core/emitter'
 	], function (Box2D, Body, _, Shapes, emitter) {
-
 	var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	    b2AABB = Box2D.Collision.b2AABB,
 	    b2BodyDef = Box2D.Dynamics.b2BodyDef,
@@ -149,7 +148,9 @@ define("core/b2d", [
 				fixDef.restitution = options.restitution;
 				fixDef.density = options.density;
 				fixDef.friction = options.friction;
-				fixDef.filter.groupIndex = options.groupId;
+				// fixDef.filter.groupIndex = options.groupId;
+				fixDef.filter.categoryBits = options.categoryBits || 0x0001;
+				fixDef.filter.maskBits = options.maskBits || 0xFFFF;
 
 			if(options.shape === 'polygon'){
 				fixDef.shape = new b2PolygonShape();

@@ -6,13 +6,17 @@ define("core/gameMath", function () {
 
 		getStep : function (a,b, speed) {
 			var distance = this.distance(a,b),
-				angle = this.angle(a,b);
+				angle = this.angle(a,b),
+				y = speed * Math.sin(angle),
+				x = speed * Math.cos(angle),
+				angleDeg = this.angleDeg(distance, angle);
 
 
 			return {
-				x : speed * Math.cos(angle),
-				y : speed * Math.sin(angle),
-				angle : this.angleDeg(angle)
+				x : x,
+				y : y,
+				angle : y < 0 ?  angleDeg: 360 - angleDeg,
+				spriteAngle : (this.spriteAngle(a,b))
 			}
 			
 		},
@@ -23,9 +27,17 @@ define("core/gameMath", function () {
 			var angle = Math.atan2(a[1] - b[1], a[0] - b[0]);
 			return angle;
 		},
-		angleDeg : function (angle) {
+		spriteAngle : function (a, b) {
+			var angle = Math.atan2(a[1] - b[1], a[0] - b[0] );
+			angle = angle * (180/Math.PI);
+			 if(angle < 0)
+	            angle = 360 - (-angle);
+	        angle += 90;
+			return angle;
+		},
+		angleDeg : function (distance, angle) {
 			var angleDeg = angle * (360 / (2 * Math.PI));
-			return angleDeg;
+			return Math.abs(angleDeg);
 		},
 		distance : function (a, b) {
 			var x = this.square(a[0] - b[0]),

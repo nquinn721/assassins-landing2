@@ -21,6 +21,15 @@ define("gameClient/character/player/playerSprite", [
 		events : function () {
 			emitter.on('tick', this.tick.bind(this));
 			emitter.on('doneloading', this.setup.bind(this));
+			emitter.on('hit', this.hit.bind(this));
+			// this.player.on('hit', this.hit.bind(this));
+
+		},
+		hit : function () {
+	        var hit = createjs.hitMarker(props.canvas.currentX, props.canvas.currentY, props.view.w, props.view.h);
+	        setTimeout(function () {
+	        	createjs.destroy(hit);
+	        }, 200);
 		},
 		setup : function () {
 			var username = this.player.username;
@@ -52,32 +61,17 @@ define("gameClient/character/player/playerSprite", [
 			this.updateName();
 			this.updateHp();
 
-			var removeBullets = [];
-
-
-			for(var i = 0; i < this.characterClass.bullets.length; i++){
-				var bullet = this.characterClass.bullets[i];
-				if(bullet.bullet && bullet.bullet.body)
-					bullet.update();
-				else removeBullets.push(bullet);
-			}
-
-			for(var i = 0; i = removeBullets.length; i++){
-				var bullet = removeBullets[i];
-				this.characterClass.destroy(bullet, createjs);
-			}
+			if(this.player.jumpAvailable && this.isJumping)
+				this.stopJumping();
+			
 
 		},
 		mouseDown : function () {
-			this.characterClass.mouseDown(this.player.characterClass.shootBullet.bullets.slice(-1), createjs);
+			var bullet = this.player.characterClass.shootBullet.bullets.slice(-1)[0];
+			this.characterClass.mouseDown(bullet);
 		},
 		keyup : function (keyCode) {
-			if(keys[keyCode] === 'up')
-				this.stopAnimation('isJumping', 
-					this.movingRight ? 'runRight' : 
-					this.movingLeft ? 'runLeft' : 
-					this.lookingRight ? 'standRight' : 'standLeft'
-				);
+			if(keys[keyCode] === 'up')this.stopJumping();
 			if(keys[keyCode] === 'left')this.stopAnimation('movingLeft', 'standLeft', 'movingRight');
 			if(keys[keyCode] === 'right')this.stopAnimation('movingRight', 'standRight', 'movingLeft');
 			if(this.movingRight){
@@ -94,6 +88,13 @@ define("gameClient/character/player/playerSprite", [
 			if(keys[keyCode] === 'left')this.startAnimation('movingLeft', 'runLeft');
 			if(keys[keyCode] === 'right')this.startAnimation('movingRight', 'runRight');
 			
+		},
+		stopJumping : function () {
+			this.stopAnimation('isJumping', 
+					this.movingRight ? 'runRight' : 
+					this.movingLeft ? 'runLeft' : 
+					this.lookingRight ? 'standRight' : 'standLeft'
+				);
 		},
 		stopAnimation : function (action, method, methodCondition) {
 			this[action] = false;
@@ -120,6 +121,10 @@ define("gameClient/character/player/playerSprite", [
 			this.hpbackgound.y = this.player.y - (this.hpy - 1);
 			this.hpbackgound1.x = this.player.x - this.hpx;
 			this.hpbackgound1.y = this.player.y - this.hpy;
+
+			if(this.player.hp <= 0)
+				this.die();
+
 		},
 		lookLeft : function () {
 			this.lookingRight = false;
@@ -148,6 +153,13 @@ define("gameClient/character/player/playerSprite", [
 			this.lookRight();
 			this.animation.gotoAndPlay('runRight');
 		},
+		die : function () {
+			var self = this;
+			this.destroy();
+			setTimeout(function () {
+				self.create();
+			}, this.player.deathTimer);	
+		},
 		create : function () {
 			createjs.add(this.animation);
 			createjs.add(this.nameBackground);
@@ -156,7 +168,9 @@ define("gameClient/character/player/playerSprite", [
 			createjs.add(this.hpbackgound);
 			createjs.add(this.hp);
 		},
+		
 		destroy : function () {
+			
 			createjs.destroy(this.animation);
 			createjs.destroy(this.hp);
 			createjs.destroy(this.hpbackgound);

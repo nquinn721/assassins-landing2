@@ -68,7 +68,9 @@ define("js/socket", [
 				menu.showMatchMaking();
 				matchMaking.showPlayers(obj);
 			},
-
+			hit : function () {
+				emitter.emit('hit');
+			},
 			createUser : function(obj){
 				emitter.emit('createUser', this);
 			},
@@ -85,18 +87,21 @@ define("js/socket", [
 			keyup : function (obj) {
 				emitter.emit('keyup', obj);
 			},
-			coords : function (obj) {
-				emitter.emit('mapCoords', obj.mapItems);
-				emitter.emit('playerCoords', obj.players);
+			playerCoords : function (obj) {
+				emitter.emit('playerCoords', obj);
+			},
+			mapCoords : function (obj) {
+				emitter.emit('mapCoords', obj);
 			},
 			setHP : function (player) {
-				console.log(player);
 				emitter.emit('setHP', player);
+			},
+			mapItemsHP : function (items) {
+				emitter.emit('mapItemsHP', items);
 			},
 			ping : function (ping) {
 				emitter.emit('clientPing', {socket : this, ping : ping});	
 			},
-
 			start : function (obj) {
 				var self = this;
 
@@ -143,8 +148,8 @@ define("js/socket", [
 									x : e.offsetX, 
 									y : e.offsetY
 								}
-								self.player.mouseDown(obj);
-								emitter.emit('mousedown', self.player);
+								// self.player.mouseDown(obj);
+								emitter.emit('mousedown', {player : self.player, mouse : obj});
 								self.emit('mousedown', obj);
 								return false;
 							}).on('mouseup', function (e) {
@@ -161,6 +166,12 @@ define("js/socket", [
 					}.bind(this));
 				}.bind(this), 1000)
 
+			},
+			die : function (player) {
+				emitter.emit('die', {player : player, b2d : this.b2d});
+			},
+			mousedown : function (obj) {
+				emitter.emit('mousedown', obj);	
 			},
 			emit : function (event, data) {
 				io.emit(event, data);

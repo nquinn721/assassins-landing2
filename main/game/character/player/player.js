@@ -14,9 +14,14 @@ define("game/character/player/player", [
 		this.speed = 5;
 		this.fixedRotation = true;
 		this.username = '';
-		this.groupId = -1;
 		this.team = 'team0';
 		this.base = 'base0';
+		this.categoryBits;
+		this.maskBits;
+		this.density = 5000;
+
+		this.deaths = 0;
+		this.deathTimer = 3;
 
 		this.previousX = 10;
 		this.previousY = 10;
@@ -26,6 +31,8 @@ define("game/character/player/player", [
 			top : this.y - 5,
 			bottom : this.y + (this.h)
 		}
+
+		this.isDirty = false;
 
 		// Property overrides
 		for(var i in obj)
@@ -46,6 +53,9 @@ define("game/character/player/player", [
 		this.visibleMapElements = [];
 		this.visibleMapPlayers = [];
 		this.visibleMapItems = [];
+
+		// Events
+		this.events = {};
 	}
 
 	Player.prototype = {
@@ -55,10 +65,15 @@ define("game/character/player/player", [
 
 			this.create(b2d);
 		},
-		create : function (b2d) {
+		create : function (b2d, obj) {
 			this.body = b2d.rect(this.obj());
-			this.body.setX(this.x);
-			this.body.setY(this.y);
+			if(!obj){
+				this.body.setX(this.x);
+				this.body.setY(this.y);
+			}else{
+				this.body.setX(obj.x);
+				this.body.setY(obj.y);
+			}
 		},
 		tick : function () {
 			// Update Previous Position
@@ -80,7 +95,7 @@ define("game/character/player/player", [
 				this.moveUp();
 
 			if(this.gettingDamaged){
-				this.hp -= this.damageDealt || 1;
+				this.damage(this.damageDealt);
 			}
 
 			// Update Current Position
@@ -113,11 +128,7 @@ define("game/character/player/player", [
 			var colide = item.sides,
 				policies = item.policies.join('');
 
-			if(policies.match('floor'))
-				if(this.sides.bottom < colide.top && (this.sides.left < colide.right - 5 || this.sides.right > colide.left + 5) ){
-					this.jumpAvailable = true;
-					this.currentlyJumping = false;
-				}
+			
 
 			if(policies.match(/floor|wall/)){
 				if(colide.top < this.sides.bottom && colide.bottom > this.sides.top && (this.sides.right < colide.left + 6 || this.sides.left > colide.right - 6)){
@@ -126,14 +137,10 @@ define("game/character/player/player", [
 			}
 
 			if(policies.match('spikePit')){
-				this.gettingDamaged = true;
-				this.damageDealt = 5;
-				this.isDirty = true;
+				this.constantDamage(5);
 			}
-			if(policies.match('bullet')){
-				this.hp -= 100;
-				this.isDirty = true;
-			}
+			if(policies.match('bullet') && item.team !== this.team)
+				this.damage(item.damageDealt);
 
 		},
 		contactPostSolve : function (item) {
@@ -141,7 +148,11 @@ define("game/character/player/player", [
 			var colide = item.sides,
 				policies = item.policies.join('');
 
-			
+			if(policies.match('floor'))
+				if(this.sides.bottom < colide.top && (this.sides.left < colide.right - 5 || this.sides.right > colide.left + 5) ){
+					this.jumpAvailable = true;
+					this.currentlyJumping = false;
+				}
 
 		},
 		endContact : function (item) {
@@ -149,9 +160,33 @@ define("game/character/player/player", [
 			var policies = item.policies.join('');
 
 			this.smallJumpAvailable = false;
+			this.jumpAvailable = false;
 
 			if(policies.match('spikePit'))
 				this.gettingDamaged = false;
+		},
+		die : function (b2d) {
+			var self = this;
+			this.deaths++;
+			this.destroy();
+			setTimeout(this.revive.bind(this, b2d), this.deathTimer * 1000);
+			
+		},
+		revive : function (b2d) {
+			this.hp = this.characterClass.stats.hp;
+			this.create(b2d, this.spawnPoint);
+			this.isDirty = true;
+			emitter.emit('revive');
+			this.deathTimer += (this.deaths * 3);
+		},
+		damage : function (dmg) {
+			this.hp -= dmg || 0;
+			this.isDirty = true;
+			this.emit('hit');
+		},
+		constantDamage : function (dmg) {
+			this.gettingDamaged = true;
+			this.damageDealt = 5;
 		},
 		setCoords : function (obj) {
 			this.body.setX(obj.x);
@@ -183,11 +218,11 @@ define("game/character/player/player", [
 		},
 		jump : function () {
 			this.currentlyJumping = true;
-			this.body.applyImpulse('up',5);
+			this.body.applyImpulse('up', 5.5 * this.density);
 		},
 		smallJump : function () {
 			this.currentlyJumping = true;
-			this.body.applyImpulse('up', 3.5);
+			this.body.applyImpulse('up', 3 * this.density);
 		},
 		destroy : function  () {
 			this.body.destroy();
@@ -204,10 +239,14 @@ define("game/character/player/player", [
 				fixedRotation : this.fixedRotation,
 				username : this.username,
 				account : this.account,
-				groupId : this.groupId,
+				// groupId : this.groupId,
 				directionFacing : this.directionFacing,
 				team : this.team,
-				spawnPont : this.spawnPont
+				spawnPoint : this.spawnPoint,
+				base : this.base,
+				categoryBits : this.categoryBits,
+				maskBits : this.maskBits,
+				density : this.density
 			}
 		},
 		// Return everything except account
@@ -220,7 +259,7 @@ define("game/character/player/player", [
 			return 	newObj;
 		},
 		mouseDown : function (obj) {
-			this.characterClass.mouseDown(obj, {x : this.x, y : this.y, w : this.w, h : this.h, direction : this.directionFacing});
+			this.characterClass.mouseDown(obj, this.obj());
 		},
 		mouseUp : function () {
 			
@@ -294,6 +333,15 @@ define("game/character/player/player", [
 		},
 		setBase : function (base) {
 			this.base = base;
+		},
+		on : function (event, cb) {
+			if(!this.events[event])this.events[event] = [];
+			this.events[event].push(cb);
+		},
+		emit : function (event, data) {
+			if(this.events[event])
+				for(var i = 0; i < this.events[event].length; i++)
+					this.events[event][i](data);
 		}
 	}
 	return Player;

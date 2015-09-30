@@ -57,8 +57,8 @@ define("gameClient/character/player/playerManagerClient",
 					player.setCoords(obj[i]);
 			}
 		},
-		mouseDown : function (player) {
-			var p = playerManager.getById(player.id);
+		mouseDown : function (obj) {
+			var p = playerManager.getById(obj.player.id);
 			p.sprite.mouseDown();
 		},
 		getUser : function  () {

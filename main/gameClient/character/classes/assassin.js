@@ -25,7 +25,7 @@ define("gameClient/character/classes/assassin", [
 		
 	}
 	Assassin.prototype = {
-		init : function () {
+		initClass : function () {
 			this.abilities.bullet = abilityManager.get('bullet');
 		}
 

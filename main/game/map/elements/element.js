@@ -32,7 +32,9 @@ define("game/map/elements/element", function () {
 				restitution : this.restitution,
 				policies : this.policies,
 				elementName : this.elementName,
-				groupId : this.groupId
+				// groupId : this.groupId,
+				categoryBits : this.categoryBits,
+				maskBits : this.maskBits
 			}
 		},
 		
@@ -42,9 +44,9 @@ define("game/map/elements/element", function () {
 			this.y = this.body.getY();
 			if(this.tickItem)this.tickItem();
 		},
-		extend : function (item, obj) {
-			var item = require('game/map/elements/' + item);
-			item = new item;
+		extend : function (itemObj, obj) {
+			var item = require('game/map/elements/' + itemObj);
+			item = new item(obj.id);
 			for(var i in this)
 				item[i] = this[i];
 

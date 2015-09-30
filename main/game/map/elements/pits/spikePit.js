@@ -10,6 +10,7 @@ define("game/map/elements/pits/spikePit", function () {
 		this.policies = ['spikePit', 'floor'];
 		this.b2delement = 'triangle';
 		this.elementName = 'spikePit';
+		this.categoryBits = 0x0001;
 	}
 
 	SpikePit.prototype = {

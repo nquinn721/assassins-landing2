@@ -6,13 +6,13 @@ define("game/map/elements/platforms/movingplatform", function () {
 		this.h = 20;
 		this.id = 'floor';
 		this.type = 'kinematic';
-		this.groupId = 1;
 		this.speed = 2;
 		this.moveBounds = 300;
 		this.friction = 50;
 		this.policies = ['floor', 'movingplatform'];
 		this.b2delement = 'rect';
 		this.elementName = 'movingplatform';
+		this.categoryBits = 0x0001;
 
 		
 

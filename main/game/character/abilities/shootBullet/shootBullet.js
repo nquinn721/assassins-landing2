@@ -8,30 +8,48 @@ define("game/character/abilities/shootBullet/shootBullet", [
 		this.bullets = [];
 
 		this.b2d = b2d;
+		this.timeBetweenBullets = 200;
+		this.waitPeriod = 1000;
+		this.availableToShoot = true;
+		this.bulletsShotBeforeWait = 5;
+		this.bulletsShot = 0;
 	}
 
 	ShootBullet.prototype = {
 		init : function () {
 			emitter.on('contact', this.contact.bind(this));
+			emitter.on('tick', this.tick.bind(this));
 		},
 		shoot : function (obj, char) {
-			var bulletStartX = char.x - (char.direction === 'left' ? 15 : -(char.w + 15)),
-				bulletStartY = char.y + (char.h / 2);
+			if(!this.availableToShoot)return;
 
-			if(char.direction === 'left' && obj.x < char.x || char.direction === 'right' && obj.x > char.x + char.w){
-				var bullet = new Bullet({
+			var bulletStartX = char.x + (char.w / 2),
+				bulletStartY = char.y + (char.h / 2),
+				self = this,
+				bullet = new Bullet({
 					x : bulletStartX,
 					y : bulletStartY,// + (char.y + char.h / 2),
 					mousex : obj.x,
 					mousey : obj.y,
 					step : gameMath.getStep([obj.x, obj.y], [bulletStartX , bulletStartY], 10),
-					direction : char.direction,
-					id : 'bullet' + this.bullets.length
+					direction : char.directionFacing,
+					id : 'bullet' + this.bullets.length,
+					owner : char.id,
+					base : char.base,
+					team : char.team,
+					categoryBits : char.team === 'team1' ? 0x0200 : 0x0100,
+					maskBits : char.team === 'team1' ? 0x2000 | 0x0020 | 0x0001 : 0x1000 | 0x0010 | 0x0001
 				});
-				bullet.create(this.b2d);
-				this.bullets.push(bullet);
-				bullet.shoot();
-			}
+
+			bullet.create(this.b2d);
+			this.bullets.push(bullet);
+			bullet.shoot();
+
+			this.bulletsShot++;
+			this.availableToShoot = false;
+			setTimeout(function () {
+				self.availableToShoot = true;
+			}, this.timeBetweenBullets)
 		},
 		getById : function (id) {
 			for(var i = 0; i < this.bullets.length; i++)
@@ -39,6 +57,10 @@ define("game/character/abilities/shootBullet/shootBullet", [
 		},
 		destroy : function (bullet) {
 			this.bullets.splice(this.bullets.indexOf(bullet), 1);
+		},
+		tick : function () {
+			for(var i = 0; i < this.bullets.length; i++)
+				this.bullets[i].tick();
 		},
 		contact : function (contact) {
 			if(contact.one.id.match('bullet') || contact.two.id.match('bullet')){

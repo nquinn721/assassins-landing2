@@ -16,6 +16,13 @@ define("gameClient/map/mapManagerClient", [
 			emitter.on('createMap', this.createMap.bind(this));
 			emitter.on('mapCoords', this.udpateMapItemCoords.bind(this));
 			emitter.on('tick', this.tick.bind(this));
+			emitter.on('contact', this.contact.bind(this));	
+			emitter.on('contactPostSolve', this.contactPostSolve.bind(this));	
+			emitter.on('endContact', this.endContact.bind(this));
+			emitter.on('mapItemsHP', this.mapItemsHP.bind(this));
+
+			emitter.on('death', this.death.bind(this));
+	        emitter.on('revive', this.revive.bind(this));
 		},
 		createElement : function (item) {
 			item.create(this.b2d);
@@ -40,9 +47,43 @@ define("gameClient/map/mapManagerClient", [
 				if(this.mapElements[i].id === id)
 					return this.mapElements[i];
 		},
+		contact : function (obj) {
+			this.createContact(obj, 'contact');
+		},
+		contactPostSolve : function (obj) {
+			this.createContact(obj, 'contactPostSolve');
+		},
+		endContact : function (obj) {
+			this.createContact(obj, 'endContact');
+		},
+		createContact : function (obj, method) {
+			var a = this.getById(obj.one.id),
+				b = this.getById(obj.two.id);
 
+			if(a && a[method])a[method](b || obj.two);
+			if(b && b[method])b[method](a || obj.one);
+		},
+		mapItemsHP : function (items) {
+			for(var i = 0; i < items.length; i++)
+				this.getById(items[i].id).setHP(items[i].hp)
+		},
+		death : function () {
+			for(var i = 0; i < this.mapElements.length; i++){
+				this.mapElements[i].destroySprite();
+				this.mapElements[i].createSprite({
+					filters : ['grayScale']
+				})
+			}
+			
+		},
+		revive : function () {
+			for(var i = 0; i < this.mapElements.length; i++){
+				this.mapElements[i].destroySprite();
+				this.mapElements[i].createSprite();
+			}
+		},
 		udpateMapItemCoords : function (mapItems) {
-			if(!this.mapElements.length)return;
+			if(!this.mapElements.length || !mapItems)return;
 
 			for(var i = 0; i < mapItems.length; i++){
 				var item = this.getById(mapItems[i].id);
