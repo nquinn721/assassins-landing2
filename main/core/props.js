@@ -9,12 +9,8 @@ define("core/props", [], function () {
 			currentY : 0
 		},
 		view : {
-			w : 800,
-			h : 400
+			w : 1200,
+			h : 600
 		}
-		// canvas : {
-		// 	w : 600,
-		// 	h : 400
-		// }
 	}
 });

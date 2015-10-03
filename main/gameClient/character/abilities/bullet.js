@@ -15,8 +15,8 @@ define("gameClient/character/abilities/bullet", function () {
 		this.bullet = obj;
 	}
 	Bullet.prototype = {
-		create : function (createjs) {
-			this.animation = createjs.spriteSheet(this.data, 'shoot');	
+		create : function (stage) {
+			this.animation = stage.spriteSheet(this.data, 'shoot');	
 			this.animation.x = this.bullet.x;
 			this.animation.y = this.bullet.y;
 		},
@@ -27,11 +27,11 @@ define("gameClient/character/abilities/bullet", function () {
 			this.animation.y = this.bullet.body.getY();
 			this.animation.rotation = this.bullet.step.spriteAngle;
 		},
-		destroy : function (createjs) {
+		destroy : function (stage) {
 			var self = this;
 			this.animation.gotoAndPlay('explode');
 			setTimeout(function () {
-				createjs.destroy(self.animation);
+				stage.destroy(self.animation);
 			}, 200)
 
 		}

@@ -1,8 +1,8 @@
 define("gameClient/background/background", [
-		"js/createjs", 
+		"gameClient/stage/stage", 
 		"core/props",
 		"core/emitter"
-	], function (createjs, props, emitter) {
+	], function (stage, props, emitter) {
 	function Background () {
 		
 	}
@@ -14,8 +14,8 @@ define("gameClient/background/background", [
 	        emitter.on('revive', this.create.bind(this));
 		},
 		death : function () {
-			createjs.destroy(this.img);
-			this.img = createjs.image("background",{
+			stage.destroy(this.img);
+			this.img = stage.image("background",{
 				filters : ['grayScale']
 			});
 			this.setImage();
@@ -25,13 +25,13 @@ define("gameClient/background/background", [
 			this.img.y = 0;
 	        this.img.scaleY = props.canvas.h / this.img.image.height;
 	        this.img.scaleX = props.canvas.w / this.img.image.width;
-	        createjs.index(this.img, 1);
+	        stage.index(this.img, 1);
 
 		},
 		create : function () {
 			if(this.img)
-				createjs.destroy(this.img);
-			this.img = createjs.image("background");
+				stage.destroy(this.img);
+			this.img = stage.image("background");
 			this.setImage();
 		}
 	}

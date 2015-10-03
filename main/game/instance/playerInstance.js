@@ -3,7 +3,8 @@ define("game/instance/playerInstance", [
 	"game/character/player/playerManager",
 	"core/props"
 	], function (emitter, playerManager) {
-	function PlayerInstance (id, b2d) {
+	function PlayerInstance (instance, id, b2d) {
+		this.instance = instance;
 		this.players = [];
 		this.id = id;
 		this.b2d = b2d;
@@ -25,20 +26,21 @@ define("game/instance/playerInstance", [
 		createUser : function (socket, io, base, team) {
 			var player = playerManager.createPlayer({
 					socketId : socket.id, 
-					username : socket.account.username, 
+					username : socket.account.username,
 					characterClass : socket.account.characterClass.stats,
 					team : team,
 					base : base,
 					categoryBits : team === 'team1' ? 0x1000 : 0x2000,
 					maskBits : team === 'team1' ? 0x0100 | 0x0001 : 0x0200 | 0x0001
 				});
-
 			player.init(this.b2d, socket.account.characterClass);
-			// Full player class
+			
 			socket.player = player;
 			socket.player.account = {
 				username : socket.account.username,
+				id : socket.account._id
 			}
+			socket.join(this.id);
 			player.on('hit', this.hit.bind(this, socket));
 		},
 		hit : function (socket) {

@@ -1,7 +1,7 @@
 define("gameClient/character/abilities/abilityManager", [
-		"js/createjs",
+		"gameClient/stage/stage",
 		"gameClient/character/abilities/bullet"
-	], function (createjs, Bullet) {
+	], function (stage, Bullet) {
 	function AbilityManager () {
 		this.abilities = {
 			bullet : Bullet

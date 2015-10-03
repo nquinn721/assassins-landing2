@@ -2,13 +2,13 @@ define("gameClient/character/player/playerManagerClient",
 	[
 		'core/emitter', 
 		'gameClient/character/player/playerSprite',
-		'js/playerStats',
 		'game/character/player/playerManager',
-		'js/canvas',
 		'game/character/classes/assassin',
-		'game/character/classes/brute'
+		'game/character/classes/brute',
+		'gameClient/playerStats',
+		'gameClient/client'
 	], 
-	function (emitter, PlayerSprite, PlayerStats, playerManager, canvas, assassin, brute) {
+	function (emitter, PlayerSprite, playerManager, assassin, brute, PlayerStats, client) {
 
 	function PlayerManagerClient () {
 		this.players = [];
@@ -31,24 +31,26 @@ define("gameClient/character/player/playerManagerClient",
 			emitter.on('createPlayers', this.createPlayers.bind(this));
 			emitter.on('keydown', this.keydown.bind(this));
 			emitter.on('keyup', this.keyup.bind(this));
+			emitter.on('blur', this.blur.bind(this));
+			emitter.on('focus', this.focus.bind(this));
 			emitter.on('destroyPlayer', this.destroyPlayer.bind(this));
 			emitter.on('playerCoords', this.setPlayerCoords.bind(this));
-			emitter.on('tick', this.tick.bind(this));
+			// emitter.on('tick', this.tick.bind(this));
 			emitter.on('mousedown', this.mouseDown.bind(this));
 		},
-		createUser : function (socket) {
-			var player = playerManager.createPlayer(socket.player),
-				sprite = new PlayerSprite(player),
+		createUser : function (obj) {
+			var player = playerManager.createPlayer(obj.user),
+				sprite = new PlayerSprite(player, true),
 				playerStats = new PlayerStats(player),
-				characterClass = new this.classes[socket.player.characterClass.character];
+				characterClass = new this.classes[player.characterClass.character];
 
 
 			playerStats.init();
 			sprite.init();
-			player.init(socket.b2d, characterClass);
+			player.init(obj.b2d, characterClass);
 			this.user = player;
-			socket.player = player;
-
+			client.createUser(player);
+			player.on('move', this.loadPlayer.bind(this));
 		},
 		setPlayerCoords : function (obj) {
 			for(var i = 0; i < obj.length; i++){
@@ -88,7 +90,7 @@ define("gameClient/character/player/playerManagerClient",
 				this.createPlayer(player, true);
 			}
 		},
-		tick : function () {
+		loadPlayer : function () {
 			this.frames++;
 			for(var i = 0; i < this.players.length; i++)
 				if(this.players.id !== this.user.id)
@@ -106,6 +108,20 @@ define("gameClient/character/player/playerManagerClient",
 			if(p){
 				p.keyDown(obj.keyCode);
 				p.sprite.keydown(obj.keyCode);
+			}
+		},
+		blur : function () {
+			var p = playerManager.getById(this.user);
+			if(p){
+				p.blur();
+				p.sprite.resetKeys();
+			}
+		},
+		focus : function () {
+			var p = playerManager.getById(this.user);
+			if(p){
+				p.focus();
+				// p.sprite.focus();
 			}
 		},
 		destroyPlayer : function (player) {

@@ -1,16 +1,18 @@
 define("gameClient/character/player/playerSprite", [
-		"js/canvas", 
 		"core/props",
-		"js/createjs",
+		"gameClient/stage/stage",
 		"core/emitter",
 		"core/keys",
 		"gameClient/character/classes/classManager"
-	], function (canvas, props, createjs, emitter, keys, classManager) {
+	], function (props, stage, emitter, keys, classManager) {
 
 		
-	function PlayerSprite(player) {
+	function PlayerSprite(player, isUser) {
 		this.player = player;
 		this.lookingLeft = true;
+		this.isHit = false;
+
+		this.isUser = isUser;
 	}
 
 	PlayerSprite.prototype = {
@@ -22,14 +24,37 @@ define("gameClient/character/player/playerSprite", [
 			emitter.on('tick', this.tick.bind(this));
 			emitter.on('doneloading', this.setup.bind(this));
 			emitter.on('hit', this.hit.bind(this));
-			// this.player.on('hit', this.hit.bind(this));
-
+			emitter.on('win', this.win.bind(this));
+			emitter.on('lose', this.lose.bind(this));
 		},
 		hit : function () {
-	        var hit = createjs.hitMarker(props.canvas.currentX, props.canvas.currentY, props.view.w, props.view.h);
+	        var self = this;
+
+			if(this.isHit)return;
+	        this.isHit = true;
+
+	        // this.hitMarker = stage.hitMarker(props.canvas.currentX, props.canvas.currentY, props.view.w, props.view.h);
+
 	        setTimeout(function () {
-	        	createjs.destroy(hit);
+	        	self.isHit = false;
+	        	stage.destroy(self.hitMarker);
 	        }, 200);
+		},
+		win : function () {
+			stage.box("#088A2B", props.canvas.currentX + props.view.w / 2 - 75, props.canvas.currentY + props.view.h / 2 - 20, 175, 40);
+			stage.text("Yay! You Win!", null, null, props.canvas.currentX + props.view.w / 2 - 50, props.canvas.currentY + props.view.h / 2 - 10);
+		},
+		lose : function () {
+			stage.box("#651515", props.canvas.currentX + props.view.w / 2 - 175, props.canvas.currentY + props.view.h / 2 - 20, 320, 40);
+			stage.text("Sorry! Better Luck Next Time!", null, null, props.canvas.currentX + props.view.w / 2 - 150, props.canvas.currentY + props.view.h / 2 - 10);
+		},	
+		moveHitMarker : function () {
+			if(this.isHit){
+				stage.destroy(this.hitMarker);
+		        this.hitMarker = stage.hitMarker(props.canvas.currentX, props.canvas.currentY, props.view.w, props.view.h);
+				// this.hitMarker.image.x = props.canvas.currentX;
+				// this.hitMarker.image.y = props.canvas.currentY;
+			}	
 		},
 		setup : function () {
 			var username = this.player.username;
@@ -41,8 +66,8 @@ define("gameClient/character/player/playerSprite", [
 			username = username.substr(0,1).toUpperCase() + username.substr(1);
 
 
-			this.nameBackground = createjs.box("#222", 75, 20);
-			this.name = createjs.text(username, "16px arial");
+			this.nameBackground = stage.box("#222", 0,0,75, 20);
+			this.name = stage.text(username, "16px arial");
 			this.name.textAlign = "center";
 
 			this.hpw = 75;
@@ -50,9 +75,9 @@ define("gameClient/character/player/playerSprite", [
 			this.hpx = 10;
 			this.hpy = 40;
 
-			this.hpbackgound1 = createjs.box('#222', this.hpw, this.hph);
-			this.hpbackgound = createjs.box('white', this.hpw - 2, this.hph - 2);
-			this.hp = createjs.box("green", this.hpw - 4, this.hph - 4);
+			this.hpbackgound1 = stage.box('#222', 0,0, this.hpw, this.hph);
+			this.hpbackgound = stage.box('white', 0,0, this.hpw - 2, this.hph - 2);
+			this.hp = stage.box((this.isUser ? "green" : "#B50D0D"), 0,0,this.hpw - 4, this.hph - 4);
 		},
 		tick : function () {
 			if(!this.player || !this.animation)return;
@@ -63,7 +88,7 @@ define("gameClient/character/player/playerSprite", [
 
 			if(this.player.jumpAvailable && this.isJumping)
 				this.stopJumping();
-			
+			this.moveHitMarker();
 
 		},
 		mouseDown : function () {
@@ -88,6 +113,10 @@ define("gameClient/character/player/playerSprite", [
 			if(keys[keyCode] === 'left')this.startAnimation('movingLeft', 'runLeft');
 			if(keys[keyCode] === 'right')this.startAnimation('movingRight', 'runRight');
 			
+		},
+		resetKeys : function () {
+			for(var i in keys)
+				this.keyup(i);	
 		},
 		stopJumping : function () {
 			this.stopAnimation('isJumping', 
@@ -161,22 +190,22 @@ define("gameClient/character/player/playerSprite", [
 			}, this.player.deathTimer);	
 		},
 		create : function () {
-			createjs.add(this.animation);
-			createjs.add(this.nameBackground);
-			createjs.add(this.name);
-			createjs.add(this.hpbackgound1);
-			createjs.add(this.hpbackgound);
-			createjs.add(this.hp);
+			stage.add(this.animation);
+			stage.add(this.nameBackground);
+			stage.add(this.name);
+			stage.add(this.hpbackgound1);
+			stage.add(this.hpbackgound);
+			stage.add(this.hp);
 		},
 		
 		destroy : function () {
 			
-			createjs.destroy(this.animation);
-			createjs.destroy(this.hp);
-			createjs.destroy(this.hpbackgound);
-			createjs.destroy(this.hpbackgound1);
-			createjs.destroy(this.nameBackground);
-			createjs.destroy(this.name);
+			stage.destroy(this.animation);
+			stage.destroy(this.hp);
+			stage.destroy(this.hpbackgound);
+			stage.destroy(this.hpbackgound1);
+			stage.destroy(this.nameBackground);
+			stage.destroy(this.name);
 		}
 	}
 

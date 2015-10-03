@@ -1,11 +1,13 @@
-.login.menu.none
-	h1 Login
-	form
-		.form-group
-			label(for="username") Username
-			input.form-control(class="username", id="username", placeholder="Type username...")
-		.form-group
-			label(for="password") Password
-			input.form-control(class="password", id="password", type="password", placeholder="Type password...")
-		.form-group
-			input.btn.btn-primary(type="submit", value="Login")
+.login.menu
+	.header: h2 Login
+	.body
+		form(ng-submit="login.submit()")
+			.form-group
+				label(for="username") Username
+				input.form-control(class="username", id="username", ng-model="login.username", placeholder="Type username...")
+			.form-group
+				label(for="password") Password
+				input.form-control(class="password", id="password", ng-model="login.password", type="password", placeholder="Type password...")
+			.form-group
+				input.btn.btn-primary(type="submit", id="submit", value="Login")
+		.alert.alert-danger(ng-show="login.failedLogin") Wrong credentials

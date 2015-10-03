@@ -7,6 +7,9 @@ define("gameClient/map/mapManagerClient", [
 
 	function MapManagerClient() {
 		this.mapElements = [];
+
+		// Loading elements while player is moving
+		this.liveLoading = false;
 	}
 	MapManagerClient.prototype = {
 		init : function () {
@@ -41,6 +44,8 @@ define("gameClient/map/mapManagerClient", [
 				this.mapElements.push(el);
 				this.createElement(el);
 			}
+
+			// this.user.on('move', this.checkLoadStatusOfItem.bind(this));
 		},
 		getById : function (id) {
 			for(var i = 0; i < this.mapElements.length; i++)
@@ -99,7 +104,8 @@ define("gameClient/map/mapManagerClient", [
 				if(item.el.tickItem)item.el.tickItem();
 
 
-				this.checkLoadStatusOfItem(item);
+				if(this.liveLoading)
+					this.checkLoadStatusOfItem(item);
 
 			}
 		},

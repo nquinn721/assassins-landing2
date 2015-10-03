@@ -15,20 +15,31 @@
     position: absolute;
     overflow: hidden;
 }
+.text-center{
+    text-align: center;
+}
 .menu{
-    padding: 75px;
+    padding: 50px;
     z-index: 1;
-    background-color: #47638A;
+    background-color: #0f0f0f;
     color: white;
+}
+.login{
+    padding-top:70px;
 }
 .menu-clear{
     background-color:transparent !important;
 }
 .error {
-    width:800px;
     margin:auto;
     margin-bottom:20px;
     display: none;
+}
+.alert-danger{
+    position: absolute;
+    top: 20px;
+    left: 50px;
+    right:50px;
 }
 canvas{
     position: absolute;
@@ -90,6 +101,7 @@ canvas{
 }
 .characters img.selected {
     border: 1px solid white !important;
+    background : #222;
 }
 
 .stats-container {
@@ -139,21 +151,19 @@ canvas{
     background:none !important;
 }
 .timer{
-    display: flex;
-    align-items: center;
-    justify-content: center;
     height: 100%;
 }
 .timer .num{
-    font-size: 100px;
-}
-.num {
+    font-size: 60px;
+    text-align: center;
     background-color: #222;
-    padding: 0 28px;
     height: 108px;
     position: absolute;
     top: 50%;
     line-height: 100px;
     margin-top: -50px;
     box-shadow: 0 0 10px 4px;
+    left: 50%;
+    margin-left: -55px;
+    width: 110px;
 }

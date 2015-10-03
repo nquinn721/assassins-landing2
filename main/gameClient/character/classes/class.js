@@ -1,4 +1,4 @@
-define("gameClient/character/classes/class", ["core/emitter", "js/createjs"], function (emitter, createjs) {
+define("gameClient/character/classes/class", ["core/emitter", "gameClient/stage/stage"], function (emitter, stage) {
 	function Class () {
 		this.abilities = {};
 		this.bullets = [];
@@ -16,11 +16,11 @@ define("gameClient/character/classes/class", ["core/emitter", "js/createjs"], fu
 		mouseDown : function (obj) {
 			if(!obj)return;
 			var bullet = new this.abilities.bullet(obj);
-			bullet.create(createjs);
+			bullet.create(stage);
 			this.bullets.push(bullet);
 		},
 		destroy : function (bullet) {
-			bullet.destroy(createjs);
+			bullet.destroy(stage);
 			this.bullets.splice(this.bullets.indexOf(bullet), 1);
 		},
 		tick : function () {

@@ -1,7 +1,7 @@
 	define("gameClient/map/element", [
-		'js/createjs',
+		'gameClient/stage/stage',
 		'core/emitter'
-	], function (createjs, emitter) {
+	], function (stage, emitter) {
 	function Element () {
 	}
 
@@ -13,7 +13,7 @@
 			this.body = b2d.rect(obj);
 	        this.el.body = this.body;
 
-	        if(this.init)this.init(createjs);
+	        if(this.init)this.init(stage);
 			this.createSprite(opts);
 
 		},
@@ -24,17 +24,17 @@
 			this.destroySprite();
 		},
 		destroySprite : function () {
-			createjs.destroy(this.img);
+			stage.destroy(this.img);
 		},
 		createSprite : function (opts) {
 			if(this.setupSprite)this.setupSprite();
 			else{
-				this.img = createjs.image(this.sprite, opts);
+				this.img = stage.image(this.sprite, opts);
 				this.img.x = this.x;
 				this.img.y = this.y;
 		        this.img.scaleY = this.h / this.img.image.height;
 		        this.img.scaleX = this.w / this.img.image.width;
-				createjs.index(this.img, 1);
+				stage.index(this.img, 1);
 				
 			}
 		},

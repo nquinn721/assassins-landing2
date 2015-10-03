@@ -1,23 +1,24 @@
 require([
-	'gameClient/gameManagerClient',
-	'js/socket',
-	'core/ping',
-	'js/canvas',
-	'js/canvasControls',
-	'js/responsive',
-	'js/death'
+	'angular',
+	'js/app',
+	'js/io',
+	'js/auth',
+	'js/user',
+	'js/login',
+	'js/events',
+	'js/viewport',
+	'js/gameStats',
+	'js/characters',
+	'js/matchMaking',
+	'js/accountMenu',
+	'js/accountService',
+	'js/characterSelect',
+	'domReady',
 	], 
-	function (gameManagerClient, socket, ping, canvas, canvasControls, responsive, death) {
-		
-		// responsive.init();
-		// $(window).on('resize', function () {
-		// 	responsive.resize();
-		// });
-
-
-		ping.initClient();
-		gameManagerClient.init();
-		
+	function (angular, domReady) {
+	 angular.element(document).ready(function() {
+        angular.bootstrap(document, ['assassins-landing']);
+    });
 });
 
 

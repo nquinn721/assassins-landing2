@@ -1,9 +1,9 @@
 define("gameClient/character/classes/classManager", [
-		'js/createjs',
+		'gameClient/stage/stage',
 		'gameClient/character/classes/assassin',
 		'gameClient/character/classes/brute',
 		'gameClient/character/classes/class'
-	], function (createjs, assassin, brute, Class) {
+	], function (stage, assassin, brute, Class) {
 
 
 	function ClassManager () {
@@ -15,7 +15,7 @@ define("gameClient/character/classes/classManager", [
 	ClassManager.prototype = {
 		create : function (cl, player) {
 			var characterClass = Class.extend(new this.classes[cl]),
-				animation = createjs.spriteSheet(characterClass.data, player.directionFacing === 'left' ? 'standLeft' : 'standRight');
+				animation = stage.spriteSheet(characterClass.data, player.directionFacing === 'left' ? 'standLeft' : 'standRight');
 			
 			characterClass.init();
 

@@ -1,5 +1,6 @@
 define("game/instance/mapInstance", [], function () {
-	function MapInstance (id, b2d, map) {
+	function MapInstance (instance, id, b2d, map) {
+		this.instance = instance;
 		this.id = id;
 		this.b2d = b2d;
 		this.map = map;
@@ -18,10 +19,11 @@ define("game/instance/mapInstance", [], function () {
 			}
 
 			if(dirty.length){
+				this.checkWin(dirty);
 				io.in(this.id).emit('mapItemsHP', dirty);
 			}
 
-			// this.updateCoords(io);
+			this.updateCoords(io);
 		},
 		updateCoords : function (io) {
 			var itemCoords = [];
@@ -35,6 +37,16 @@ define("game/instance/mapInstance", [], function () {
 
 			io.emit('mapCoords', itemCoords);
 			
+		},
+		checkWin : function (items) {
+			for(var i = 0; i < items.length; i++){
+				var item = items[i];
+				if(item.id.match('base')){
+					if(item.hp < 0){
+						this.instance.endGame(item.id === 'base0' ? 'base1' : 'base0');
+					}
+				}
+			}
 		}
 	}
 	return MapInstance;

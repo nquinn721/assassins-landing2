@@ -4,15 +4,16 @@ define("gameClient/map/elements/structures/base", ["game/map/elements/structures
 		this.sprite = 'base';
 	}
 	Base.prototype = {
-		init : function (createjs) {
+		init : function (stage) {
+			this.stage = stage;
 			this.hpw = this.el.w;
 			this.hph = 10;
 			this.hpx = this.el.x;
 			this.hpy = this.el.y - 10;
 
-			this.hpbackgound1 = createjs.box('#222', this.hpw, this.hph);
-			this.hpbackgound = createjs.box('white', this.hpw - 2, this.hph - 2);
-			this.hp = createjs.box("green", this.hpw - 4, this.hph - 4);
+			this.hpbackgound1 = stage.box('#222', 0,0,this.hpw, this.hph);
+			this.hpbackgound = stage.box('white', 0,0,this.hpw - 2, this.hph - 2);
+			this.hp = stage.box("green", 0,0,this.hpw - 4, this.hph - 4);
 			this.hp.x = this.hpx + 2;
 			this.hp.y = this.hpy + 2;
 			this.hpbackgound.x = this.hpx + 1;
@@ -22,6 +23,7 @@ define("gameClient/map/elements/structures/base", ["game/map/elements/structures
 		},
 		tickItem : function () {
 			this.hp.scaleX = this.el.hp / this.el.originalHp;
+			if(this.el.hp <= 0)this.stage.destroy(this.hp);
 		},
 		contact : function (obj) {
 			this.el.contact(obj);

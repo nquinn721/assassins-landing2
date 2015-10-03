@@ -13,8 +13,10 @@ define("game/instance/instanceManager", [
 	}
 
 	InstanceManager.prototype = {
+		init : function (io) {
+			this.io = io;
+		},
 		getInstance : function () {
-			
 			// Check if an instance has fewer players
 			// If so return that one instead of a new one
 			if(this.instances.length)
@@ -42,7 +44,7 @@ define("game/instance/instanceManager", [
 		    });
 
 
-			instance.init();
+			instance.init(this.io);
 
 		    this.instances.push(instance);
 			this.totalInstances++;

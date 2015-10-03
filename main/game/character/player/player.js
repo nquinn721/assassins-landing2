@@ -56,6 +56,8 @@ define("game/character/player/player", [
 
 		// Events
 		this.events = {};
+
+		this.isBlur = false;
 	}
 
 	Player.prototype = {
@@ -76,6 +78,7 @@ define("game/character/player/player", [
 			}
 		},
 		tick : function () {
+
 			// Update Previous Position
 			this.previousY = this.y;
 			this.previousX = this.x;
@@ -94,9 +97,9 @@ define("game/character/player/player", [
 			if(this.moveup)
 				this.moveUp();
 
-			if(this.gettingDamaged){
+			if(this.gettingDamaged)
 				this.damage(this.damageDealt);
-			}
+			
 
 			// Update Current Position
 			this.x = this.body.getX();
@@ -130,15 +133,15 @@ define("game/character/player/player", [
 
 			
 
-			if(policies.match(/floor|wall/)){
-				if(colide.top < this.sides.bottom && colide.bottom > this.sides.top && (this.sides.right < colide.left + 6 || this.sides.left > colide.right - 6)){
+			if(policies.match(/floor|wall/))
+				if(colide.top < this.sides.bottom && colide.bottom > this.sides.top && (this.sides.right < colide.left + 10 || this.sides.left > colide.right - 10))
 					this.smallJumpAvailable = true;
-				}
-			}
+				
+			
 
-			if(policies.match('spikePit')){
+			if(policies.match('spikePit'))
 				this.constantDamage(5);
-			}
+			
 			if(policies.match('bullet') && item.team !== this.team)
 				this.damage(item.damageDealt);
 
@@ -211,14 +214,19 @@ define("game/character/player/player", [
 		moveRight : function () {
 			this.directionFacing = 'right';
 			this.body.move('right');
+			this.emits(['move', 'moveright']);
 		},
 		moveLeft : function () {
 			this.directionFacing = 'left';
 			this.body.move('left');
+			this.emits(['move', 'moveleft']);
 		},
 		jump : function () {
+			this.jumped = true;
+			this.jumpAvailable = false;
 			this.currentlyJumping = true;
 			this.body.applyImpulse('up', 5.5 * this.density);
+			this.emits(['move', 'jump']);
 		},
 		smallJump : function () {
 			this.currentlyJumping = true;
@@ -239,7 +247,6 @@ define("game/character/player/player", [
 				fixedRotation : this.fixedRotation,
 				username : this.username,
 				account : this.account,
-				// groupId : this.groupId,
 				directionFacing : this.directionFacing,
 				team : this.team,
 				spawnPoint : this.spawnPoint,
@@ -268,12 +275,11 @@ define("game/character/player/player", [
 			var key = keys[keyCode];
 
 			if(key === 'up' && !this.jumped){
-				this.jumped = true;
-
 				if(this.smallJumpAvailable && !this.jumpAvailable){
 					this.smallJumpAvailable = false;
 					this.smallJump();
 				}
+				
 				if(this.jumpAvailable){
 					this.jumpAvailable = false;
 					this.jump();
@@ -286,12 +292,17 @@ define("game/character/player/player", [
 		
 		keyUp : function (keyCode) {
 			var key = keys[keyCode];
-
+			this.emits(['stopmove', 'stop' + key]);
 			if(key === 'up'){
 				this.jumped = false;
 			}else{
 				this[key] = false;
 			}
+		},
+		blur : function () {
+			for(var i in keys)this.keyUp(i);
+		},
+		focus : function () {
 		},
 		getVisibleItems : function () {
 			return this.visibleMapItems;
@@ -342,6 +353,11 @@ define("game/character/player/player", [
 			if(this.events[event])
 				for(var i = 0; i < this.events[event].length; i++)
 					this.events[event][i](data);
+		},
+		emits : function (events) {
+			for(var i = 0; i < events.length; i++){
+				this.emit(events[i]);
+			}
 		}
 	}
 	return Player;

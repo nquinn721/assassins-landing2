@@ -1,30 +1,20 @@
-.account.menu.none
-	.accountInfo
-		.left
-			.accountUsername
-				| Username: 
-				span.username 
-			.accountEmail
-				| Email: 
-				span.email
-			br
-			br
-			.characters Choose a class
-				br
-				img#assassin(src="/characters/assassin-standstill.png")
-				img#brute(src="/characters/brute-standstill.png")
-		.right
-			.accountName
-				| Name: 
-				span.firstName
-				| &nbsp;
-				span.lastName 
-			.accountXP
-				| Experience: 
-				span.xp 
-			.accountGold
-				| Gold: 
-				span.gold 
-	.start-game
-		input.start.btn.btn-danger(type="button", value="Start Game", disabled)
-		
+.account.menu
+	.header: h2 Account
+		.right: .btn.btn-primary(ng-click="acc.gotoCharacterSelect()") Character Select
+	.body
+		table.table.table-striped
+			tr 
+				td Username: 
+				td {{acc.user.username}} 
+			tr
+				td Email: 
+				td {{acc.user.email}}
+			tr
+				td Name: 
+				td {{acc.user.fullName()}}
+			tr
+				td Experience: 
+				td {{acc.user.xp}}
+			tr
+				td Gold: 
+				td {{acc.user.gold}}

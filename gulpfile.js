@@ -4,10 +4,14 @@ var uglify = require('gulp-uglify');
 var imagemin = require('gulp-imagemin');
 var sourcemaps = require('gulp-sourcemaps');
 var del = require('del');
+var stylus = require('gulp-stylus');
+var sourcemaps = require('gulp-sourcemaps');
+var minifyCss = require('gulp-minify-css');
 
 var paths = {
   scripts: ['client/assets/js/**/*.js'],
-  images: 'client/assets/img/**/*'
+  images: 'client/assets/img/**/*',
+  stylus: './client/assets/style/*.styl'
 };
 
 // Not all tasks need to use streams
@@ -38,9 +42,19 @@ gulp.task('images', ['clean'], function() {
 
 // Rerun the task when a file changes
 gulp.task('watch', function() {
-  gulp.watch(paths.scripts, ['scripts']);
-  gulp.watch(paths.images, ['images']);
+  // gulp.watch(paths.scripts, ['scripts']);
+  // gulp.watch(paths.images, ['images']);
+  gulp.watch(paths.stylus, ['css']);
+});
+
+gulp.task('css', function () {
+  gulp.src(paths.stylus)
+    .pipe(stylus())
+    .pipe(concat('main.css'))
+    .pipe(minifyCss())
+    .pipe(gulp.dest('./client/assets/css/build'));
 });
 
 // The default task (called when you run `gulp` from cli)
-gulp.task('default', ['watch', 'scripts', 'images']);
+// gulp.task('default', ['watch', 'scripts', 'images']);
+gulp.task('default', ['watch', 'css']);

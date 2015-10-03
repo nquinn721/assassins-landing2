@@ -13,13 +13,14 @@ define("game/instance/instance", [
 		this.id = obj.id;
 		this.map = obj.map;
 		this.frames = 0;
+		this.xpGained = 100;
 		
 		// Players
 		this.totalPlayers = 0;
 		this.playersAloud = 2;
 		this.waitingPlayers = [];
-		this.playerInstance = new PlayerInstance(this.id, this.b2d);
-		this.mapInstance = new MapInstance(this.id, this.b2d, obj.map);
+		this.playerInstance = new PlayerInstance(this, this.id, this.b2d);
+		this.mapInstance = new MapInstance(this, this.id, this.b2d, obj.map);
 
 		
 
@@ -28,7 +29,8 @@ define("game/instance/instance", [
 	}
 
 	Instance.prototype = {
-		init : function () {
+		init : function (io) {
+			this.io = io;
 			emitter.on('serverTick', this.tick.bind(this));
 		},
 		full : function () {
@@ -39,6 +41,7 @@ define("game/instance/instance", [
 			io.in(this.id).emit('matchMaking', this.playerInstance.players.map(function(v){return { name : v.account.username, character : v.characterClass.stats.character, team : v.team}}));
 
 			if(this.full()){
+				io.in(this.id).emit('startGame');
 				for(var i = 0; i < this.waitingPlayers.length; i++)
 					this.updatePlayersAndStartMatch(this.waitingPlayers[i].socket, this.waitingPlayers[i].user);
 			}
@@ -80,9 +83,11 @@ define("game/instance/instance", [
 		
 		updatePlayersAndStartMatch : function (socket, user) {
 			var players = _.compact(this.playerInstance.players.map(function(v){if(v.id !== socket.player.id)return v.simpleObj()})),
-		 		items = this.map.items.map(function(v){return v.obj()});
-
-			socket.emit('start', {map : items, players : players, user : user, mapName : this.mapName});
+		 		items = this.map.items.map(function(v){return v.obj()}),
+		 		self = this;
+		 	socket.on('startGame', function () {
+				socket.emit('start', {map : items, players : players, user : user, mapName : self.mapName});
+		 	});
 			this.matchStarted = true;
 		},
 
@@ -108,9 +113,36 @@ define("game/instance/instance", [
 			this.mapInstance.tick(io);
 			
 		},
-		emitToPlayer : function (io, player, event, data) {
-			if(player && io.sockets.connected[player.socketId])
-				io.sockets.connected[player.socketId].emit(event, data);
+		emitToPlayer : function (player, event, data) {
+			if(player && this.io.sockets.connected[player.socketId])
+				this.io.sockets.connected[player.socketId].emit(event, data);
+		},
+		endGame : function (winner) {
+			var players = this.playerInstance.players,	
+				winners = [],
+				losers = [],
+				self = this;
+
+			for(var i = 0; i < players.length; i++){
+				var player = players[i];
+				if(player.base === winner)winners.push({id : player.account.id, socketId : player.socketId});
+				else losers.push({id : player.account.id, socketId : player.socketId})
+			}
+
+			for(var i = 0; i < winners.length; i++){
+				this.emitToPlayer(winners[i], 'win');
+				Account.findOne({_id : winners[i].id}, function (err, acc) {
+					console.log(acc);
+					acc.xp += self.xpGained;
+					console.log(acc);
+					acc.save();
+				});
+			}
+
+			for(var i = 0; i < losers.length; i++)
+				this.emitToPlayer(losers[i], 'lose');
+
+			this.instanceManager.destroyInstance(this);
 		}
 	}
 
