@@ -1,0 +1,8 @@
+.home.menu
+	.header: h1 Welcome To Assassin's Landing
+		.right-header
+			| XP {{home.user.xp}} Gold {{home.user.gold}}
+	.body
+		.main
+		.sidebar
+		.bottom: center: a(ng-click="home.play()", ng-href="#/character-select"): input.btn.btn-danger.wide-button(type="button", value="Play")

@@ -10,9 +10,9 @@ define("js/app", [
 	app.config(function ($routeProvider) {
 		$routeProvider
 			.when('/', {
-				templateUrl : '/login',
-				controller : 'login',
-				controllerAs : 'login'
+				templateUrl : '/home',
+				controller : 'home',
+				controllerAs : 'home'
 			})
 			.when('/account', {
 				templateUrl : '/account',
@@ -42,13 +42,13 @@ define("js/app", [
 			.otherwise({
 				redirectTo : '/'
 			});
-	})
-	.run(['$rootScope', '$location', 'Auth', function ($rootScope, $location, Auth) {
-	    $rootScope.$on('$routeChangeStart', function (event) {
-	        if (!Auth.isLoggedIn())
-	            $location.path('/');
-	    });
-	}]);
+	});
+	// .run(['$rootScope', '$location', 'Auth', function ($rootScope, $location, Auth) {
+	//     $rootScope.$on('$routeChangeStart', function (event) {
+	//         if (!Auth.isLoggedIn())
+	//             $location.path('/');
+	//     });
+	// }]);
 	
 	return app;
 });

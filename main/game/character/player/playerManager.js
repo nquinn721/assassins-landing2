@@ -104,7 +104,7 @@ define("game/character/player/playerManager", [
 		},
 		tick : function () {
 			for(var i = 0; i < this.players.length; i++)
-				this.players[i].tick();
+				if(this.players[i].isStarted())this.players[i].tick();
 		}
 	}
 

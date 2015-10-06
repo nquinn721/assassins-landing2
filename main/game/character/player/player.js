@@ -38,10 +38,7 @@ define("game/character/player/player", [
 		for(var i in obj)
 			this[i] = obj[i];
 
-		// Extend character class
-		var characterObj = obj.characterClass;
-		for(var i in characterObj)
-			this[i] = characterObj[i];
+		
 
 		this.frames = 0;
 
@@ -63,9 +60,15 @@ define("game/character/player/player", [
 	Player.prototype = {
 		init : function (b2d, characterClass) {
 			this.characterClass = characterClass;
+			for(var i in characterClass)
+				this[i] = characterClass[i];
 			this.characterClass.init(b2d);
 
 			this.create(b2d);
+			this.started = true;
+		},
+		isStarted : function () {
+			return this.started;
 		},
 		create : function (b2d, obj) {
 			this.body = b2d.rect(this.obj());
@@ -78,7 +81,6 @@ define("game/character/player/player", [
 			}
 		},
 		tick : function () {
-
 			// Update Previous Position
 			this.previousY = this.y;
 			this.previousX = this.x;
@@ -242,7 +244,7 @@ define("game/character/player/player", [
 				w : this.w,
 				h : this.h,
 				id : this.id,
-				characterClass : this.characterClass.stats,
+				characterClass : this.characterClass ? this.characterClass.stats : null,
 				speed : this.speed,
 				fixedRotation : this.fixedRotation,
 				username : this.username,
@@ -251,6 +253,7 @@ define("game/character/player/player", [
 				team : this.team,
 				spawnPoint : this.spawnPoint,
 				base : this.base,
+				characterSelected : this.characterSelected,
 				categoryBits : this.categoryBits,
 				maskBits : this.maskBits,
 				density : this.density

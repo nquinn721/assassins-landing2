@@ -7,12 +7,12 @@ define("gameClient/character/player/playerSprite", [
 	], function (props, stage, emitter, keys, classManager) {
 
 		
-	function PlayerSprite(player, isUser) {
+	function PlayerSprite(player, onUsersTeam) {
 		this.player = player;
 		this.lookingLeft = true;
 		this.isHit = false;
 
-		this.isUser = isUser;
+		this.onUsersTeam = onUsersTeam;
 	}
 
 	PlayerSprite.prototype = {
@@ -77,7 +77,7 @@ define("gameClient/character/player/playerSprite", [
 
 			this.hpbackgound1 = stage.box('#222', 0,0, this.hpw, this.hph);
 			this.hpbackgound = stage.box('white', 0,0, this.hpw - 2, this.hph - 2);
-			this.hp = stage.box((this.isUser ? "green" : "#B50D0D"), 0,0,this.hpw - 4, this.hph - 4);
+			this.hp = stage.box((this.onUsersTeam ? "green" : "#B50D0D"), 0,0,this.hpw - 4, this.hph - 4);
 		},
 		tick : function () {
 			if(!this.player || !this.animation)return;

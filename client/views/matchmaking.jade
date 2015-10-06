@@ -2,7 +2,7 @@
 	.header: h3: center Waiting for players...
 	.body
 		.team1.team.left
-			h3 Team 1
+			h3: center Team 1
 			| {{characters}}
 			.characters
 				.character(ng-repeat="char in ch.characters")
@@ -10,7 +10,7 @@
 					.username
 					.character-name
 		.team2.team.right
-			h3 Team2
+			h3: center Team2
 			.characters
 				.character(ng-repeat="char in ch.characters")
 					img(ng-src="/characters/{{char.character}}-standstill.png", ng-if="char.team === 'team2'")

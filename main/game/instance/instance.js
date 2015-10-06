@@ -18,6 +18,7 @@ define("game/instance/instance", [
 		// Players
 		this.totalPlayers = 0;
 		this.playersAloud = 2;
+		this.playersStarted = 0;
 		this.waitingPlayers = [];
 		this.playerInstance = new PlayerInstance(this, this.id, this.b2d);
 		this.mapInstance = new MapInstance(this, this.id, this.b2d, obj.map);
@@ -38,14 +39,9 @@ define("game/instance/instance", [
 				return true;
 		},
 		matchMaking : function (io) {
-			io.in(this.id).emit('matchMaking', this.playerInstance.players.map(function(v){return { name : v.account.username, character : v.characterClass.stats.character, team : v.team}}));
+			// io.in(this.id).emit('matchMaking', this.playerInstance.players.map(function(v){return { name : v.account.username, character : v.characterClass.stats.character, team : v.team}}));
 
-			if(this.full()){
-				io.in(this.id).emit('startGame');
-				for(var i = 0; i < this.waitingPlayers.length; i++)
-					this.updatePlayersAndStartMatch(this.waitingPlayers[i].socket, this.waitingPlayers[i].user);
-			}
-
+			
 		},
 		join : function (socket, io) {
 			this.totalPlayers++;
@@ -59,14 +55,27 @@ define("game/instance/instance", [
 				base = 'base0';
 				team = 'team1';
 			}
+
 			this.playerInstance.createUser(socket, io, base, team);
-
-
-			this.setSpawnPoint(socket.player);
-			this.playerInstance.add(socket.player);
-			this.waitingPlayers.push({socket : socket, user : socket.player.obj()});
-			
+			this.playerInstance.updateCharacterSelect(socket);
+			// this.waitingPlayers.push({socket : socket, user : socket.player.obj()});
 			this.matchMaking(io);
+		},
+		characterSelect : function (socket, char) {
+			this.playerInstance.characterSelect(socket, char);
+		},
+		start : function (socket) {
+			this.playerInstance.start(socket);	
+
+			this.playersStarted++;
+			if(this.playersStarted === this.playersAloud){
+				this.setSpawnPoint(socket.player);
+				for(var i = 0; i < this.waitingPlayers.length; i++)
+					this.updatePlayersAndStartMatch(this.waitingPlayers[i].socket, this.waitingPlayers[i].user);
+
+
+				io.in(this.id).emit('startGame');
+			}
 		},
 		
 		leave : function (player) {
@@ -132,9 +141,7 @@ define("game/instance/instance", [
 			for(var i = 0; i < winners.length; i++){
 				this.emitToPlayer(winners[i], 'win');
 				Account.findOne({_id : winners[i].id}, function (err, acc) {
-					console.log(acc);
 					acc.xp += self.xpGained;
-					console.log(acc);
 					acc.save();
 				});
 			}

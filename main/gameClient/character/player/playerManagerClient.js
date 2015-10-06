@@ -69,7 +69,7 @@ define("gameClient/character/player/playerManagerClient",
 		createPlayer : function (playerObj, addPlayer) {
 			if(addPlayer){
 				var player = playerManager.createPlayer(playerObj),
-					sprite = new PlayerSprite(player),
+					sprite = new PlayerSprite(player, player.team === this.user.team ? true : false),
 					characterClass = new this.classes[playerObj.characterClass.character];
 
 				sprite.init();

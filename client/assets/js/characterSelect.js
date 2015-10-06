@@ -1,27 +1,27 @@
 define("js/characterSelect", ["js/app"], function (app) {
-	app.controller('characterSelect', ['User', '$location', '$scope', 'socket', 'characters', 'events', 
-		function (User, $location, $scope, socket, characters, events) {
-
+	app.controller('characterSelect', ['User', '$scope', 'socket', 'characters', 'events', 
+		function (User, $scope, socket, characters, events) {
 		this.user = User;
+		this.characterSelected = {};
+		this.playersSelected = {};
 
-		$scope.characters = [];
-
-		this.character = 'Assassin';
-		this.AssassinSelect = true;
 
 		this.select = function (character) {
-			this.AssassinSelect = false;
-			this.BruteSelect = false;
+			for(var i in this.characterSelected)this.characterSelected[i] = false;
 			this.character = character;
-			this[character + 'Select'] = true;
+			this.characterSelected[character] = true;
+			socket.emit('character-select', character);
+		}
+		this.playerSelect = function (obj) {
+			this.playersSelected[obj.player.id] = {username : obj.player.username, character : obj.character};
+		}
+		this.updatePlayersSelected = function (obj) {
+			for(var i in obj)
+				this.playersSelected[obj[i].username] = {username : obj[i].username, character : obj[i].characterSelected};
 		}
 
-		this.gotoAccount = function () {
-			$location.path('/account');
-		}
 
 		this.start = function () {
-			$location.path('/match-making');
 			socket.emit('start', {
 				account : User,
 				character : this.character
@@ -30,7 +30,17 @@ define("js/characterSelect", ["js/app"], function (app) {
 		this.updateCharacters = function (obj) {
 			characters.set(obj);
 		}
+		this.availableChars = function (chars) {
+			this.characters = chars;
+		}
+		this.characterUpper = function (char) {
+			return char.substr(0,1).toUpperCase() + char.substr(1);
+		}
 		socket.on('matchMaking', this.updateCharacters);
+		socket.on('availableChars', this.availableChars.bind(this));
+		socket.on('character-select', this.playerSelect.bind(this));
+		socket.on('characters-selected', this.updatePlayersSelected.bind(this));
+		this.select(this.user.characters[0]);
 
 	}]);
 });

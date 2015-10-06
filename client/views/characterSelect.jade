@@ -1,25 +1,30 @@
 .character-select.menu
 	.header: h2 {{ch.user.upper()}}
 	.body
-		.title Choose a character
-			.right {{ch.character}}
-		.characters
-			br
-			.left.text-center()
-				img#assassin(
-					ng-class="{selected : ch.AssassinSelect}", 
-					ng-click="ch.select('Assassin')", 
-					src="/characters/assassin-stats.png"
-				)
+		.main
+			.title Choose a character
+			.characters
 				br
-				center Assassin
-			.left.text-center()
-				img#brute(
-					ng-class="{selected : ch.BruteSelect}",
-					ng-click="ch.select('Brute')", 
-					src="/characters/brute-stats.png"
-				)
-				br
-				center Brute
-		.account: i.fa.fa-cog(title="Account", ng-click="ch.gotoAccount()")
-		.play: input.btn.btn-danger(type="button", ng-click="ch.start()", value="Start")
+				.left.text-center.character(ng-repeat="char in ch.user.characters")
+					img(
+						ng-src="/characters/{{char}}-stats.png",
+						ng-click="ch.select(char)",
+						ng-class="{selected : ch.characterSelected[char]}"
+					)
+		.sidebar
+			.user.character-chosen
+				div.character-chosen-name {{ch.character.substr(0,1).toUpperCase() + ch.character.substr(1)}}
+				img(ng-src="/characters/{{ch.character}}-stats.png")
+				div.user-info.right
+					.stat {{ch.user.upper()}}
+					.stat Rank: 10
+			.player.character-chosen(ng-repeat="player in ch.playersSelected")
+				div.character-chosen-name {{player.character.substr(0,1).toUpperCase() + player.character.substr(1)}}
+				img(ng-src="/characters/{{ch.character}}-stats.png")
+				div.user-info.right
+					.stat {{player.username.substr(0,1).toUpperCase() + player.username.substr(1)}}
+					.stat Rank: 10
+			//- .player1.character-chosen
+			//- .player2.character-chosen
+		.account: a.link(ng-href="#/account"): i.fa.fa-cog(title="Account")
+		.bottom: center: a.wide-button.btn.btn-danger(ng-click="ch.start()", ng-href="#/match-making") Start
