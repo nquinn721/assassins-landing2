@@ -10,8 +10,7 @@ var minifyCss = require('gulp-minify-css');
 
 var paths = {
   scripts: ['client/assets/js/**/*.js'],
-  images: 'client/assets/img/**/*',
-  stylus: './client/assets/style/*.styl'
+  images: 'client/assets/img/**/*'
 };
 
 // Not all tasks need to use streams
@@ -44,15 +43,22 @@ gulp.task('images', ['clean'], function() {
 gulp.task('watch', function() {
   // gulp.watch(paths.scripts, ['scripts']);
   // gulp.watch(paths.images, ['images']);
-  gulp.watch(paths.stylus, ['css']);
+  gulp.watch('./client/assets/site/style/*.styl', ['css']);
+  gulp.watch('./client/assets/game/style/*.styl', ['css']);
+  gulp.watch('./client/assets/common/style/*.styl', ['css']);
 });
 
 gulp.task('css', function () {
-  gulp.src(paths.stylus)
+  gulp.src(['./client/assets/site/style/*.styl', './client/assets/common/style/*.styl'])
     .pipe(stylus())
     .pipe(concat('main.css'))
     .pipe(minifyCss())
-    .pipe(gulp.dest('./client/assets/css/build'));
+    .pipe(gulp.dest('./client/assets/css/build/site'));
+  gulp.src(['./client/assets/game/style/*.styl', './client/assets/common/style/*.styl'])
+    .pipe(stylus())
+    .pipe(concat('main.css'))
+    .pipe(minifyCss())
+    .pipe(gulp.dest('./client/assets/css/build/game'));
 });
 
 // The default task (called when you run `gulp` from cli)

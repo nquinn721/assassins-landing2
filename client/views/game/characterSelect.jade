@@ -1,0 +1,30 @@
+.character-select.menu
+	.header: h2 {{ch.user.upper()}}
+	.body
+		.main
+			.title Choose a character
+			.characters
+				br
+				.left.text-center.character(ng-repeat="(char, set) in ch.user.characterSelect")
+					img(
+						ng-src="/characters/{{char}}-stats.png",
+						ng-click="ch.selectCharacter(char)",
+						ng-class="{selected : set}"
+					)
+		.sidebar
+			.user.character-chosen
+				.character-chosen-name {{ch.user.character ? ch.user.charUpper() : 'No Character'}}
+				.character-chosen-image 
+					.no-character Character
+					img(ng-src="/characters/{{ch.user.character}}-stats.png", ng-if="ch.user.character")
+				.user-info.right
+					.stat {{ch.user.upper()}}
+			.player.character-chosen(ng-repeat="account in ch.accounts")
+				.character-chosen-name {{account.character || 'No Character'}}
+				.character-chosen-image 
+					.no-character Character
+					img(ng-src="/characters/{{account.character}}-stats.png", ng-if="account.character")
+				.user-info.right
+					.stat {{account.upper()}}
+		.account: a.link(ng-href="#/account"): i.fa.fa-cog(title="Account")
+		.bottom: center: a.wide-button.btn.btn-danger(ng-click="ch.start()", ng-href="#/match-making") Start

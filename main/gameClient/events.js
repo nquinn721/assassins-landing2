@@ -1,6 +1,6 @@
 define("gameClient/events", [
 		"require",
-		"js/io",
+		"game/js/io",
 		"core/emitter",
 		"core/b2d",
 		"gameClient/loader",

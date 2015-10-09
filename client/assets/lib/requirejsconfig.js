@@ -22,5 +22,5 @@ require.config({
         ngRoute : '/lib/angular-route/angular-route.min',
         '$' : '/lib/jquery/dist/jquery'
     },
-    deps : ['/js/main.js']
+    deps : ['/game/js/main.js']
 });

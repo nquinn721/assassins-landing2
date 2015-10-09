@@ -1,23 +1,46 @@
-module.exports =function (socket, io, instanceManager, emitter, require) {
-	var IS_BLURRED = false;
+module.exports =function (socket, io, emitter, require, db, port) {
+	var IS_BLURRED = false,
+		cookie = socket.request.cookies.al;
+	
+
+	// Get current user
+	socket.on('getUser', function () {
+		db.getSession(cookie, function (session) {
+			socket.account = session.account;
+			socket.emit('user', session.account);
+			socket.broadcast.emit('newAccount', {username : session.account.username});
+		});
+	});
+
+	// Get all accounts already in instance
+	socket.on('getAccounts', function () {
+		db.getInstance(port, function (accounts) {
+			accounts = _.compact(accounts.map(function(v){if(v.cookie !== cookie)return { username : v.account.username, character : v.account.character}; }));
+			socket.emit('accounts', accounts);
+		});
+	});
+
+
 
 	socket.on('start', function (character) {
 		if(this.account){
 			var Class = require("game/character/classes/" + this.player.characterSelected);
 			this.account.characterClass = new Class;
-			this.instance.start(this);
+			// this.instance.start(this);
 		}else{
 			this.emit('notLoggedIn');
 		}
 	})
 	.on('join', function (account) {
-		this.account = account;
-		var instance = instanceManager.getInstance(); 
-		this.instance = instance;
-		this.instance.join(this, io);
+		// this.account = account;
+		// var instance = instanceManager.getInstance(); 
+		// this.instance = instance;
+		// this.instance.join(this, io);
 	})
-	.on('character-select', function (char) {
-			this.instance.characterSelect(this, char);
+	.on('characterSelected', function (char) {
+			db.setCharacter(cookie, char, function () {
+				socket.broadcast.emit('characterSelected', {id : socket.account.username, character : char});
+			});
 	})
 	.on('keyup', function (keyCode) {
 		if(this.player && !IS_BLURRED){

@@ -1,26 +1,24 @@
-function setupRequire (requirejs, io, db) {
+function setupRequire (requirejs, io, db, PORT, PLAYERS_ALOUD) {
 
 	requirejs([
 		'require',
 		'core/ticker',
 		'core/body',
 		'core/emitter',
-		'game/instance/instanceManager',
-		'game/gameManager',
 		'core/props',
 		'core/ping'
 
 	],
-	function (req, ticker, body, emitter, instanceManager, gameManager, props, ping) {
-		instanceManager.init(io);
-		gameManager.init();
+	function (requirejs, ticker, body, emitter, props, ping) {
+		var GameManager = require('gameManagerServer');
+		gameManager = new GameManager(PORT, PLAYERS_ALOUD)
 		ticker.start(io);
 		// ping.initServer();
 
 	
 		io.on('connection', function (socket) {
 
-			require('./gameSocketEvents')(socket, io, instanceManager, emitter, req);
+			require('./gameSocketEvents')(socket, io, emitter, requirejs, db, PORT);
 		});
 	});
 }

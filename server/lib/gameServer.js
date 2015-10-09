@@ -1,43 +1,68 @@
-var port = process.argv.slice(-1)[0];
+var PLAYERS_ALOUD = process.argv.pop();
+var PORT = process.argv.pop();
 var express = require('express'),
 	app = express(),
+	cookieParser = require('cookie-parser'),
 	requirejs = require('requirejs'),
-	server = app.listen(port),
+	server = app.listen(PORT, function  () {
+		console.log('started');
+		console.log('Game Server started on port: ', PORT);
+	}),
+	_ = require('underscore'),
 	io = require('socket.io').listen(server),
-	bodyParser = require('body-parser'),
-	rabbit = require(process.cwd() + '/lib/instance/rabbit');
+	mongoose = require('mongoose'),
+	socketCookieParser = require('socket.io-cookie-parser'),
+	bodyParser = require('body-parser');
 
 
-// rabbit.receive('instance-' + port, function (data) {
-// 	console.log(data);
-// });
-// console.log(process.cwd());
-// rabbit.recieve('instance-' + port, function (data) {
-// 	console.log(data);
-// });
+app.use(express.static(process.cwd() + '/client/assets'));
+app.use(express.static(process.cwd() + '/main'));
+app.use(bodyParser.urlencoded({extended : true}));
+app.use(bodyParser.json());
+app.use(cookieParser());
+app.set('view engine', 'jade');
+app.set('views', process.cwd() + '/client');
 
-// app.use(express.static(__dirname + '/client/assets'));
-// app.use(express.static(__dirname + '/main'));
-// app.use(bodyParser.urlencoded({extended : true}));
-// app.use(bodyParser.json());
-// app.set('view engine', 'jade');
-// app.set('views', __dirname + '/client');
 
-// // require('./server/lib/main')(requirejs, io);
+global.define = require('amdefine')(module);
+mongoose.connect('mongodb://localhost/assassins');
+var DB = require(process.cwd() + '/lib/db/connection.js');
+var db = new DB(mongoose);
+db.init();
 
-// global.define = require('amdefine')(module);
+requirejs.config({
+    nodeRequire: require,
+    baseUrl: process.cwd() + '/main/',
+    paths : {
+    	_ : 'underscore'
+    }
+});
 
-// requirejs.config({
-//     nodeRequire: require,
-//     baseUrl: __dirname + '/main/',
-//     paths : {
-//     	_ : 'underscore'
-//     }
-// });
+io.use(socketCookieParser());
+
+
+// Main
+require('./main')(requirejs, io, db, PORT, PLAYERS_ALOUD);
 
 
 app.get('/', function (req, res) {
-	rabbit.receive('instance-' + port, function (data) {
-		res.send(data.content.toString());
-	});
+	res.render('views/game/index');
+});
+app.get('/home', function (req, res) {
+	res.render('views/game/home');
+});
+app.get('/account', function (req, res) {
+	res.render('views/game/account');
+});
+app.get('/match-making', function (req, res) {
+	res.render('views/game/matchmaking');
+});
+app.get('/game-stats', function (req, res) {
+	res.render('views/game/gameStats');
+});
+app.get('/viewport', function (req, res) {
+	res.render('views/game/viewport');
+});
+app.get('/character-select', function (req, res) {
+	res.render('views/game/characterSelect');
 });
