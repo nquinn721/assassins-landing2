@@ -78,15 +78,11 @@ app.post('/login', function (req, res) {
  * Angular Routes
  */
 app.get('/an-start-game', function (req, res) {
-	
-
 	if(!req.session.instance){
 		connect(req, res);
 	} else {
-		var request = http.request({host: 'localhost', port : 3001 }, function () {
-			db.setInstanceAndTeam(req, req.session.instance, req.session.team, function () {
-				res.render('views/site/game-frame', {url : 'http://localhost:' + req.session.instance});
-			});
+		var request = http.request({host: 'localhost', port : req.session.instance }, function () {
+			res.render('views/site/game-frame', {url : 'http://localhost:' + req.session.instance});
 		});
 		request.on('error', function (err) {
 			connect(req, res);
@@ -114,8 +110,4 @@ app.get('/an-game', function (req, res) {
 });
 app.use(function (req, res) {
 	res.redirect('/');
-	// db.getSession(req, function (yep) {
-		// if(yep) res.redirect('/');
-		// else res.redirect('/login');
-	// });
-})
+});

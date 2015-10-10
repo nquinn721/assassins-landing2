@@ -5,7 +5,7 @@ define("gameClient/events", [
 		"core/b2d",
 		"gameClient/loader",
 		"gameClient/client"
-	], function (require, socket, emitter, B2D, Loader, client) {
+	], function (require, socket, emitter, b2d, Loader, client) {
 	var DEBUG_DRAW = false,
 		IS_BLURRED,
 		gameStartCounter = 3000;
@@ -31,8 +31,6 @@ define("gameClient/events", [
 									screenTimer.hide();
 								}, gameStartCounter);
 
-								var b2d = new B2D;
-									b2d.init();
 								canvas = canvas();
 								loader.hide();
 

@@ -247,6 +247,8 @@ define("core/b2d", [
 				window.requestAnimationFrame(this.tick.bind(this));
 		}
 	}
-	return B2D;
+	var b2d = new B2D;
+	b2d.init();
+	return b2d;
 
 });

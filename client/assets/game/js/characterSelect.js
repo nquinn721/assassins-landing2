@@ -25,7 +25,6 @@ define("game/js/characterSelect",  function () {
 			player.getById(obj.id).character = obj.character;
 		};
 		this.showStart = function () {
-			console.log('instanc full');
 			this.startButton = true;	
 		};
 

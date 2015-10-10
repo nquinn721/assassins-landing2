@@ -1,5 +1,4 @@
 var PLAYERS_ALOUD = process.argv.pop();
-console.log(PLAYERS_ALOUD);
 var PORT = process.argv.pop();
 var express = require('express'),
 	app = express(),
@@ -44,7 +43,7 @@ io.use(socketCookieParser());
 
 
 // Main
-require('./main')(requirejs, io, db, PORT);
+require('./main')(requirejs, io, db, PORT, PLAYERS_ALOUD);
 
 
 app.get('/', function (req, res) {
