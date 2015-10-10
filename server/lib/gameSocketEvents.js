@@ -1,4 +1,4 @@
-module.exports =function (socket, io, emitter, require, db, port) {
+module.exports =function (socket, io, emitter, require, db, port, gameManagerServer) {
 	var IS_BLURRED = false,
 		cookie = socket.request.cookies.al;
 	
@@ -6,41 +6,41 @@ module.exports =function (socket, io, emitter, require, db, port) {
 	// Get current user
 	socket.on('getUser', function () {
 		db.getSession(cookie, function (session) {
+			session.account.character = session.character;
+			session.account.team = session.team;
+			session.account.socketId = socket.id;
+
+			socket.join(session.account.team);
+			gameManagerServer.join(socket.account);
+
 			socket.account = session.account;
+			
 			socket.emit('user', session.account);
-			socket.broadcast.emit('newAccount', {username : session.account.username});
+			socket.broadcast.to(session.account.team).emit('newAccount');
 		});
 	});
 
 	// Get all accounts already in instance
 	socket.on('getAccounts', function () {
-		db.getInstance(port, function (accounts) {
-			accounts = _.compact(accounts.map(function(v){if(v.cookie !== cookie)return { username : v.account.username, character : v.account.character}; }));
+		console.log('get accounts for team ', this.account.team);
+		db.getTeam(cookie, port, this.account.team, function (accounts) {
+			accounts = _.compact(accounts.map(function(v){return { username : v.account.username, character : v.character}; }));
 			socket.emit('accounts', accounts);
 		});
 	});
 
 
 
-	socket.on('start', function (character) {
-		if(this.account){
-			var Class = require("game/character/classes/" + this.player.characterSelected);
-			this.account.characterClass = new Class;
-			// this.instance.start(this);
-		}else{
-			this.emit('notLoggedIn');
-		}
-	})
-	.on('join', function (account) {
-		// this.account = account;
-		// var instance = instanceManager.getInstance(); 
-		// this.instance = instance;
-		// this.instance.join(this, io);
+	socket.on('start', function () {
+		var Class = require("game/character/classes/" + this.account.character);
+		this.account.characterClass = new Class;
+		// this.instance.start(this);
 	})
 	.on('characterSelected', function (char) {
-			db.setCharacter(cookie, char, function () {
-				socket.broadcast.emit('characterSelected', {id : socket.account.username, character : char});
-			});
+		this.account.character = char;
+		db.setCharacter(cookie, char, function () {
+			socket.broadcast.to(socket.account.team).emit('characterSelected', {id : socket.account.username, character : char});
+		});
 	})
 	.on('keyup', function (keyCode) {
 		if(this.player && !IS_BLURRED){
@@ -51,13 +51,13 @@ module.exports =function (socket, io, emitter, require, db, port) {
 	.on('keydown', function (keyCode) {
 		if(this.player && !IS_BLURRED){
 			this.player.keyDown(keyCode);
-			this.broadcast.to(this.instance.id).emit('keydown',{player : this.player.obj(), keyCode : keyCode});
+			this.broadcast.emit('keydown',{player : this.player.obj(), keyCode : keyCode});
 		}
 	})
 	.on('mousedown', function (obj) {
 		if(this.player && !IS_BLURRED){
 			this.player.mouseDown(obj);
-			this.broadcast.to(this.instance.id).emit('mousedown', {player : this.player.obj(), mouse : obj});
+			this.broadcast.emit('mousedown', {player : this.player.obj(), mouse : obj});
 		}
 	})
 	.on('ping', function (obj) {
@@ -75,7 +75,7 @@ module.exports =function (socket, io, emitter, require, db, port) {
 	})
 	.on('disconnect', function () {
 		if(this.user){
-			io.in(this.instance.id).emit('destroyPlayer', this.user);
+			io.emit('destroyPlayer', this.user);
 			this.instance.leave(this.user);
 			emitter.emit('destroyPlayer', this.user);
 		}

@@ -1,25 +1,16 @@
-function GameManagerServer(PORT, PLAYERS_ALOUD) {
-	this.PORT = PORT;
+function GameManagerServer(io, PLAYERS_ALOUD) {
+	this.io = io;
 	this.PLAYERS_ALOUD = PLAYERS_ALOUD;
 
-	this.teams = ['team1', 'team2'];
-
 	this.players = [];
-
-	this.currentTeam = this.teams[0];
 }
 GameManagerServer.prototype = {
 	join : function (player) {
-		player.team = this.currentTeam;
-		
 		this.players.push(player);
 
-		if(this.players.length / 2 >= this.PLAYERS_ALOUD / 2)
-			this.currentTeam = this.teams[1];
-	},
-	init : function () {
-		// characterManager.init();
-		// mapManagerServer.init();
+		console.log(this.players.length, this.PLAYERS_ALOUD);
+		if(this.players.length === this.PLAYERS_ALOUD)
+			this.io.emit('instanceFull');	
 	}
 }
 module.exports = GameManagerServer;

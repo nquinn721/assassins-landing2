@@ -4,12 +4,12 @@ var express = require('express'),
 	_ = require('underscore'),
 	requirejs = require('requirejs'),
 	server = app.listen(3000),
-	ping = require ("ping");
 	io = require('socket.io').listen(server),
 	mongoose = require('mongoose'),
 	uuid = require('node-uuid'),
 	cookieParser = require('cookie-parser'),
-	bodyParser = require('body-parser');
+	bodyParser = require('body-parser'),
+	http = require('http');
 
 
 // DB Connection
@@ -78,19 +78,20 @@ app.post('/login', function (req, res) {
  * Angular Routes
  */
 app.get('/an-start-game', function (req, res) {
+	
+
 	if(!req.session.instance){
 		connect(req, res);
 	} else {
-		ping.sys.probe('http://localhost:' + req.session.instance, function(isAlive){
-			if(!isAlive){
-				console.log('creating instance cause its dead');
-				connect(req, res);
-			}else {
-				db.setInstance(req, req.session.instance, function () {
-					res.render('views/site/game-frame', {url : 'http://localhost:' + req.session.instance});
-				});
-			}
-	    });
+		var request = http.request({host: 'localhost', port : 3001 }, function () {
+			db.setInstanceAndTeam(req, req.session.instance, req.session.team, function () {
+				res.render('views/site/game-frame', {url : 'http://localhost:' + req.session.instance});
+			});
+		});
+		request.on('error', function (err) {
+			connect(req, res);
+		});
+		request.end();
 	}
 });
 function connect (req, res) {
@@ -112,8 +113,9 @@ app.get('/an-game', function (req, res) {
 	res.render('views/site/game');
 });
 app.use(function (req, res) {
-	db.isLoggedIn(req, function (yep) {
-		if(yep) res.redirect('/');
-		else res.redirect('/login');
-	});
+	res.redirect('/');
+	// db.getSession(req, function (yep) {
+		// if(yep) res.redirect('/');
+		// else res.redirect('/login');
+	// });
 })

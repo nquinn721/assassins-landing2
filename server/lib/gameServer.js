@@ -1,11 +1,13 @@
 var PLAYERS_ALOUD = process.argv.pop();
+console.log(PLAYERS_ALOUD);
 var PORT = process.argv.pop();
 var express = require('express'),
 	app = express(),
 	cookieParser = require('cookie-parser'),
 	requirejs = require('requirejs'),
 	server = app.listen(PORT, function  () {
-		console.log('started');
+		// This log is used to tell instance the server is ready
+		console.log('started'); // DO NOT DELETE
 		console.log('Game Server started on port: ', PORT);
 	}),
 	_ = require('underscore'),
@@ -42,7 +44,7 @@ io.use(socketCookieParser());
 
 
 // Main
-require('./main')(requirejs, io, db, PORT, PLAYERS_ALOUD);
+require('./main')(requirejs, io, db, PORT);
 
 
 app.get('/', function (req, res) {
@@ -65,4 +67,7 @@ app.get('/viewport', function (req, res) {
 });
 app.get('/character-select', function (req, res) {
 	res.render('views/game/characterSelect');
+});
+app.get('/test', function (req, res) {
+	res.send(true);
 });

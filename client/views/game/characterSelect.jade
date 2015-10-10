@@ -26,5 +26,4 @@
 					img(ng-src="/characters/{{account.character}}-stats.png", ng-if="account.character")
 				.user-info.right
 					.stat {{account.upper()}}
-		.account: a.link(ng-href="#/account"): i.fa.fa-cog(title="Account")
-		.bottom: center: a.wide-button.btn.btn-danger(ng-click="ch.start()", ng-href="#/match-making") Start
+		.bottom: center(ng-show="startButton"): a.wide-button.btn.btn-danger(ng-click="ch.start()", ng-href="#/match-making") Start

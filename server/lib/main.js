@@ -10,15 +10,22 @@ function setupRequire (requirejs, io, db, PORT, PLAYERS_ALOUD) {
 
 	],
 	function (requirejs, ticker, body, emitter, props, ping) {
-		var GameManager = require('gameManagerServer');
-		gameManager = new GameManager(PORT, PLAYERS_ALOUD)
-		ticker.start(io);
+		var GameManagerServer = require('./gameManagerServer'),
+			gameManagerServer = new GameManagerServer(io, PLAYERS_ALOUD);
+		// ticker.start(io);
 		// ping.initServer();
 
 	
 		io.on('connection', function (socket) {
-
-			require('./gameSocketEvents')(socket, io, emitter, requirejs, db, PORT);
+			require('./gameSocketEvents')(
+				socket, 
+				io, 
+				emitter, 
+				requirejs, 
+				db, 
+				PORT,
+				gameManagerServer
+			);
 		});
 	});
 }

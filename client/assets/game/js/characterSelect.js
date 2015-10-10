@@ -4,31 +4,37 @@ define("game/js/characterSelect",  function () {
 		var self = this;
 		this.accounts = [];
 
-		socket.emit('getUser')
-		socket.on('user', function (user) {
-			self.user = player.set(user);
-		});
 
-		socket.emit('getAccounts');
-		socket.on('accounts', function (accounts) {
-			var accs = [];
-			for(var i in accounts){
-				var p = player.set(accounts[i]);
-				accs.push(p);
-			}
-			self.accounts = accs;
-		});
-		socket.on('newAccount', function (account) {
-			self.accounts.push(player.set(account));
-		});
-		socket.on('characterSelected', function (obj) {
-			var p = player.getById(obj.id).character = obj.character;
-		});
 
+		this.getAccounts = function () {
+			socket.emit('getAccounts');
+		};
+		this.updateAccounts = function (accounts) {
+			console.log(accounts);
+			this.accounts = player.createAccounts(accounts);
+		};
 		this.selectCharacter = function (character) {
 			this.user.setCharacter(character);
 			socket.emit('characterSelected', character);
 		};
+		this.updateUser = function (user) {
+			this.user = player.set(user);
+			this.getAccounts();
+		};
+		this.updateCharacter = function (obj) {
+			player.getById(obj.id).character = obj.character;
+		};
+		this.showStart = function () {
+			console.log('instanc full');
+			this.startButton = true;	
+		};
+
+		socket.emit('getUser')
+		socket.on('user', this.updateUser.bind(this));
+		socket.on('accounts', this.updateAccounts.bind(this));
+		socket.on('newAccount', this.getAccounts.bind(this));
+		socket.on('characterSelected', this.updateCharacter.bind(this));
+		socket.on('instanceFull', this.showStart.bind(this));
 
 	}];
 });

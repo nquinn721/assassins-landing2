@@ -18,6 +18,12 @@ define('game/js/player', function () {
 				this.players.push(obj);
 				return obj;
 			},
+			createAccounts : function (accounts) {
+				var accs = [];
+				for(var i = 0; i < accounts.length; i++)
+					accs.push(this.set(accounts[i]));
+				return accs;
+			},
 			upper : function () {
 				return this.username.substr(0,1).toUpperCase() + this.username.substr(1);
 			},
