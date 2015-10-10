@@ -9,6 +9,7 @@ module.exports =function (socket, io, emitter, require, db, port, gameManagerSer
 			session.account.character = session.character;
 			session.account.team = session.team;
 			session.account.socketId = socket.id;
+			session.account.started = session.started;
 
 			socket.join(session.account.team);
 			gameManagerServer.join(socket.account);
@@ -17,38 +18,20 @@ module.exports =function (socket, io, emitter, require, db, port, gameManagerSer
 			
 			socket.emit('user', session.account);
 			socket.broadcast.to(session.account.team).emit('newAccount');
+			
 		});
-	});
-
-	// Get all accounts already in instance
-	socket.on('getAccounts', function () {
-		console.log('get accounts for team ', this.account.team);
+	})
+	.on('getAccounts', function () {
 		db.getTeam(cookie, port, this.account.team, function (accounts) {
 			accounts = _.compact(accounts.map(function(v){return { username : v.account.username, character : v.character}; }));
 			socket.emit('accounts', accounts);
+			if(socket.account.started)
+				socket.emit('gotoMatchMaking');
+			else socket.emit('stayInCharacterSelect');
 		});
-	});
-
-
-
-	socket.on('start', function () {
-		var Class = require("game/character/classes/" + this.account.character);
-		this.account.characterClass = new Class;
-		var player = playerManager.createPlayer({
-				socketId : this.id, 
-				username : this.account.username,
-				team : this.account.team,
-				base : this.account.team === 'team1' ? 'base0' : 'base1',
-				categoryBits : this.account.team === 'team1' ? 0x1000 : 0x2000,
-				maskBits : this.account.team === 'team1' ? 0x0100 | 0x0001 : 0x0200 | 0x0001
-			});
-		player.init(this.b2d, this.account.characterClass);
-		
-		socket.player = player;
-		socket.player.account = {
-			username : socket.account.username,
-			id : socket.account._id
-		}
+	})
+	.on('start', function () {
+		gameManagerServer.start(this);
 	})
 	.on('characterSelected', function (char) {
 		this.account.character = char;
@@ -90,8 +73,8 @@ module.exports =function (socket, io, emitter, require, db, port, gameManagerSer
 	.on('disconnect', function () {
 		if(this.account){
 			gameManagerServer.leave(this.account);
-			io.emit('destroyPlayer', this.user);
-			emitter.emit('destroyPlayer', this.user);
+			// io.emit('destroyPlayer', this.user);
+			// emitter.emit('destroyPlayer', this.user);
 		}
 	});
 };

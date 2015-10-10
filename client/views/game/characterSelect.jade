@@ -1,4 +1,4 @@
-.character-select.menu
+.character-select.menu(ng-if="ch.notStarted")
 	.header: h2 {{ch.user.upper()}}
 	.body
 		.main
@@ -13,17 +13,17 @@
 					)
 		.sidebar
 			.user.character-chosen
-				.character-chosen-name {{ch.user.character ? ch.user.charUpper() : 'No Character'}}
+				.character-chosen-name {{ch.user.character ? ch.user.character.toUpper() : 'No Character'}}
 				.character-chosen-image 
 					.no-character Character
 					img(ng-src="/characters/{{ch.user.character}}-stats.png", ng-if="ch.user.character")
 				.user-info.right
-					.stat {{ch.user.upper()}}
+					.stat {{ch.user.username.toUpper()}}
 			.player.character-chosen(ng-repeat="account in ch.accounts")
-				.character-chosen-name {{account.character || 'No Character'}}
+				.character-chosen-name {{account.character.toUpper() || 'No Character'}}
 				.character-chosen-image 
 					.no-character Character
 					img(ng-src="/characters/{{account.character}}-stats.png", ng-if="account.character")
 				.user-info.right
-					.stat {{account.upper()}}
-		.bottom: center(ng-show="ch.startButton"): a.wide-button.btn.btn-danger(ng-click="ch.start()", ng-href="#/match-making") Start
+					.stat {{account.username.toUpper()}}
+		.bottom: center(ng-show="ch.startButton"): a.wide-button.btn.btn-danger(ng-href="#/match-making") Start

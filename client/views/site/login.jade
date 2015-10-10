@@ -5,6 +5,7 @@ head
 	title Login
 	link(rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css")
 	link(rel="stylesheet", href="/css/build/site/main.css")
+	script(src="lib/jquery/dist/jquery.min.js")
 		
 body
 	.login-page
@@ -22,3 +23,5 @@ body
 						input.btn.btn-primary(type="submit", id="submit", value="Login")
 				if error
 					.alert.alert-danger Wrong credentials
+script.
+	$('.username').focus();

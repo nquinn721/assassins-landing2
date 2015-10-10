@@ -6,12 +6,13 @@ function setupRequire (requirejs, io, db, PORT, PLAYERS_ALOUD) {
 		'core/body',
 		'core/emitter',
 		'core/props',
-		'core/ping'
+		'core/ping',
+		'gameServer/gameManagerServer',
+		'core/prototype'
 
 	],
-	function (requirejs, ticker, body, emitter, props, ping) {
-		var GameManagerServer = require('./gameManagerServer'),
-			gameManagerServer = new GameManagerServer(io, PLAYERS_ALOUD);
+	function (requirejs, ticker, body, emitter, props, ping, GameManagerServer) {
+		var gameManagerServer = new GameManagerServer(io, PLAYERS_ALOUD, db);
 		// ticker.start(io);
 		// ping.initServer();
 

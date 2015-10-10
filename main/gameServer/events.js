@@ -5,7 +5,12 @@ define("gameServer/events", [
 		
 	}
 	Events.prototype = {
+		on : {
 
+		}
 	}
-	return new Events;
+	var events = new Events;
+	for(var i in events.on)
+		socket.on(i, events.on[i]);
+	return ;
 });
