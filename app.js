@@ -79,11 +79,9 @@ app.post('/login', function (req, res) {
  */
 app.get('/an-start-game', function (req, res) {
 	if(!req.session.instance || req.session.instance === 'false'){
-		console.log('creating new');
 		connect(req, res);
 	} else {
 		var request = http.request({host: 'localhost', port : req.session.instance }, function () {
-			console.log('reconnecting');
 			res.render('views/site/game-frame', {url : 'http://localhost:' + req.session.instance});
 		});
 		request.on('error', function (err) {

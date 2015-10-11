@@ -18,7 +18,6 @@ function setupRequire (requirejs, io, db, PORT, PLAYERS_ALOUD) {
 		// ping.initServer();
 
 		io.on('connection', function (socket) {
-			console.log('connected', socket.id);
 			require('./gameSocketEvents')(
 				socket, 
 				io, 

@@ -29,7 +29,8 @@ define("gameServer/gameManagerServer", [
 		start : function (socket) {
 			if (this.gameStarted)
 				this.resumeGame(socket);
-			else this.startNewGame(socket);
+			else if(!socket.account.started)this.startNewGame(socket);
+			else this.resumeReady(socket);
 
 		},
 		resumeGame : function (socket) {
@@ -46,8 +47,23 @@ define("gameServer/gameManagerServer", [
 				socket.emit('showViewport');					
 			}, 10000);
 		},
+		resumeReady : function (socket) {
+			socket.emit('matchMaking', playerManagerServer.players.map(function (v) {
+				return {
+					username : v.username.toUpper(), 
+					character : v.character.toUpper(), 
+					team : v.team
+				};
+			}));
+
+			if(this.beginLoading){
+				socket.emit('startGame');
+				playerManagerServer.sendToClient(socket, true);
+			}
+		},
 		startNewGame : function (socket) {
 			var self = this;
+
 
 			this.readyPlayers++;
 			this.addPlayerWaiting(socket.account);
@@ -61,10 +77,11 @@ define("gameServer/gameManagerServer", [
 				}));
 				
 				playerManagerServer.create(socket);
-
-				if(this.readyPlayers === this.PLAYERS_ALOUD){
+				console.log('ready', this.readyPlayers, 'total', this.totalPlayers, 'aloud', this.PLAYERS_ALOUD);
+				if(this.readyPlayers === this.totalPlayers && this.readyPlayers === this.PLAYERS_ALOUD){
 					this.io.emit('startGame');	
 					playerManagerServer.sendToClient(this.io);
+					this.beginLoading = true;
 					setTimeout(function () {
 						self.gameStarted = true;
 						self.io.emit('showViewport');
@@ -91,7 +108,8 @@ define("gameServer/gameManagerServer", [
 		},
 		leave : function (player) {
 			this.totalPlayers--;
-			this.readyPlayers--;
+			// this.readyPlayers--;
+			console.log('leave ready players', this.readyPlayers);
 			playerManagerServer.leave(player);
 		},
 		tick : function () {
