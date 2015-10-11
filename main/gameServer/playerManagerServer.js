@@ -7,6 +7,9 @@ define("gameServer/playerManagerServer", [
 			
 	}
 	PlayerManagerServer.prototype = {
+		init : function (manager) {
+			this.manager = manager;
+		},
 		tick : function () {
 			
 		},
@@ -16,8 +19,9 @@ define("gameServer/playerManagerServer", [
 			var player = playerManager.createPlayer({
 					socketId : socket.id, 
 					username : socket.account.username,
+					cookie : socket.request.cookies.al,
 					team : socket.account.team,
-					base : socket.account.team === 'team1' ? 'base0' : 'base1',
+					base : socket.account.team === 'team1' ? 'base1' : 'base0',
 					categoryBits : socket.account.team === 'team1' ? 0x1000 : 0x2000,
 					maskBits : socket.account.team === 'team1' ? 0x0100 | 0x0001 : 0x0200 | 0x0001
 				});
@@ -53,8 +57,49 @@ define("gameServer/playerManagerServer", [
 			if(hp.length)
 				io.in(this.id).emit('setHP', hp);
 		},
+		sendToClient : function (io, socketOnly) {
+			var mapItems = this.manager.map.items.map(function (v) {return v.obj(); });
+
+			if(!socketOnly)
+				for(var i = 0; i < this.players.length; i++){
+					var player = this.players[i];
+					this.setSpawnPoint(player);
+					io.sockets.connected[player.socketId].emit('start', {map : mapItems, mapName : this.manager.mapName, user : player.obj(), players : this.getAllOthers(player.username)});
+				}
+			else{
+				io.player = this.getByCookie(io.request);
+				var players = this.getAllOthers(io.player.username);
+				this.setSpawnPoint(io.player);
+				io.emit('start', {map : mapItems, mapName : this.manager.mapName, user : io.player.obj(), players : players});
+			}
+		},
+		setSpawnPoint : function (player) {
+			for(var i = 0; i < this.manager.map.items.length; i++){
+				var item = this.manager.map.items[i];
+				if(item.id ===  player.base){
+					var x = item.x + (item.w / 2) - (player.w / 2),
+						y = item.y + (item.h - player.h);
+					player.setCoords({x : x, y : y});
+					player.directionFacing = item.id === 'base0' ? 'left' : 'right';
+					player.spawnPoint = {
+						x : x,
+						y : y
+					}
+				}
+			}
+		},
+		getByCookie : function (req) {
+			var cookie = req.cookies.al;
+			for(var i = 0; i < this.players.length; i++)
+				if(this.players[i].cookie === cookie)return this.players[i];
+		},
+		getAllOthers : function (username) {
+			var players = [];
+			for(var i = 0; i < this.players.length; i++)
+				if(this.players[i].username !== username)players.push(this.players[i].obj());
+			return players;
+		},
 		leave : function (player) {
-			this.players.splice(this.players.indexOf(player), 1);
 		},
 		getById : function (id) {
 			for(var i = 0; i < this.players.length; i++)

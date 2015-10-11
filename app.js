@@ -78,6 +78,7 @@ app.post('/login', function (req, res) {
  * Angular Routes
  */
 app.get('/an-start-game', function (req, res) {
+	console.log(req.session.cookie, req.session.instance, req.session.team);
 	if(!req.session.instance){
 		connect(req, res);
 	} else {

@@ -1,7 +1,7 @@
 define("game/js/app", [
 		'require',
 		'angular', 
-		'game/js/io',
+		'game/js/angulario',
 		'game/js/player',
 		'game/js/instance',
 		'game/js/characterSelect',
@@ -28,6 +28,11 @@ define("game/js/app", [
 						templateUrl : '/match-making',
 						controller : 'matchMaking',
 						controllerAs : 'mm'
+					})
+					.when('/viewport', {
+						templateUrl : '/viewport',
+						controller : 'viewport',
+						controllerAs : 'view'
 					})
 					.otherwise({
 						redirectTo : '/'

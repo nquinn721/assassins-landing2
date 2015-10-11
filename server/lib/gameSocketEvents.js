@@ -10,6 +10,7 @@ module.exports =function (socket, io, emitter, require, db, port, gameManagerSer
 			session.account.team = session.team;
 			session.account.socketId = socket.id;
 			session.account.started = session.started;
+			session.account.socketId = this.id;
 
 			socket.join(session.account.team);
 			gameManagerServer.join(socket.account);
@@ -42,7 +43,7 @@ module.exports =function (socket, io, emitter, require, db, port, gameManagerSer
 	.on('keyup', function (keyCode) {
 		if(this.player && !IS_BLURRED){
 			this.player.keyUp(keyCode);
-			this.broadcast.to(this.instance.id).emit('keyup',{player : this.player.obj(), keyCode : keyCode});
+			this.broadcast.emit('keyup',{player : this.player.obj(), keyCode : keyCode});
 		}
 	})
 	.on('keydown', function (keyCode) {

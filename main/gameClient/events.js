@@ -1,6 +1,6 @@
 define("gameClient/events", [
 		"require",
-		"game/js/io",
+		"gameClient/io",
 		"core/emitter",
 		"core/b2d",
 		"gameClient/loader",
@@ -16,6 +16,7 @@ define("gameClient/events", [
 		on : {
 			start : function (obj) {
 				var self = this;
+
 				emitter.on('gameSetup', function () {
 					var loader = new Loader;
 					require([
@@ -27,9 +28,6 @@ define("gameClient/events", [
 						], function (canvas, background, Viewport, stage, screenTimer) {
 							screenTimer.show(3);
 						stage.loadMap(obj.mapName, function (a) {
-								setTimeout(function () {
-									screenTimer.hide();
-								}, gameStartCounter);
 
 								canvas = canvas();
 								loader.hide();
@@ -54,8 +52,10 @@ define("gameClient/events", [
 								viewport.init();
 								
 							setTimeout(function () {
-								
+								screenTimer.hide();
+								console.log('starting key events', client.user, $(document));
 								$(document).on('keydown', function (e) {
+									console.log('keydown', client.user);
 									if(IS_BLURRED)return;
 									socket.emit('keydown', e.keyCode);
 									client.user.keyDown(e.keyCode);
@@ -156,8 +156,6 @@ define("gameClient/events", [
 
 	for(var i in events.on)
 		socket.on(i, events.on[i]);
-	socket.emit('startGame');
-
 	emitter.on('endGame', events.endGame);
 	return events;
 });

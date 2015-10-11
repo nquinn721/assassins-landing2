@@ -60,8 +60,8 @@ define("game/character/player/player", [
 	Player.prototype = {
 		init : function (b2d, characterClass) {
 			this.characterClass = characterClass;
-			for(var i in characterClass)
-				this[i] = characterClass[i];
+			for(var i in characterClass.stats)
+				this[i] = characterClass.stats[i];
 			this.characterClass.init(b2d);
 
 			this.create(b2d);
@@ -244,7 +244,12 @@ define("game/character/player/player", [
 				w : this.w,
 				h : this.h,
 				id : this.id,
-				characterClass : this.characterClass ? this.characterClass.stats : null,
+				hp : this.hp,
+				str : this.str,
+				spd : this.spd,
+				agi : this.agi,
+				def : this.def,
+				characterClass : this.characterClass.stats,
 				speed : this.speed,
 				fixedRotation : this.fixedRotation,
 				username : this.username,
@@ -252,6 +257,7 @@ define("game/character/player/player", [
 				directionFacing : this.directionFacing,
 				team : this.team,
 				spawnPoint : this.spawnPoint,
+				character : this.characterClass.stats.character,
 				base : this.base,
 				characterSelected : this.characterSelected,
 				categoryBits : this.categoryBits,

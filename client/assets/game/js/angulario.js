@@ -1,4 +1,4 @@
-define('game/js/io', ['io'], function (io) {
+define('game/js/angulario', ['io'], function (io) {
 	var socket = io.connect();
 	return ['$rootScope', function ($rootScope) {
 	  return {

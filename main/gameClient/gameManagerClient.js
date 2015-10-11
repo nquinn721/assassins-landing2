@@ -21,8 +21,8 @@ define("gameClient/gameManagerClient", [
 				
 			})
 		},
-		startEvents : function () {
-			require(['gameClient/events']);
+		startEvents : function (cb) {
+			require(['gameClient/events'], cb);
 		}
 	}
 

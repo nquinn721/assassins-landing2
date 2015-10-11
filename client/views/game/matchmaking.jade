@@ -1,5 +1,5 @@
 .match-making.menu
-	.header: h3: center Waiting for players...
+	.header: h3: center {{mm.title}}
 	.body
 		.team1.team.left
 			h3: center Team 1
@@ -17,7 +17,7 @@
 						.username {{team2.username.toUpper()}}
 						img(ng-src="/characters/{{team2.character}}-standstill.png")
 						.character-name {{team2.character}}
-		.bottom()
+		.bottom(ng-show="mm.loadingGame")
 			.bottom-loader 
 				.loader-overlay
-				.bar(ng-style="width:{{loadingWidth}}")
+				.bar(ng-style="{width : mm.loadingWidth}")

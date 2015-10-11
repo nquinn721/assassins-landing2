@@ -23,7 +23,6 @@ define("gameClient/screenTimer", ["core/emitter"], function (emitter) {
 			this.countDown(num);
 		},
 		hide : function () {
-			console.log('hide');
 			this.timer.hide();
 		}
 	}
