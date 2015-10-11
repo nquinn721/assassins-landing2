@@ -53,9 +53,7 @@ define("gameClient/events", [
 								
 							setTimeout(function () {
 								screenTimer.hide();
-								console.log('starting key events', client.user, $(document));
 								$(document).on('keydown', function (e) {
-									console.log('keydown', client.user);
 									if(IS_BLURRED)return;
 									socket.emit('keydown', e.keyCode);
 									client.user.keyDown(e.keyCode);

@@ -73,7 +73,7 @@ module.exports =function (socket, io, emitter, require, db, port, gameManagerSer
 	})
 	.on('disconnect', function () {
 		if(this.account){
-			gameManagerServer.leave(this.account);
+			gameManagerServer.leave(this.player);
 			// io.emit('destroyPlayer', this.user);
 			// emitter.emit('destroyPlayer', this.user);
 		}

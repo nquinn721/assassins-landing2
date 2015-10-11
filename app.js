@@ -78,15 +78,19 @@ app.post('/login', function (req, res) {
  * Angular Routes
  */
 app.get('/an-start-game', function (req, res) {
-	console.log(req.session.cookie, req.session.instance, req.session.team);
-	if(!req.session.instance){
+	if(!req.session.instance || req.session.instance === 'false'){
+		console.log('creating new');
 		connect(req, res);
 	} else {
 		var request = http.request({host: 'localhost', port : req.session.instance }, function () {
+			console.log('reconnecting');
 			res.render('views/site/game-frame', {url : 'http://localhost:' + req.session.instance});
 		});
 		request.on('error', function (err) {
-			connect(req, res);
+			console.log('failed');
+			db.clearInstance(req, function () {
+				res.send('noinstance');
+			});
 		});
 		request.end();
 	}

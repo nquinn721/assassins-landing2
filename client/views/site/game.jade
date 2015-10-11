@@ -1,2 +1,2 @@
 .game.menu
-	div(ng-bind-html="html(gameFrame)")
+	div(ng-if="gameLoaded", ng-bind-html="html(gameFrame)")

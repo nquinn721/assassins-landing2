@@ -34,17 +34,17 @@ define("gameServer/gameManagerServer", [
 		},
 		resumeGame : function (socket) {
 			socket.emit('matchMaking', playerManagerServer.players.map(function (v) {
-					return {
-						username : v.username.toUpper(), 
-						character : v.character.toUpper(), 
-						team : v.team
-					};
-				}));
-				socket.emit('startGame');
-				playerManagerServer.sendToClient(socket, true);
-				setTimeout(function () {
-					socket.emit('showViewport');					
-				}, 10000);
+				return {
+					username : v.username.toUpper(), 
+					character : v.character.toUpper(), 
+					team : v.team
+				};
+			}));
+			socket.emit('startGame');
+			playerManagerServer.sendToClient(socket, true);
+			setTimeout(function () {
+				socket.emit('showViewport');					
+			}, 10000);
 		},
 		startNewGame : function (socket) {
 			var self = this;
@@ -92,6 +92,7 @@ define("gameServer/gameManagerServer", [
 		leave : function (player) {
 			this.totalPlayers--;
 			this.readyPlayers--;
+			playerManagerServer.leave(player);
 		},
 		tick : function () {
 			playerManagerServer.tick();

@@ -14,11 +14,11 @@ function setupRequire (requirejs, io, db, PORT, PLAYERS_ALOUD) {
 	function (requirejs, ticker, body, emitter, props, ping, GameManagerServer) {
 		var gameManagerServer = new GameManagerServer(io, PLAYERS_ALOUD, db);
 		gameManagerServer.init();
-		// ticker.start(io);
+		ticker.start(io);
 		// ping.initServer();
 
-	
 		io.on('connection', function (socket) {
+			console.log('connected', socket.id);
 			require('./gameSocketEvents')(
 				socket, 
 				io, 

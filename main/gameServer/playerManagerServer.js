@@ -11,7 +11,7 @@ define("gameServer/playerManagerServer", [
 			this.manager = manager;
 		},
 		tick : function () {
-			
+			this.updateCoords();
 		},
 		create : function (socket) {
 			var Class = require("game/character/classes/" + socket.account.character);
@@ -36,10 +36,24 @@ define("gameServer/playerManagerServer", [
 
 			this.players.push(player);
 		},
-		hit : function (socket) {
-			socket.emit('hit');
+		updateCoords : function() {
+			var players = this.players;
+
+			var playerCoords = [];
+			for(var i = 0; i < players.length; i++){
+				var p = players[i];
+				if(!p)continue;
+				playerCoords.push({x : p.x, y : p.y, id : p.id});
+
+			}
+			this.manager.io.emit('playerCoords', playerCoords);
+
 		},
-		updatePlayerInfo : function (io) {
+		hit : function (socket) {
+			this.manager.io.emit('hit');
+
+		},
+		updatePlayerInfo : function () {
 			var hp = [],
 				player;
 
@@ -55,7 +69,7 @@ define("gameServer/playerManagerServer", [
 			}
 
 			if(hp.length)
-				io.in(this.id).emit('setHP', hp);
+				this.manager.io.emit('setHP', hp);
 		},
 		sendToClient : function (io, socketOnly) {
 			var mapItems = this.manager.map.items.map(function (v) {return v.obj(); });
@@ -100,6 +114,9 @@ define("gameServer/playerManagerServer", [
 			return players;
 		},
 		leave : function (player) {
+			// console.log('leaving game');
+			// console.log('leaving game', this.players.map(function(v){return {x : v.x, y : v.y, id  :v.id}}));
+			// this.setSpawnPoint(player);
 		},
 		getById : function (id) {
 			for(var i = 0; i < this.players.length; i++)
