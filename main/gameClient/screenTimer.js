@@ -4,8 +4,7 @@ define("gameClient/screenTimer", ["core/emitter"], function (emitter) {
 	}
 	ScreenTimer.prototype = {
 		init : function () {
-			emitter.on('death', this.show.bind(this));
-			emitter.on('revive', this.hide.bind(this));
+			emitter.on('timer', this.show.bind(this));
 		},
 		countDown : function (num) {
 			var self = this;
@@ -14,8 +13,10 @@ define("gameClient/screenTimer", ["core/emitter"], function (emitter) {
 			this.interval = setInterval(function () {
 				num--;
 				self.timer.find('.num').text(num === 0 ? 'Go!' : num);
-				if(num === 0)
+				if(num === 0){
 					clearInterval(self.interval);
+					self.hide();
+				}
 			}, 800);
 		},
 		show : function (num) {

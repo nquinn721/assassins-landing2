@@ -7,10 +7,11 @@ define("game/map/elements/pits/spikePit", function () {
 		this.id = 'spikePit';
 		this.type = 'static';
 		this.groupId = 1;
-		this.policies = ['spikePit', 'floor'];
+		this.policies = ['spikePit', 'floor', 'constantDamage'];
 		this.b2delement = 'triangle';
 		this.elementName = 'spikePit';
 		this.categoryBits = 0x0001;
+		this.damage = 50;
 	}
 
 	SpikePit.prototype = {

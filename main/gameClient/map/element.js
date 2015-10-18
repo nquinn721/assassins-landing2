@@ -1,29 +1,43 @@
 	define("gameClient/map/element", [
 		'gameClient/stage/stage',
-		'core/emitter'
-	], function (stage, emitter) {
+		'core/b2d',
+		'core/emitter',
+		'core/props'
+	], function (stage, b2d, emitter, props) {
 	function Element () {
 	}
 
 	Element.prototype = {
-		create : function (b2d, opts) {
-			var obj = this.obj();
+		create : function (opts) {
+	        if(this.init)this.init();
+	        if(this.initSprite)this.initSprite(stage);
 
-			// B2D body
-			this.body = b2d.rect(obj);
-	        this.el.body = this.body;
+			this.createBody();
 
-	        if(this.init)this.init(stage);
 			this.createSprite(opts);
 
+
+
+		},
+		createBody : function () {
+			if(this.bodies){
+				this.bodies = b2d.rects(this.bodies);
+				this.body = this.bodies[0];
+			} else
+				this.body = b2d.rect(this.obj());
+		},
+		createClient : function () {
+			
 		},
 		events : function () {
 		},
 		destroy : function () {
+			
 			this.body.destroy();
-			this.destroySprite();
+			if(this.destroySprite)this.destroySprite();
+			else stage.destroy(this.img);
 		},
-		destroySprite : function () {
+		removeSprite : function () {
 			stage.destroy(this.img);
 		},
 		createSprite : function (opts) {
@@ -39,7 +53,8 @@
 			}
 		},
 		setHP :function (hp) {
-			this.el.hp = hp;
+			this.hp = hp;
+			if(this.setSpriteHP)this.setSpriteHP();
 		},
 		updateCoords : function (obj) {
 			if(!this.body)return;
@@ -49,8 +64,8 @@
 		tick : function () {
 			if(!this.img)return;
 			if(this.tickItem)this.tickItem();
-			this.img.x = this.el.x = this.el.body.getX();
-			this.img.y = this.el.y = this.el.body.getY();
+			this.img.x = this.x = this.body.getX();
+			this.img.y = this.y = this.body.getY();
  
 		},
 		obj : function () {
@@ -64,6 +79,7 @@
 				speed : this.speed,
 				b2delement : this.b2delement,
 				friction : this.friction,
+				density : this.density,
 				restitution : this.restitution,
 				policies : this.policies,
 				elementName : this.elementName,
@@ -71,17 +87,18 @@
 				widthItems : this.widthItems,
 				groupId : this.groupId,
 				categoryBits : this.categoryBits,
-				maskBits : this.maskBits
+				maskBits : this.maskBits,
+				heal : this.heal,
+				damage : this.damage
 			}
 		},
 		extend : function (item, obj) {
+			for(var i in item.el)
+				item[i] = item.el[i];
 			for(var i in this)
 				item[i] = this[i];
-			for(var i in obj){
-				item.el[i] = obj[i];
+			for(var i in obj)
 				item[i] = obj[i];
-			}
-	        if(item.el.init)item.el.init();
 
 			return item;
 		}

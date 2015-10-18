@@ -1,6 +1,6 @@
 define("gameClient/map/elements/platforms/floor", ["game/map/elements/platforms/floor"], function (floor) {
-	function Floor (obj) {
-		this.el = new floor(obj);
+	function Floor () {
+		this.el = new floor;
 		this.sprite = "floor";
 	}
 

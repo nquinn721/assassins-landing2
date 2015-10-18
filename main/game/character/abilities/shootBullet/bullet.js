@@ -9,12 +9,12 @@ define("game/character/abilities/shootBullet/bullet", function () {
 		this.groupId = -1;
 		this.policies = ['bullet'];
 		this.damageDealt = 400;
+		this.elementName = 'bullet';
 
 		this.mousex = 10;
 		this.mousey = 10;
 		this.destroyed = false;
-		this.categoryBits = 0x0100;
-		this.maskBits = 0x0001;
+		
 		for(var i in obj)this[i] = obj[i];
 
 	}
@@ -60,7 +60,8 @@ define("game/character/abilities/shootBullet/bullet", function () {
 				isSensor : true,
 				categoryBits : this.categoryBits,
 				maskBits : this.maskBits,
-				damageDealt : this.damageDealt
+				damageDealt : this.damageDealt,
+				elementName : this.elementName
 			}
 		}
 	}

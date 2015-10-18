@@ -6,6 +6,7 @@ head
 	link(rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css")
 	link(rel="stylesheet", href="/css/build/site/main.css")
 	script(src="lib/jquery/dist/jquery.min.js")
+	script(src="/socket.io/socket.io.js")
 		
 body
 	.login-page
@@ -25,3 +26,5 @@ body
 					.alert.alert-danger Wrong credentials
 script.
 	$('.username').focus();
+	var socket = io.connect();
+	socket.on('connected baby', function(){console.log('yep')});

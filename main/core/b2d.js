@@ -3,8 +3,9 @@ define("core/b2d", [
 	'core/body', 
 	'core/lib/underscore',
 	'core/shapes', 
-	'core/emitter'
-	], function (Box2D, Body, _, Shapes, emitter) {
+	'core/emitter',
+	'core/props'
+	], function (Box2D, Body, _, Shapes, emitter, props) {
 	var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	    b2AABB = Box2D.Collision.b2AABB,
 	    b2BodyDef = Box2D.Dynamics.b2BodyDef,
@@ -18,6 +19,7 @@ define("core/b2d", [
 	    b2MouseJointDef =  Box2D.Dynamics.Joints.b2MouseJointDef,
 	    b2WeldJointDef =  Box2D.Dynamics.Joints.b2WeldJointDef,
 	    b2RevoluteJointDef = Box2D.Dynamics.Joints.b2RevoluteJointDef,
+	    b2RevoluteJointDef = Box2D.Dynamics.Joints.b2DistanceJointDef,
 	    b2Shape = Box2D.Collision.Shapes.b2Shape;
 
 	function B2D() {
@@ -115,7 +117,7 @@ define("core/b2d", [
 			else
 				joint = this.createJoint(body, body1);
 
-			return this.createBody(body, options);
+			return [this.createBody(body, options), this.createBody(body1, options1)];
 		},
 		rect : function (opts) {
 			var options = _.extend({
@@ -123,8 +125,27 @@ define("core/b2d", [
 				}, opts),
 				body = this.bodyDef(options),
 				fixDef = this.fixDef(options, body);
-
+				
 			return this.createBody(body, options);
+		},
+		rects : function (opts) {
+			var options = [],
+				bodies = [],
+				fixtures = [],
+				bodyClass = [];
+
+			for(var i = 0; i < opts.length; i++){
+				options.push(_.extend({
+					shape : 'rect'
+				}, opts[i]));
+				bodies.push(this.bodyDef(options[i]));
+				fixtures.push(this.fixDef(options[i], bodies[i]));
+				bodyClass.push(this.createBody(bodies[i], options[i]));
+			}
+
+			for(var i = 0; i < bodies.length; i += 2)
+				this.createJoint(bodies[i], opts[i], bodies[i + 1], opts[i + 1]);
+			return bodyClass;
 		},
 		polygon : function (opts) {
 			var body = this.bodyDef(opts);
@@ -133,7 +154,7 @@ define("core/b2d", [
 			return this.createBody(body, opts);
 		},
 		createBody : function (body, opts) {
-			return new Body(body, b2Vec2, opts)	
+			return new Body(body, b2Vec2, opts);
 		},
 		fixDef : function (opts, body) {
 			var options = _.extend({
@@ -149,8 +170,18 @@ define("core/b2d", [
 				fixDef.density = options.density;
 				fixDef.friction = options.friction;
 				// fixDef.filter.groupIndex = options.groupId;
-				fixDef.filter.categoryBits = options.categoryBits || 0x0001;
-				fixDef.filter.maskBits = options.maskBits || 0xFFFF;
+				fixDef.filter.categoryBits = 0x0001;
+				fixDef.filter.maskBits = 0xFFFF;
+
+				// Set collision based of props file
+				if(props.collision[opts.elementName]){
+
+					fixDef.filter.categoryBits = props.collision[opts.elementName].categoryBits || fixDef.filter.categoryBits;
+					fixDef.filter.maskBits = props.collision[opts.elementName].maskBits || fixDef.filter.maskBits;
+				}
+
+
+				if(options.groupIndex)fixDef.filter.groupIndex = options.groupIndex;
 
 			if(options.shape === 'polygon'){
 				fixDef.shape = new b2PolygonShape();
@@ -168,15 +199,15 @@ define("core/b2d", [
 			body.CreateFixture(fixDef);
 
 		},
-		createJoint : function (body1, body2) {
+		createJoint : function (body1, opts1, body2, opts2) {
 			//create distance joint between b and c
 			var joint_def = new b2WeldJointDef();
 			joint_def.bodyA = body1;
 			joint_def.bodyB = body2;
 			     
 			//connect the centers - center in local coordinate - relative to body is 0,0
-			joint_def.localAnchorA = new b2Vec2(-0.5, -0.5);
-			joint_def.localAnchorB = new b2Vec2(0.5, 0.5);
+			joint_def.localAnchorA = new b2Vec2(0,0);
+			joint_def.localAnchorB = new b2Vec2(0,0);
 			    
 			//difference in angle of each body
 			joint_def.referenceAngle = 0 * Math.PI / 3;
@@ -185,6 +216,15 @@ define("core/b2d", [
 			this.world.CreateJoint(joint_def);
 			return body1;
 			
+		},
+		distanceJoint : function (body1, fix1, body2, fix2) {
+			// Create distance joint
+			var jointDef = new b2.DistanceJointDef();
+			jointDef.Initialize(body1, body2, fix1.position, topBodyDef.position);
+			jointDef.collideConnected = true;
+			jointDef.frequencyHz = 100;
+			jointDef.dampingRatio = 1;
+			var joint = this.world.CreateJoint(jointDef);
 		},
 		createRevoluteJoint : function (body1, body2) {
 			var joint = new b2RevoluteJointDef();

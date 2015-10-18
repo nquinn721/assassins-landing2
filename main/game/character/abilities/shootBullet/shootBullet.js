@@ -37,8 +37,8 @@ define("game/character/abilities/shootBullet/shootBullet", [
 					owner : char.id,
 					base : char.base,
 					team : char.team,
-					categoryBits : char.team === 'team1' ? 0x0200 : 0x0100,
-					maskBits : char.team === 'team1' ? 0x2000 | 0x0020 | 0x0001 : 0x1000 | 0x0010 | 0x0001
+					elementName : 'bullet' + char.team
+					
 				});
 
 			bullet.create(this.b2d);

@@ -1,5 +1,6 @@
 define("gameClient/character/player/playerManagerClient", 
 	[
+		'core/b2d',
 		'core/emitter', 
 		'gameClient/character/player/playerSprite',
 		'game/character/player/playerManager',
@@ -8,7 +9,7 @@ define("gameClient/character/player/playerManagerClient",
 		'gameClient/playerStats',
 		'gameClient/client'
 	], 
-	function (emitter, PlayerSprite, playerManager, assassin, brute, PlayerStats, client) {
+	function (b2d, emitter, PlayerSprite, playerManager, assassin, brute, PlayerStats, client) {
 
 	function PlayerManagerClient () {
 		this.players = [];
@@ -35,11 +36,12 @@ define("gameClient/character/player/playerManagerClient",
 			emitter.on('focus', this.focus.bind(this));
 			emitter.on('destroyPlayer', this.destroyPlayer.bind(this));
 			emitter.on('playerCoords', this.setPlayerCoords.bind(this));
-			// emitter.on('tick', this.tick.bind(this));
 			emitter.on('mousedown', this.mouseDown.bind(this));
+			emitter.on('init', this.loadPlayer.bind(this));
+			emitter.on('die', this.die.bind(this));
 		},
-		createUser : function (obj) {
-			var player = playerManager.createPlayer(obj.user),
+		createUser : function (user) {
+			var player = playerManager.createPlayer(user),
 				sprite = new PlayerSprite(player, true),
 				playerStats = new PlayerStats(player),
 				characterClass = new this.classes[player.characterClass.character];
@@ -47,10 +49,9 @@ define("gameClient/character/player/playerManagerClient",
 
 			playerStats.init();
 			sprite.init();
-			player.init(obj.b2d, characterClass);
+			player.init(characterClass);
 			this.user = player;
 			client.createUser(player);
-			player.on('move', this.loadPlayer.bind(this));
 		},
 		setPlayerCoords : function (obj) {
 			for(var i = 0; i < obj.length; i++){
@@ -74,18 +75,21 @@ define("gameClient/character/player/playerManagerClient",
 
 				sprite.init();
 				player.sprite = sprite;
-				player.init(this.b2d, characterClass);
+				player.init(characterClass);
 				this.players.push(player);
 			}else{
-				playerObj.create(this.b2d);
+				playerObj.create(b2d);
 				playerObj.sprite.create();
 			}
 
 		},
-		createPlayers : function (obj) {
-			this.b2d = obj.b2d;
-			for(var i = 0; i < obj.players.length; i++){
-				var player = obj.players[i];
+		die : function (player) {
+			if(player.id === this.user.id)
+				emitter.emit('timer', this.user.deathTimer);
+		},
+		createPlayers : function (players) {
+			for(var i = 0; i < players.length; i++){
+				var player = players[i];
 				this.user.addVisiblePlayer(player);
 				this.createPlayer(player, true);
 			}

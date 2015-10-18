@@ -42,9 +42,9 @@ define("gameClient/events", [
 
 								stage.ticker();
 								
-								emitter.emit('createUser', {b2d : b2d, user : obj.user});
-								emitter.emit('createPlayers', {b2d : b2d, players : obj.players});
-								emitter.emit('createMap', {map : obj.map, b2d : b2d});
+								emitter.emit('createUser', obj.user);
+								emitter.emit('createPlayers', obj.players);
+								emitter.emit('createMap', obj.map);
 								emitter.emit('doneloading');
 
 
@@ -102,6 +102,9 @@ define("gameClient/events", [
 				emitter.emit('startGame');
 				
 			},
+			mousedown : function (obj) {
+				emitter.emit('mousedown', obj);
+			},
 			hit : function () {
 				emitter.emit('hit');
 			},
@@ -114,7 +117,7 @@ define("gameClient/events", [
 				emitter.emit('lose');
 			},
 			createPlayer : function (player) {
-				emitter.emit('createPlayer', {b2d : cient.b2d, player : player});
+				emitter.emit('createPlayer', player);
 			},
 			destroyPlayer : function (player) {
 				emitter.emit('destroyPlayer', player);
@@ -142,7 +145,11 @@ define("gameClient/events", [
 				emitter.emit('clientPing', {socket : socket, ping : ping});	
 			},
 			die : function (player) {
-				emitter.emit('die', {player : player, b2d : client.b2d});
+				emitter.emit('die', player);
+			},
+			revive : function (player) {
+				console.log('revive', player);
+				emitter.emit('revive', player);
 			}
 		},
 		endGame : function () {

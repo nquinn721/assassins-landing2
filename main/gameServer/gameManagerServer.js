@@ -25,6 +25,7 @@ define("gameServer/gameManagerServer", [
 		init : function () {
 			emitter.on('tick', this.tick.bind(this));
 			playerManagerServer.init(this);
+			mapManagerServer.init(this);
 		},
 		start : function (socket) {
 			if (this.gameStarted)
@@ -45,7 +46,7 @@ define("gameServer/gameManagerServer", [
 			playerManagerServer.sendToClient(socket, true);
 			setTimeout(function () {
 				socket.emit('showViewport');					
-			}, 10000);
+			}, 10000); 
 		},
 		resumeReady : function (socket) {
 			socket.emit('matchMaking', playerManagerServer.players.map(function (v) {
@@ -77,7 +78,6 @@ define("gameServer/gameManagerServer", [
 				}));
 				
 				playerManagerServer.create(socket);
-				console.log('ready', this.readyPlayers, 'total', this.totalPlayers, 'aloud', this.PLAYERS_ALOUD);
 				if(this.readyPlayers === this.totalPlayers && this.readyPlayers === this.PLAYERS_ALOUD){
 					this.io.emit('startGame');	
 					playerManagerServer.sendToClient(this.io);
@@ -109,12 +109,44 @@ define("gameServer/gameManagerServer", [
 		leave : function (player) {
 			this.totalPlayers--;
 			// this.readyPlayers--;
-			console.log('leave ready players', this.readyPlayers);
 			playerManagerServer.leave(player);
 		},
 		tick : function () {
 			playerManagerServer.tick();
 			mapManagerServer.tick();
+		},
+		endGame : function (winner) {
+			var players = playerManagerServer.players,	
+				winners = [],
+				losers = [],
+				self = this;
+
+			for(var i = 0; i < players.length; i++){
+				var player = players[i];
+				if(player.base === winner)winners.push({id : player.account.id, socketId : player.socketId});
+				else losers.push({id : player.account.id, socketId : player.socketId})
+
+				// Clear Instance
+				this.db.clearInstance(player.account.cookie);
+			}
+
+			for(var i = 0; i < winners.length; i++){
+				this.emitToPlayer(winners[i], 'win');
+				Account.findOne({_id : winners[i].id}, function (err, acc) {
+					acc.xp += self.xpGained;
+					acc.save();
+				});
+			}
+			for(var i = 0; i < losers.length; i++)
+				this.emitToPlayer(losers[i], 'lose');
+
+			setTimeout(function () {
+				process.exit();
+			}, 5000)
+		},
+		emitToPlayer : function (player, event, data) {
+			if(player && this.io.sockets.connected[player.socketId])
+				this.io.sockets.connected[player.socketId].emit(event, data);
 		}
 		
 	}

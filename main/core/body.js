@@ -1,4 +1,4 @@
-define("core/body", [], function (require) {
+define("core/body", function () {
 
 	function Body (bodyFixture, b2Vec2, opts) {
 		this.body = bodyFixture;
@@ -102,6 +102,21 @@ define("core/body", [], function (require) {
 			var self = this;
 			setTimeout(function () {
 				self.body.GetWorld().DestroyBody(self.body);
+			}, 0);
+		},
+		destroyJoints : function () {
+			var joints = this.body.GetJointList(),
+				destroy = [],
+				self = this;
+			for (var i = 0; i < joints.length; i++) {
+			    destroy.push(joints[i].joint);
+			}
+
+			setTimeout(function () {
+				for(var i = 0; i < destroy.length; i++){
+					var joint = destroy[i];
+				    self.body.GetWorld().DestroyJoint(joint);
+				}
 			}, 0);
 		}
 	}

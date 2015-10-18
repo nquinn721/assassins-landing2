@@ -1,6 +1,6 @@
 define("gameClient/map/elements/platforms/elevator", ["game/map/elements/platforms/elevator"], function (elevator) {
-	function Elevator (obj) {
-		this.el = new elevator(obj);
+	function Elevator () {
+		this.el = new elevator;
 		this.sprite = "elevator";
 	}
 

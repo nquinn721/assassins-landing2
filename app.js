@@ -47,9 +47,14 @@ var DB = require(process.cwd() + '/lib/db/connection.js');
 var db = new DB(mongoose);
 db.init();
 
+io.on('connection', function (socket) {
+	socket.on('join', function (port) {
+		socket.join(port);
+	});
+});
 // Instance
 var instanceManager = require('./lib/instance/instanceManager');
-instanceManager.init(db);
+instanceManager.init(db, io);
 
 
 app.get('/', function (req, res) {
@@ -85,7 +90,6 @@ app.get('/an-start-game', function (req, res) {
 			res.render('views/site/game-frame', {url : 'http://localhost:' + req.session.instance});
 		});
 		request.on('error', function (err) {
-			console.log('failed');
 			db.clearInstance(req, function () {
 				res.send('noinstance');
 			});

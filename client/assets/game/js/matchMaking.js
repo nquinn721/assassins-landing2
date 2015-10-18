@@ -3,7 +3,7 @@ define("game/js/matchMaking", [
 	], function (gameManagerClient) {
 	gameManagerClient.init();
 	gameManagerClient.startEvents();
-	return ['socket','$scope', '$location', function (socket, $scope, $location) {
+	return ['socket','$scope', '$location', '$timeout', '$interval', function (socket, $scope, $location, $timeout, $interval) {
 		var timer;
 
 		this.playersWaiting = [];
@@ -23,13 +23,13 @@ define("game/js/matchMaking", [
 			var self = this;
 			this.loadingGame = true;
 			this.title = "Loading Game!";
-			setTimeout(function () {
-				timer = setInterval(function () {
-					self.loadingWidth = (Math.round(self.time / self.loadingTime * 100)) + '%';
+			$timeout(function () {
+				self.timer = $interval(function () {
+					var num = (Math.round(self.time / self.loadingTime * 100));
+					self.loadingWidth =  num + '%';
 					self.time++;
-					if(self.loadingWidth === '100%')
-						clearTimeout(timer);
-					$scope.$digest();
+					if(num >= 100)
+						$interval.cancel(self.timer);
 				}, 1);
 			}, 1000);
 		};

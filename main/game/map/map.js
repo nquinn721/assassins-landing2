@@ -59,6 +59,9 @@ define("game/map/map", [
 			var a = this.getById(obj.one.id),
 				b = this.getById(obj.two.id);
 
+			if(!a)a = this.getById(obj.one.owner);
+			if(!b)b = this.getById(obj.two.owner);
+
 			if(a && a[method])a[method](b || obj.two);
 			if(b && b[method])b[method](a || obj.one);
 		},

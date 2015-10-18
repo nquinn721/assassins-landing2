@@ -1,9 +1,9 @@
 define("game/character/abilities/abilityManager", [
-		"game/character/abilities/shootBullet/shootBullet"
-	], function (shootBullet) {
+		"game/character/abilities/shootBullet/shootBullet",
+		"core/b2d"
+	], function (shootBullet, b2d) {
 
-	function AbilityManager (b2d) {
-		this.b2d = b2d;
+	function AbilityManager () {
 
 		this.abilities = {
 			shootBullet : shootBullet
@@ -11,7 +11,7 @@ define("game/character/abilities/abilityManager", [
 	}
 	AbilityManager.prototype = {
 		get : function (ability) {
-			ability = new this.abilities[ability](this.b2d);
+			ability = new this.abilities[ability](b2d);
 			ability.init();
 			return ability;
 		}

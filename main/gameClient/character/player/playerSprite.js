@@ -25,11 +25,12 @@ define("gameClient/character/player/playerSprite", [
 			emitter.on('doneloading', this.setup.bind(this));
 			emitter.on('hit', this.hit.bind(this));
 			emitter.on('win', this.win.bind(this));
-			emitter.on('lose', this.lose.bind(this));
+			emitter.on('win', this.win.bind(this));
+			emitter.on('die', this.die.bind(this));
+			emitter.on('revive', this.revive.bind(this));
 		},
 		hit : function () {
 	        var self = this;
-
 			if(this.isHit)return;
 	        this.isHit = true;
 
@@ -143,6 +144,8 @@ define("gameClient/character/player/playerSprite", [
 			this.name.y = this.player.y - 28;
 		},
 		updateHp : function () {
+			if(this.player.hp < 0)return;
+			
 			this.hp.x = this.player.x - (this.hpx - 2);
 			this.hp.y = this.player.y - (this.hpy - 2);
 			this.hp.scaleX = this.player.hp / this.player.characterClass.stats.hp;
@@ -150,9 +153,6 @@ define("gameClient/character/player/playerSprite", [
 			this.hpbackgound.y = this.player.y - (this.hpy - 1);
 			this.hpbackgound1.x = this.player.x - this.hpx;
 			this.hpbackgound1.y = this.player.y - this.hpy;
-
-			if(this.player.hp <= 0)
-				this.die();
 
 		},
 		lookLeft : function () {
@@ -182,12 +182,14 @@ define("gameClient/character/player/playerSprite", [
 			this.lookRight();
 			this.animation.gotoAndPlay('runRight');
 		},
-		die : function () {
-			var self = this;
-			this.destroy();
-			setTimeout(function () {
-				self.create();
-			}, this.player.deathTimer);	
+		die : function (player) {
+			if(player.id === this.player.id)
+				this.destroy();
+		},
+		revive : function (player) {
+			console.log('revive spritee', player, this.player);
+			if(player.id === this.player.id)
+				this.create();
 		},
 		create : function () {
 			stage.add(this.animation);
@@ -199,7 +201,6 @@ define("gameClient/character/player/playerSprite", [
 		},
 		
 		destroy : function () {
-			
 			stage.destroy(this.animation);
 			stage.destroy(this.hp);
 			stage.destroy(this.hpbackgound);

@@ -26,7 +26,7 @@ module.exports =function (socket, io, emitter, require, db, port, gameManagerSer
 		db.getTeam(cookie, port, this.account.team, function (accounts) {
 			accounts = _.compact(accounts.map(function(v){return { username : v.account.username, character : v.character}; }));
 			socket.emit('accounts', accounts);
-			if(socket.account.started)
+			if(socket.account.started && socket.account.started !== 'false')
 				socket.emit('gotoMatchMaking');
 			else socket.emit('stayInCharacterSelect');
 		});

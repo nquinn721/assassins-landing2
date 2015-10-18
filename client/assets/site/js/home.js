@@ -1,7 +1,6 @@
-app.controller('home', ["$rootScope", function ($rootScope) {
+app.controller('home', ["message", "$timeout", "$window", '$scope', function (message, $timeout, $window, $scope) {
 
-	this.startGame = function () {
-		// $rootScope.showLoader = true;
-	}
-		
+	// message.show("You are in a game instance are you sure you want to leave the page?", 2);
+	window.onbeforeunload = function(){}
 }]);
+

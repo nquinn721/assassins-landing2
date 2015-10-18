@@ -14,7 +14,7 @@ define("gameClient/gameManagerClient", [
 		setup : function () {
 			require([
 				"gameClient/character/characterManagerClient",
-				"gameClient/map/mapManagerClient"
+				"gameClient/map/mapManagerClient",
 			], function (characterManagerClient, mapManagerClient) {
 				characterManagerClient.init();
 				mapManagerClient.init();

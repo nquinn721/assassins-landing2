@@ -1,5 +1,6 @@
 var app = angular.module('site', ['ngRoute', 'ngSanitize']);
 
+var socket = io.connect();
 
 app.config(function ($routeProvider) {
 	$routeProvider
@@ -17,6 +18,11 @@ app.config(function ($routeProvider) {
 			templateUrl : '/an-game',
 			controller : 'game',
 			controllerAs : 'game'
+		})
+		.when('/game-stats', {
+			templateUrl : '/an-game-stats',
+			controller : 'gameStats',
+			controllerAs : 'gs'
 		})
 		.otherwise({
 			redirectTo : '/'

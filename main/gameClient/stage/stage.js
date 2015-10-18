@@ -43,7 +43,7 @@ define("gameClient/stage/stage", ['core/emitter'], function (emitter) {
         },
         image : function (id, options) {
             var bitmap = new createjs.Bitmap(this.queue.getResult(id));
-
+            
             this.handleOptions(bitmap, options);
 
             this.add(bitmap);

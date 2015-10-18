@@ -10,15 +10,6 @@ define("gameClient/background/background", [
 	Background.prototype = {
 		init : function () {
 			this.create();			
-	        emitter.on('death', this.death.bind(this));
-	        emitter.on('revive', this.create.bind(this));
-		},
-		death : function () {
-			stage.destroy(this.img);
-			this.img = stage.image("background",{
-				filters : ['grayScale']
-			});
-			this.setImage();
 		},
 		setImage : function () {
 			this.img.x = 0;

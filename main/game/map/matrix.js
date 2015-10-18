@@ -11,7 +11,10 @@ define("game/map/matrix", [
 			e : 'platforms/elevator',
 			m : 'platforms/movingplatform',
 			s : 'pits/spikePit',
-			b : 'structures/base'
+			b : 'structures/base',
+			sp : 'items/potions/smallPotion',
+			bx : 'boxes/box',
+			bwp : 'boxes/boxWithPotion'
 		};
 
 
@@ -71,7 +74,7 @@ define("game/map/matrix", [
 			return this.items;
 		},
 		createItem : function (currentRow, currentColumn, matrix, segment) {
-			var item = this.elements[segment],
+			var item = this.elements[segment.replace(/\s/g, '')],
 				id = item.split('/')[1];
 
 			this.item = element.extend(item, {

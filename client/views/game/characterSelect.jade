@@ -6,7 +6,7 @@
 			.characters
 				br
 				.left.text-center.character(ng-repeat="(char, set) in ch.user.characterSelect")
-					img(
+					img.animated.fadeIn(
 						ng-src="/characters/{{char}}-stats.png",
 						ng-click="ch.selectCharacter(char)",
 						ng-class="{selected : set}"
@@ -15,15 +15,15 @@
 			.user.character-chosen
 				.character-chosen-name {{ch.user.character ? ch.user.character.toUpper() : 'No Character'}}
 				.character-chosen-image 
-					.no-character Character
-					img(ng-src="/characters/{{ch.user.character}}-stats.png", ng-if="ch.user.character")
+					.no-character(ng-hide="account.character") Character
+					img.animated.fadeIn(ng-src="/characters/{{ch.user.character}}-stats.png", ng-if="ch.user.character")
 				.user-info.right
 					.stat {{ch.user.username.toUpper()}}
 			.player.character-chosen(ng-repeat="account in ch.accounts")
 				.character-chosen-name {{account.character.toUpper() || 'No Character'}}
 				.character-chosen-image 
-					.no-character Character
-					img(ng-src="/characters/{{account.character}}-stats.png", ng-if="account.character")
+					.no-character(ng-hide="account.character") Character
+					img.animated.fadeIn(ng-src="/characters/{{account.character}}-stats.png", ng-if="account.character")
 				.user-info.right
 					.stat {{account.username.toUpper()}}
 		.bottom: center(ng-show="ch.startButton"): a.wide-button.btn.btn-danger(ng-href="#/match-making") Start

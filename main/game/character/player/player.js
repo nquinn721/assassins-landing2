@@ -1,9 +1,9 @@
 define("game/character/player/player", [
-		'core/emitter', 
 		'core/keys', 
-		'core/props'
+		'core/props',
+		'core/b2d'
 	], 
-	function (emitter, keys, props) {
+	function (keys, props, b2d) {
 
 	function Player (obj) {
 		this.x = 10;
@@ -18,7 +18,10 @@ define("game/character/player/player", [
 		this.base = 'base0';
 		this.categoryBits;
 		this.maskBits;
-		this.density = 5000;
+		this.density = 50;
+		this.elementName = 'player';
+		this.policies = ['player', 'character'];
+		this.friction = 10;
 
 		this.deaths = 0;
 		this.deathTimer = 3;
@@ -58,7 +61,7 @@ define("game/character/player/player", [
 	}
 
 	Player.prototype = {
-		init : function (b2d, characterClass) {
+		init : function (characterClass) {
 			this.characterClass = characterClass;
 			for(var i in characterClass.stats)
 				this[i] = characterClass.stats[i];
@@ -101,7 +104,7 @@ define("game/character/player/player", [
 
 			if(this.gettingDamaged)
 				this.damage(this.damageDealt);
-			
+
 
 			// Update Current Position
 			this.x = this.body.getX();
@@ -141,11 +144,16 @@ define("game/character/player/player", [
 				
 			
 
-			if(policies.match('spikePit'))
-				this.constantDamage(5);
+			if(policies.match('constantDamage'))
+				this.constantDamage(item.damage);
 			
 			if(policies.match('bullet') && item.team !== this.team)
 				this.damage(item.damageDealt);
+
+			if(policies.match('item')){
+				if(policies.match('heal'))
+					this.heal(item.heal);
+			}
 
 		},
 		contactPostSolve : function (item) {
@@ -170,19 +178,23 @@ define("game/character/player/player", [
 			if(policies.match('spikePit'))
 				this.gettingDamaged = false;
 		},
-		die : function (b2d) {
-			var self = this;
+		die : function () {
 			this.deaths++;
 			this.destroy();
-			setTimeout(this.revive.bind(this, b2d), this.deathTimer * 1000);
+			this.isDead = true;
 			
 		},
-		revive : function (b2d) {
+		revive : function () {
 			this.hp = this.characterClass.stats.hp;
 			this.create(b2d, this.spawnPoint);
 			this.isDirty = true;
-			emitter.emit('revive');
+			this.isDead = false;
 			this.deathTimer += (this.deaths * 3);
+		},
+		heal : function (amount) {
+			this.hp += amount;
+			if(this.hp > this.characterClass.stats.hp)this.hp = this.characterClass.stats.hp;
+			this.emit('heal');
 		},
 		damage : function (dmg) {
 			this.hp -= dmg || 0;
@@ -191,7 +203,7 @@ define("game/character/player/player", [
 		},
 		constantDamage : function (dmg) {
 			this.gettingDamaged = true;
-			this.damageDealt = 5;
+			this.damageDealt = dmg;
 		},
 		setCoords : function (obj) {
 			this.body.setX(obj.x);
@@ -216,6 +228,7 @@ define("game/character/player/player", [
 		moveRight : function () {
 			this.directionFacing = 'right';
 			this.body.move('right');
+			// this.body.applyForce('right', 50);
 			this.emits(['move', 'moveright']);
 		},
 		moveLeft : function () {
@@ -262,7 +275,10 @@ define("game/character/player/player", [
 				characterSelected : this.characterSelected,
 				categoryBits : this.categoryBits,
 				maskBits : this.maskBits,
-				density : this.density
+				density : this.density,
+				policies : this.policies,
+				elementName : this.elementName,
+				friction : this.friction
 			}
 		},
 		// Return everything except account
@@ -355,8 +371,16 @@ define("game/character/player/player", [
 			this.base = base;
 		},
 		on : function (event, cb) {
-			if(!this.events[event])this.events[event] = [];
-			this.events[event].push(cb);
+			if(typeof event === 'object'){
+				for(var i = 0; i < event.length; i++){
+					if(!this.events[event[i]])this.events[event[i]] = [];
+					this.events[event[i]].push(cb);
+				}
+
+			}else{
+				if(!this.events[event])this.events[event] = [];
+				this.events[event].push(cb);
+			}
 		},
 		emit : function (event, data) {
 			if(this.events[event])

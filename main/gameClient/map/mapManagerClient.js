@@ -1,8 +1,9 @@
 define("gameClient/map/mapManagerClient", [
+		'core/b2d',
 		'core/emitter',
 		'gameClient/map/map',
 		'gameClient/character/player/playerManagerClient'
-	], function (emitter, map, pm) {
+	], function (b2d, emitter, map, pm) {
 
 
 	function MapManagerClient() {
@@ -24,23 +25,20 @@ define("gameClient/map/mapManagerClient", [
 			emitter.on('endContact', this.endContact.bind(this));
 			emitter.on('mapItemsHP', this.mapItemsHP.bind(this));
 
-			emitter.on('death', this.death.bind(this));
-	        emitter.on('revive', this.revive.bind(this));
 		},
 		createElement : function (item) {
-			item.create(this.b2d);
+			item.create();
 			this.user.addVisibleItem(item);
 		},
 		destroyElement : function (item) {
 			this.user.removeVisibleItem(item);
 			item.destroy();
 		},
-		createMap : function (obj) {
-			this.b2d = obj.b2d;
+		createMap : function (mapItems) {
 			this.user = pm.getUser();
 
-			for(var i = 0; i < obj.map.length; i++){
-				var el = map.create(obj.map[i]);
+			for(var i = 0; i < mapItems.length; i++){
+				var el = map.create(mapItems[i]);
 				this.mapElements.push(el);
 				this.createElement(el);
 			}
@@ -65,25 +63,35 @@ define("gameClient/map/mapManagerClient", [
 			var a = this.getById(obj.one.id),
 				b = this.getById(obj.two.id);
 
+			if(!a)a = this.getById(obj.one.owner);
+			if(!b)b = this.getById(obj.two.owner);
+
 			if(a && a[method])a[method](b || obj.two);
 			if(b && b[method])b[method](a || obj.one);
 		},
 		mapItemsHP : function (items) {
-			for(var i = 0; i < items.length; i++)
-				this.getById(items[i].id).setHP(items[i].hp)
+			for(var i = 0; i < items.length; i++){
+				var item = this.getById(items[i].id)
+				item.setHP(items[i].hp);
+				if(items[i].hp <= 0){
+					// Let items handle their own destroy
+					if(item.handleDestroy)return;
+					item.destroy();
+				}
+			}
 		},
 		death : function () {
 			for(var i = 0; i < this.mapElements.length; i++){
-				this.mapElements[i].destroySprite();
+				this.mapElements[i].removeSprite();
 				this.mapElements[i].createSprite({
 					filters : ['grayScale']
-				})
+				});
 			}
 			
 		},
 		revive : function () {
 			for(var i = 0; i < this.mapElements.length; i++){
-				this.mapElements[i].destroySprite();
+				this.mapElements[i].removeSprite();
 				this.mapElements[i].createSprite();
 			}
 		},
@@ -101,7 +109,7 @@ define("gameClient/map/mapManagerClient", [
 				var item = this.mapElements[i];
 				
 				if(item.tick)item.tick();
-				if(item.el.tickItem)item.el.tickItem();
+				if(item.tickItem)item.tickItem();
 
 
 				if(this.liveLoading)

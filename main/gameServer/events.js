@@ -12,5 +12,5 @@ define("gameServer/events", [
 	var events = new Events;
 	for(var i in events.on)
 		socket.on(i, events.on[i]);
-	return ;
+	return Events;
 });

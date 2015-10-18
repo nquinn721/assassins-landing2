@@ -1,4 +1,4 @@
-define("game/map/elements/platforms/floor", [], function () {
+define("game/map/elements/platforms/floor", function () {
 
 	function Floor () {
 		this.x = 10;
@@ -7,10 +7,10 @@ define("game/map/elements/platforms/floor", [], function () {
 		this.h = 20;
 		this.id = 'floor';
 		this.type = 'static';
+		this.friction = 10;
 		this.policies = ['floor'];
 		this.b2delement = 'rect';
 		this.elementName = 'floor';
-		this.categoryBits = 0x0001;
 
 	}
 	return Floor;

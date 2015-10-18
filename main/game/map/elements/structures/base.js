@@ -14,9 +14,8 @@ define("game/map/elements/structures/base", [], function () {
 		this.elementName = 'base';
 		this.isDirty = false;
 		this.team;
-		this.categoryBits = base === 'base0' ? 0x0010 : 0x0020;
-		this.maskBits = base === 'base0' ? 0x0100 | 0x1000 | 0x2000 : 0x0200 | 0x1000 | 0x2000;
-
+		this.elementName = base;
+		
 	}
 
 	Base.prototype = {

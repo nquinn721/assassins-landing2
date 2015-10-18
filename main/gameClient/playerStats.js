@@ -15,8 +15,7 @@ define("gameClient/playerStats", ["core/emitter"], function (emitter) {
 			this.initStats();
 		},
 		events : function () {
-			this.player.on('hit', this.hit.bind(this));
-			emitter.on('revive', this.revive.bind(this));
+			this.player.on(['hit', 'heal'], this.changeHP.bind(this));
 		},
 		initStats : function () {
 			var character = this.player.characterClass,
@@ -28,16 +27,9 @@ define("gameClient/playerStats", ["core/emitter"], function (emitter) {
 			this.characterImg.attr('src', '/characters/' + character.character + '-stats.png');
 
 		},
-		hit : function () {
+		changeHP : function () {
 			if(this.player.hp >= 0)
 				this.hp.text(this.player.hp);
-			if(this.player.hp <= 0 && !this.dead){
-				emitter.emit('death', this.player.deathTimer);
-				this.dead = true;
-			}
-		},
-		revive : function () {
-			this.dead = false;
 		}
 
 	}

@@ -1,10 +1,11 @@
 define("gameServer/playerManagerServer", [
 		'core/b2d',
-		'game/character/player/playerManager'
-		], function (b2d, playerManager) {
+		'game/character/player/playerManager',
+		'core/props',
+		'core/emitter'
+		], function (b2d, playerManager, props, emitter) {
 	function PlayerManagerServer () {
 		this.players = [];
-			
 	}
 	PlayerManagerServer.prototype = {
 		init : function (manager) {
@@ -22,17 +23,16 @@ define("gameServer/playerManagerServer", [
 					cookie : socket.request.cookies.al,
 					team : socket.account.team,
 					base : socket.account.team === 'team1' ? 'base1' : 'base0',
-					categoryBits : socket.account.team === 'team1' ? 0x1000 : 0x2000,
-					maskBits : socket.account.team === 'team1' ? 0x0100 | 0x0001 : 0x0200 | 0x0001
+					elementName : socket.account.team
 				});
-			player.init(b2d, socket.account.characterClass);
+			player.init(socket.account.characterClass);
 			
 			socket.player = player;
 			socket.player.account = {
 				username : socket.account.username,
 				id : socket.account._id
 			}	
-			player.on('hit', this.hit);
+			player.on('hit', this.hit.bind(this, socket));
 
 			this.players.push(player);
 		},
@@ -50,8 +50,17 @@ define("gameServer/playerManagerServer", [
 
 		},
 		hit : function (socket) {
-			this.manager.io.emit('hit');
-
+			if(socket.player.hp <= 0){
+				emitter.emit('die', socket.player.obj());
+				this.manager.io.emit('die', socket.player.obj());
+				setTimeout(function () {
+					emitter.emit('revive', socket.player.obj());
+					this.manager.io.emit('revive', socket.player.obj());
+				}.bind(this), socket.player.deathTimer * 1000);
+			}else{
+				socket.emit('hit');
+				this.manager.io.emit('setHP', socket.player.obj());
+			}
 		},
 		updatePlayerInfo : function () {
 			var hp = [],

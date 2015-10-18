@@ -1,6 +1,6 @@
 define("gameClient/map/elements/platforms/wall", ["game/map/elements/platforms/wall"], function (wall) {
-	function Wall (obj) {
-		this.el = new wall(obj);
+	function Wall () {
+		this.el = new wall;
 		this.sprite = "wall";
 	}
 
