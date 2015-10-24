@@ -69,6 +69,10 @@ define("core/b2d", [
 		},
 		contact : function (contact, event) {
 			if(!contact.GetFixtureA)return;
+			// if(event == 'contact')
+				// console.log(contact.GetFixtureA(), contact.GetFixtureB());
+
+
 			var one = contact.GetFixtureA().GetBody(),
 			  	two = contact.GetFixtureB().GetBody(),
 			  	oneData = one.GetUserData(),
@@ -95,7 +99,6 @@ define("core/b2d", [
 				top : twoData.y,
 				bottom : twoData.y + twoData.h
 			}
-
 			emitter.emit(event, {one : oneData, two : twoData});
 	
 		},
@@ -119,13 +122,26 @@ define("core/b2d", [
 
 			return [this.createBody(body, options), this.createBody(body1, options1)];
 		},
-		rect : function (opts) {
-			var options = _.extend({
+		rect : function (o) {
+			var opts = _.compactObject(o);
+				options = _.extend({
 					shape : 'rect'
 				}, opts),
 				body = this.bodyDef(options),
 				fixDef = this.fixDef(options, body);
+
+			if(opts.id.match('player')){
+				var obj = {
+					w : opts.w + 5,
+					h : opts.h,
+					density : 0,
+					friction : 0,
+					shape : 'rect',
+					elementName : opts.elementName
+				}
+				this.fixDef(obj, body);
 				
+			}
 			return this.createBody(body, options);
 		},
 		rects : function (opts) {
@@ -137,7 +153,7 @@ define("core/b2d", [
 			for(var i = 0; i < opts.length; i++){
 				options.push(_.extend({
 					shape : 'rect'
-				}, opts[i]));
+				}, _.compactObject(opts[i])));
 				bodies.push(this.bodyDef(options[i]));
 				fixtures.push(this.fixDef(options[i], bodies[i]));
 				bodyClass.push(this.createBody(bodies[i], options[i]));
@@ -166,22 +182,16 @@ define("core/b2d", [
 			}, opts);
 
 			var fixDef = new b2FixtureDef();
-				fixDef.restitution = options.restitution;
-				fixDef.density = options.density;
-				fixDef.friction = options.friction;
-				// fixDef.filter.groupIndex = options.groupId;
-				fixDef.filter.categoryBits = 0x0001;
-				fixDef.filter.maskBits = 0xFFFF;
-
-				// Set collision based of props file
-				if(props.collision[opts.elementName]){
-
-					fixDef.filter.categoryBits = props.collision[opts.elementName].categoryBits || fixDef.filter.categoryBits;
-					fixDef.filter.maskBits = props.collision[opts.elementName].maskBits || fixDef.filter.maskBits;
-				}
 
 
-				if(options.groupIndex)fixDef.filter.groupIndex = options.groupIndex;
+			for(var i in options)fixDef[i] = options[i];
+
+			// Set collision based of props file
+			if(props.collision[opts.elementName]){
+				fixDef.filter.categoryBits = props.collision[opts.elementName].categoryBits || fixDef.filter.categoryBits;
+				fixDef.filter.maskBits = props.collision[opts.elementName].maskBits || fixDef.filter.maskBits;
+			}
+
 
 			if(options.shape === 'polygon'){
 				fixDef.shape = new b2PolygonShape();

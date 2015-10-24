@@ -16,7 +16,8 @@ define("gameClient/map/elements/boxes/boxWithPotion", [
 				img.y = this.bodies[i].opts.y;
 				img.scaleX = this.bodies[i].opts.w / img.image.width;
 		        img.scaleY = this.bodies[i].opts.h / img.image.height;
-		        
+	        	img.regX = img.image.width / 2;
+		        img.regY = img.image.height / 2;
 		        stage.index(img, 1 );
 		        
 		        if(i === 0)this.img = img;

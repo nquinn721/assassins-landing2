@@ -9,7 +9,8 @@ var express = require('express'),
 	uuid = require('node-uuid'),
 	cookieParser = require('cookie-parser'),
 	bodyParser = require('body-parser'),
-	http = require('http');
+	http = require('http'),
+	fs = require('fs');
 
 
 // DB Connection
@@ -60,6 +61,9 @@ instanceManager.init(db, io);
 app.get('/', function (req, res) {
 	res.render('views/site/index');
 });
+app.get('/map-creator', function (req, res) {
+	res.render('views/mapCreator/index');
+});
 app.get('/logout', function (req, res) {
 	res.clearCookie('al');
 	db.logout(req);
@@ -78,6 +82,9 @@ app.post('/login', function (req, res) {
 		res.redirect('/login');
 	});
 });
+
+
+require('./server/mapCreator/routes')(app);
 
 /**
  * Angular Routes

@@ -19,7 +19,7 @@ define("core/props", [], function () {
 		 */
 		collision : {
 			team1 : {
-				categoyBits : 0x1000,
+				categoryBits : 0x1000,
 				maskBits : 0x0100 | 0x0001 | 0x0002
 			},
 			team2 : {
@@ -30,6 +30,9 @@ define("core/props", [], function () {
 				categoryBits : 0x0001
 			},
 			box : {
+				categoryBits : 0x0001
+			},
+			boxWithPotion : {
 				categoryBits : 0x0001
 			},
 			smallPotion : {

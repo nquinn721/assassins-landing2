@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+html(lang="en", ng-app="mapCreator")
+head
+	meta(charset="UTF-8")
+	link(rel="stylesheet", href="/lib/bootstrap/dist/css/bootstrap.min.css")
+	link(rel="stylesheet", href="/lib/fontawesome/css/font-awesome.min.css")
+	link(rel="stylesheet", href="/lib/animate.css")
+	link(rel='stylesheet', href='/css/build/mapCreator/main.css')
+	title Map Creator
+body(ng-controller="main")
+	.map-creator
+		.currentItem(ng-class="{'cantLay' : cantLay}")
+			.dimen {{width}} x {{height}}
+			img(ng-src="{{currentItem}}")
+		.menu-hidden.animated.fadeIn(ng-show="!menuOpen")
+			i.fa.fa-chevron-right(ng-click="openMenu()")
+		.menu-container
+			.nav
+				.nav-item(ng-class="menuSelected === 'items' ? 'selected' : ''", ng-click="menuSelected = 'items'")#items Items
+				.nav-item(ng-class="menuSelected === 'maps' ? 'selected' : ''", ng-click="menuSelected = 'maps'")#maps Maps
+				.visual-mode(ng-show="visualMode") Visual Mode
+				.minimize(ng-click="closeMenu()"): i.fa.fa-chevron-left
+			.side-menu.items(ng-show="menuSelected == 'items'")
+				item-menu
+				
+			.side-menu.maps(ng-show="menuSelected == 'maps'")
+				map-menu
+		.dimensions
+			p: input(id="width", step="50", type="number", placeholder="W:",ng-model="width", value="50", ng-click="setWidth(width)")
+			p: input(id="height", step="50", type="number", placeholder="H:",ng-model="height", value="50", ng-click="setHeight(height)")
+		center: canvas#map(width="2000", height="1400")
+	script(src="/lib/jquery/dist/jquery.min.js")
+	script(src="/lib/angular/angular.min.js")
+	script(src="/lib/createjs.js")
+	script(src="/lib/requirejs.js", data-main="/lib/requirejsSiteConfig.js")
+	script(src="/mapCreator/js/main.js")
+	script(src="/mapCreator/js/stage.js")
+	script(src="/mapCreator/js/item.js")
+	script(src="/mapCreator/js/itemMenuDirective.js")
+	script(src="/mapCreator/js/mapMenuDirective.js")

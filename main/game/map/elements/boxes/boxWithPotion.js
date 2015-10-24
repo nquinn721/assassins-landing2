@@ -7,8 +7,8 @@ define("game/map/elements/boxes/boxWithPotion", ["game/map/elements/items/potion
 		this.h = 25;
 		this.id = 'boxWithPotion';
 		this.type = 'dynamic';
-		this.density = 10000;
-		this.friction = 100;
+		this.density = 10;
+		this.friction = 0.3;
 		this.groupId = 1;
 		this.policies = ['item', 'floor'];
 		this.elementName = 'boxWithPotion';

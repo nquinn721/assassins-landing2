@@ -2,8 +2,8 @@ define("game/map/elements/items/potions/smallPotion", ["core/props"], function (
 	function SmallPotion () {
 		this.x = 100;
 		this.y = 100;
-		this.w = 35;
-		this.h = 50;
+		this.w = 25;
+		this.h = 40;
 		this.id = 'smallPotion';
 		this.type = 'dynamic';
 		this.groupId = 1;

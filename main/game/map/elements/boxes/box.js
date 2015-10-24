@@ -7,9 +7,9 @@ define("game/map/elements/boxes/box", function () {
 		this.h = 25;
 		this.id = 'box';
 		this.type = 'dynamic';
-		this.density = 10000;
+		this.density = 10;
 		this.groupId = 1;
-		this.friction = 1000;
+		this.friction = 0.3;
 		this.heal = 200;
 		this.policies = ['item', 'floor'];
 		this.elementName = 'box';

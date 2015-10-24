@@ -11,17 +11,17 @@ define("game/character/player/player", [
 		this.w = 50;
 		this.h = 100;
 		this.id = 'player';
-		this.speed = 5;
+		this.speed = 100;
 		this.fixedRotation = true;
 		this.username = '';
 		this.team = 'team0';
 		this.base = 'base0';
 		this.categoryBits;
 		this.maskBits;
-		this.density = 50;
+		this.density = 2;
+		this.friction = 0.2;
 		this.elementName = 'player';
 		this.policies = ['player', 'character'];
-		this.friction = 10;
 
 		this.deaths = 0;
 		this.deathTimer = 3;
@@ -227,14 +227,17 @@ define("game/character/player/player", [
 		},
 		moveRight : function () {
 			this.directionFacing = 'right';
-			this.body.move('right');
-			// this.body.applyForce('right', 50);
+			this.body.move('right', 10);
 			this.emits(['move', 'moveright']);
 		},
 		moveLeft : function () {
 			this.directionFacing = 'left';
-			this.body.move('left');
+			this.body.move('left', 10);
 			this.emits(['move', 'moveleft']);
+		},
+		stopMove : function () {
+			// this.body.stopLinearVelocity();
+			this.body.move('stop');
 		},
 		jump : function () {
 			this.jumped = true;
@@ -322,6 +325,7 @@ define("game/character/player/player", [
 				this.jumped = false;
 			}else{
 				this[key] = false;
+				if(key === 'left' || key === 'right')this.stopMove();
 			}
 		},
 		blur : function () {

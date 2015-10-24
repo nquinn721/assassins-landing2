@@ -1,14 +1,16 @@
 {
 	"path" : "/maps/map1/img/",
 	"manifest" : [
-		{ "id" : "floor", "src" : "floor.jpg"},
-		{ "id" : "wall", "src" : "wall.jpg"},
-		{ "id" : "elevator", "src" : "elevator.jpg"},
-		{ "id" : "background", "src" : "background.jpg"},
-		{ "id" : "spike", "src" : "spike.png"},
-		{ "id" : "base", "src" : "base.png"},
-		{ "id" : "smallPotion", "src" : "smallPotion.png"},
-		{ "id" : "box", "src" : "box.png"}
+		{ "id" : "floor", "src" : "floor.jpg", "name" : "Floor"},
+		{ "id" : "morefloor", "src" : "morefloor.jpg", "name" : "More Floor"},
+		{ "id" : "wall", "src" : "wall.png", "name" : "Wall"},
+		{ "id" : "elevator", "src" : "elevator.jpg", "name" : "Elevator"},
+		{ "id" : "background", "src" : "background.jpg", "name" : "Background"},
+		{ "id" : "spike", "src" : "spike.png", "name" : "Spike"},
+		{ "id" : "base", "src" : "base.png", "name" : "Base"},
+		{ "id" : "smallPotion", "src" : "smallPotion.png", "name" : "Small Potion"},
+		{ "id" : "box", "src" : "box.png", "name" : "Box"},
+		{ "id" : "boxWithPotion", "src" : "box.png", "name" : "Box With Potion"}
 
 	]
 }

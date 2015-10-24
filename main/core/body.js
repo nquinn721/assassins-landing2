@@ -43,26 +43,31 @@ define("core/body", function () {
 		applyImpulse : function (dir, speed) {
 			this.body.ApplyImpulse(this.getVec(dir, speed), this.body.GetWorldCenter());	
 		},
-		applyLinearImpulse : function (dir, speed) {
-			this.body.ApplyLinearImpulse(this.getVec(dir, speed), this.body.GetWorldCenter());	
-		},
-		
-		move : function (dir, speed) {
-			var x = this.getRealX(),
-				y = this.getRealY();
-
-			if(dir === 'left')
-				this.body.SetPosition({x : (x - (speed || this.speed)) / this.SCALE, y : y / this.SCALE});
-			else if(dir === 'right')
-				this.body.SetPosition({x : (x + (speed || this.speed)) / this.SCALE, y : y / this.SCALE});
-			else if(dir === 'up')
-				this.body.SetPosition({x : x  / this.SCALE, y : (y - (speed || this.speed)) / this.SCALE});
-			else if(dir === 'down')
-				this.body.SetPosition({x : x  / this.SCALE, y : (y + (speed || this.speed)) / this.SCALE});
-
-			
+		setLinearVelocity : function (dir, speed) {
 			if(!this.body.IsAwake())
 				this.body.SetAwake(true);
+			if(dir === 'right') this.body.SetLinearVelocity(new this.b2Vec2(speed, this.body.GetWorldCenter().y));
+			else this.body.SetLinearVelocity(new this.b2Vec2(-speed, this.body.GetWorldCenter().y));	
+		},
+		stopLinearVelocity : function () {
+			this.body.SetLinearVelocity(new this.b2Vec2(0,0));
+		},
+		angle : function () {
+			return this.body.GetAngle() / Math.PI * 180;
+		},
+		move : function (dir, speed) {
+			var vel = this.body.GetLinearVelocity(),
+				force = 0;
+
+			if(dir === 'right')force = speed;
+			if(dir === 'left')force = -speed;
+
+			if(!this.body.IsAwake())
+				this.body.SetAwake(true);
+
+			var velChange = force - vel.x;
+			var force = this.body.GetMass() * velChange;
+			this.body.ApplyImpulse(new this.b2Vec2(force, 0), this.body.GetWorldCenter());
 		},
 		getVec : function (dir, speed) {
 			var vec, 

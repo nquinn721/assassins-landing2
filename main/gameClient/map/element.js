@@ -44,12 +44,18 @@
 			if(this.setupSprite)this.setupSprite();
 			else{
 				this.img = stage.image(this.sprite, opts);
-				this.img.x = this.x;
-				this.img.y = this.y;
+				this.img.x = this.body.getRealX();
+				this.img.y = this.body.getRealY();
 		        this.img.scaleY = this.h / this.img.image.height;
 		        this.img.scaleX = this.w / this.img.image.width;
+
 				stage.index(this.img, 1);
 				
+			}
+
+			if(this.img){
+				this.img.regX = this.img.image.width / 2;
+		        this.img.regY = this.img.image.height / 2;
 			}
 		},
 		setHP :function (hp) {
@@ -59,14 +65,14 @@
 		updateCoords : function (obj) {
 			if(!this.body)return;
 			this.body.setX(obj.x);
-			this.body.setY(obj.y);	
+			this.body.setY(obj.y);
 		},
 		tick : function () {
 			if(!this.img)return;
 			if(this.tickItem)this.tickItem();
-			this.img.x = this.x = this.body.getX();
-			this.img.y = this.y = this.body.getY();
- 
+ 			this.img.rotation = this.body.angle();
+			this.img.x = this.x = this.body.getRealX();
+			this.img.y = this.y = this.body.getRealY();
 		},
 		obj : function () {
 			return {
