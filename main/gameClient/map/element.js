@@ -41,7 +41,7 @@
 			stage.destroy(this.img);
 		},
 		createSprite : function (opts) {
-			if(this.setupSprite)this.setupSprite();
+			if(this.setupSprite)this.setupSprite(stage, opts);
 			else{
 				this.img = stage.image(this.sprite, opts);
 				this.img.x = this.body.getRealX();

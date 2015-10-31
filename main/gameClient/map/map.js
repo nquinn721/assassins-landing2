@@ -1,5 +1,6 @@
 define("gameClient/map/map", [
 		'gameClient/map/elements/platforms/floor',
+		'gameClient/map/elements/platforms/morefloor',
 		'gameClient/map/elements/platforms/wall',
 		'gameClient/map/elements/platforms/elevator',
 		'gameClient/map/elements/platforms/movingplatform',
@@ -9,10 +10,11 @@ define("gameClient/map/map", [
 		'gameClient/map/elements/boxes/box',
 		'gameClient/map/elements/boxes/boxWithPotion',
 		'gameClient/map/element'
-	], function (Floor, Wall, Elevator, MovingPlatform, SpikePit, Base, SmallPotion, Box, BoxWithPotion, Element) {
+	], function (Floor, MoreFloor, Wall, Elevator, MovingPlatform, SpikePit, Base, SmallPotion, Box, BoxWithPotion, Element) {
 	function Map () {
 		this.mapElements = {
 			floor : Floor,
+			morefloor : MoreFloor,
 			wall : Wall,
 			elevator : Elevator,
 			movingplatform : MovingPlatform,

@@ -1,10 +1,10 @@
-MC.factory('stage', ['$http', '$rootScope', 'Item', function ($http, $rootScope, Item) {
+MC.factory('stage', ['$http', '$rootScope', 'Item', 'visualMode', function ($http, $rootScope, Item, visualMode) {
 	return {
 		stage : new createjs.Stage(document.getElementById('map')),
 		queue : new createjs.LoadQueue(true),
 		map : 'map1',
 		layout : 'layout1',
-		itemType : 'floor',
+		itemId : 'floor',
 		itemWidth : 50,
 		itemHeight : 50,
 		gridSize : 50,
@@ -13,6 +13,11 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', function ($http, $rootScope,
 		waitingItems : [],
 		mode : 'draw',
 		selected : [],
+		zoomLevel : 1,
+		zoomChangeBy : 25,
+		canvasWidth : 2000,
+		canvasHeight : 1600,
+		lines : [],
 		keys : {
 			8 : 'deleteItem',
 			70 : 'f',
@@ -21,7 +26,7 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', function ($http, $rootScope,
 		},
 		init : function () {
 			var self = this;
-			this.queue.loadManifest("/maps/map1/loadManifest.json");
+			this.queue.loadManifest("/game/map/maps/map1/loadManifest.json");
 			createjs.Ticker.setFPS(30);
 			createjs.Ticker.addEventListener('tick', this.tick.bind(this));
 			this.stage.on("stagemousedown", this.chooseMouseDown.bind(this));
@@ -29,6 +34,57 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', function ($http, $rootScope,
 			this.stage.on("stagemouseup", this.chooseMouseUp.bind(this));
 			this.queue.on("complete", this.begin, this);
 			this.setupKeys();
+			$rootScope.zoomLevel = this.zoomLevel;
+
+			this.visualModeClass = visualMode;
+			this.visualModeClass.init(this);
+		},
+		redrawItems : function () {
+			var items = [].concat(this.items);
+			this.items = [];
+			this.stage.removeAllChildren();
+			for(var i = 0; i < items.length; i++)
+				this.createItem({
+					x : items[i].column * this.gridSize, 
+					y : items[i].row * this.gridSize, 
+					w : (this.gridSize === 25 ? items[i].w / 2 : items[i].w * 2), 
+					h : (this.gridSize === 25 ? items[i].h / 2 : items[i].h * 2), 
+					id : items[i].id
+				});
+			this.addWaitingItems();
+		},
+		zoomOut : function () {
+			if(this.zoomLevel <= 0)return;
+			this.itemWidth -= this.zoomChangeBy;
+			this.itemHeight -= this.zoomChangeBy;
+			this.gridSize -= this.zoomChangeBy;
+			this.stage.canvas.width -= this.stage.canvas.width / 2;
+			this.stage.canvas.height -= this.stage.canvas.height / 2;
+			this.redrawItems();
+			this.setupLines();
+
+
+			this.zoomLevel--;
+			$rootScope.zoomLevel = this.zoomLevel;
+		},
+		zoomIn : function () {
+			if(this.zoomLevel >= 1)return;
+			this.itemWidth += this.zoomChangeBy;
+			this.itemHeight += this.zoomChangeBy;
+			this.gridSize += this.zoomChangeBy;
+			this.stage.canvas.width = this.canvasWidth;
+			this.stage.canvas.height = this.canvasHeight;
+			this.redrawItems();
+			this.setupLines();
+
+			this.zoomLevel++;
+			$rootScope.zoomLevel = this.zoomLevel;
+		},
+		canZoomIn : function () {
+			if(this.zoomLevel === 1)return true;	
+		},
+		canZoomOut : function () {
+			if(this.zoomLevel === 0)return true;	
 		},
 		begin : function () {
 			this.setupLines();
@@ -40,21 +96,18 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', function ($http, $rootScope,
 				this.line(0, y, this.stage.canvas.width, 1);
 			
 		},
+		clearLines : function () {
+			for(var i = 0; i < this.lines.length; i++)this.stage.removeChild(this.lines[i]);	
+		},
 		line : function (x, y, w, h) {
 			var g = new createjs.Shape();
 			this.stage.addChild(g);
 			g.graphics.beginFill("rgba(255,255,255,0.4)").drawRect(x, y, w, h);
+			this.lines.push(g);
 		},
-		destroyVisualBox : function () {
-			this.stage.removeChild(this.visualBox);
-		},
-		drawVisualBox : function (x, y, w, h) {
-			this.visualBox = new createjs.Shape();
-			this.stage.addChild(this.visualBox);
-			this.visualBox.graphics.beginStroke('blue').beginFill("rgba(7, 48, 133, 0.43)").drawRect(x, y, w, h);		
-		},
-		setItem : function (type, src) {
-			this.itemType = type;
+		
+		setItem : function (id, src) {
+			this.itemId = id;
 			$rootScope.currentItem = src;
 		},
 		setWidth : function (w) {
@@ -63,7 +116,7 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', function ($http, $rootScope,
 		setHeight : function (h) {
 			this.itemHeight = h;
 		},
-		createItem : function (obj) {
+		createItem : function (obj, setItems) {
 			if(!this.canLayItem())return;
 			var column = this.getColumn(obj.x),
 				row = this.getRow(obj.y),
@@ -74,14 +127,14 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', function ($http, $rootScope,
 					h : obj.h || this.itemHeight,
 					row : row,
 					column : column,
-					type : obj.type || this.itemType
+					id : obj.id || this.itemId
 				},
-				img = new createjs.Bitmap(this.queue.getResult(obj.type)),
+				img = new createjs.Bitmap(this.queue.getResult(obj.id)),
 				item = new Item(this, img, obj);
 			item.init();
 			this.stage.addChild(item.img);
-			this.waitingItems.push(item);
 
+			this.items.push(item);
 			return img;
 		},
 		addWaitingItems : function () {
@@ -94,16 +147,24 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', function ($http, $rootScope,
 			this.save();
 		},
 		
-		save : function () {
+		save : function (noApply) {
 			if(!this.currentFile)return;
-			$http({method : 'post', url : '/save-map', data : {mapJson : JSON.stringify(this.getItems()), map : this.map, layout : this.layout}});
+			$http({method : 'post', url : '/mapcreator-save-map', data : {mapJson : JSON.stringify(this.getItems()), map : this.map, layout : this.layout}});
+			$rootScope.saved = 'Saved!';
+			if(!noApply)
+				$rootScope.$apply();
+			setTimeout(function () {
+				$rootScope.saved = '';
+				$rootScope.$apply();
+			}, 1000);
+
 		},
 		getItems : function () {
 			return this.items.map(function (v) {
 				return {
 					x : v.x,
 					y : v.y,
-					type : v.type,
+					id : v.id,
 					w : v.w,
 					h : v.h,
 					row : v.row,
@@ -112,110 +173,52 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', function ($http, $rootScope,
 			});
 		},
 		canLayItem : function () {
-			if(this.findItemWithinArea(this.items) || this.findItemWithinArea(this.waitingItems))
+			if(this.findItemWithinArea(this.items))
 				return false;
 			return true;
 		},
 		findItemWithinArea : function (arr) {
 			if(!this.currentMousePos)return;
 
-			var w = this.itemWidth,
-				h = this.itemHeight,
-				row = this.currentMousePos.row,
+			var row = this.currentMousePos.row,
 				column = this.currentMousePos.column,
-				rows = w / this.gridSize,
-				columns = h / this.gridSize,
 				found;
 
 			for(var i = 0; i < arr.length; i++){
 				var item = arr[i];
 					irow = item.row,
 					icolumn = item.column,
-					irows = item.w / this.gridSize,
-					icolumns = item.h / this.gridSize;
+					irows =  irow + Math.floor(item.h / this.gridSize),
+					icolumns = icolumn + Math.floor(item.w / this.gridSize);
 
-				for(var y = 0; y < rows; y++)
-					for(var x = 0; x < columns; x++)
-						for(iy = 0; iy < irows; iy++)
-							for(ix = 0; ix < icolumns; ix++)
-								if(irow + iy === row + y && icolumn + ix === column + x)found = true;
+					for(var j = irow; j < irows; j++)
+						for(var k = icolumn; k < icolumns; k++)
+							if(j === row && k === column)found = true;
 			}
 			return found;
 		},
-		checkForItem : function () {
-			var found,
-				mp = this.currentMousePos;
-
-			for(var i = 0; i < this.items.length; i++){
-				var item = this.items[i];
-					row = item.row,
-					column = item.column;
-				if(mp.row === row && mp.column === column)found = item;
-			}
-			for(var i = 0; i < this.waitingItems.length; i++){
-				var item = this.waitingItems[i],
-					row = item.row,
-					column = item.column;
-
-				if(mp.row === row && mp.column === column)found = item;
-			}
-			if(found)return found;
-		},
 		chooseMouseDown : function (e) {
-			if(this.visualMode)this.visualModeMouseDown(e);
+			if(this.zoomLevel === 0)return;
+			if(this.visualMode)this.visualModeClass.stageMouseDown(e);
 			else this.stageMouseDown(e);	
 		},
 		chooseMouseMove : function (e) {
-			if(this.visualMode)this.visualModeMouseMove(e);
+			if(this.zoomLevel === 0)return;
+			if(this.visualMode)this.visualModeClass.stageMouseMove(e);
 			else this.stageMouseMove(e);	
 		},
 		chooseMouseUp : function (e) {
-			if(this.visualMode)this.visualModeMouseUp(e);
+			if(this.zoomLevel === 0)return;
+			if(this.visualMode)this.visualModeClass.stageMouseUp(e);
 			else this.stageMouseUp(e);	
 		},
-		visualModeMouseDown : function (e) {
-			this.visualMouseCoords = {
-				x : e.stageX,
-				y : e.stageY
-			}
-			this.visualMouseDown = true;
-		},
-		visualModeMouseMove : function (e) {
-			if(this.visualMouseDown){
-				var w = e.stageX - this.visualMouseCoords.x,
-					h = e.stageY - this.visualMouseCoords.y;
-
-				this.destroyVisualBox();
-				this.drawVisualBox(
-					this.visualMouseCoords.x,
-					this.visualMouseCoords.y,
-					w,
-					h
-				);
-			}
-		},
-		visualModeMouseUp : function (e) {
-			var box = this.visualBox.graphics.command;
-			this.visualMouseDown = false;
-
-			this.selected = [];
-
-			for(var i = 0; i < this.items.length; i++){
-				var item = this.items[i];
-				item.deselect();
-				if(item.x >= box.x && item.x <= box.x + box.w &&
-					item.y >= box.y && item.y <= box.y + box.h ||
-					item.x + item.w >= box.x && item.x + item.w <= box.x + box.w &&
-					item.y + item.h >= box.y && item.y + item.h <= box.y + box.h)item.select();
-			}
-			this.destroyVisualBox();
-
-		},
 		stageMouseDown : function(e) {
-			var item = this.checkForItem();
 			this.mouseDown = true;
 
-			if(this.selected.length) return;
+			if(this.selected.length) {
+				if(this.canLayItem())this.deselect();
+				return;
+			}
 
 
 			this.createItem({
@@ -225,14 +228,15 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', function ($http, $rootScope,
 		},
 		toggleVisualMode : function () {
 			$rootScope.visualMode = !$rootScope.visualMode;
-			this.visualMode = !this.visualMode;	
+			this.visualMode = !this.visualMode;
+			this.visualModeClass.resetVisualBox();	
 		},
 		stageMouseMove : function (e) {
 			var obj = {
-		   		row : Math.floor(e.stageY / 50), 
-		   		column : Math.floor(e.stageX / 50),
-		   		x : Math.floor(e.stageX / 50) * 50, 
-		   		y : Math.floor(e.stageY / 50) * 50,
+		   		row : Math.floor(e.stageY / this.gridSize), 
+		   		column : Math.floor(e.stageX / this.gridSize),
+		   		x : Math.floor(e.stageX / this.gridSize) * this.gridSize, 
+		   		y : Math.floor(e.stageY / this.gridSize) * this.gridSize,
 		   	}, c = this.currentMousePos;
 
 		   	if(c){
@@ -246,8 +250,10 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', function ($http, $rootScope,
 			   	}
 		   	}
 		   	this.currentMousePos = obj;
-			if(this.mouseDown && !this.selected.length)
+			if(this.mouseDown && !this.selected.length){
 				this.createItem({x : this.currentMousePos.x, y : this.currentMousePos.y});
+				this.isDirty = true;
+			}
 
 			if(this.movingItems)this.moveItems();
 
@@ -257,7 +263,9 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', function ($http, $rootScope,
 		},
 		stageMouseUp : function(e) {
 			this.mouseDown = false;
-			this.addWaitingItems();
+			
+			if(this.isDirty)
+				this.save();
 		},
 		
 		loadMap : function (map, layout) {
@@ -265,16 +273,21 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', function ($http, $rootScope,
 			this.map = map;
 			this.layout = layout;
 			this.waitingItems = [];
-			this.currentFile = 'maps/' + this.map + '/layouts/' + this.layout;
+			this.currentFile = 'game/map/maps/' + this.map + '/layouts/' + this.layout;
 			this.stage.removeAllChildren();
-			this.setupLines();
+			this.items = [];
+
+			$rootScope.currentMap = map;
+			$rootScope.currentLayout = layout;
+			
+			if(this.zoomLevel === 0)this.zoomIn();
+			else this.setupLines();
 
 			require([this.currentFile], function (items) {
-				self.items = items || [];
 				if(items)
 					for(var i = 0; i < items.length; i++){
 						var item = items[i];
-						self.createItem(item);
+						self.createItem(item, true);
 					}
 			});
 		},
@@ -282,7 +295,7 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', function ($http, $rootScope,
 			for(var i = 0; i < this.selected.length; i++){
 				var item = this.selected[i];
 				item.delete();
-				this.items.splice(this.items.indexOf(item), 1);
+				this.removeItem(item);
 			}
 			this.selected = [];
 			this.save();
@@ -290,6 +303,8 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', function ($http, $rootScope,
 		deselect : function  () {
 			for(var i = 0; i < this.selected.length; i++) this.selected[i].deselect();
 			this.selected = [];
+			$rootScope.visualMode = false;
+			this.visualMode = false;
 		},
 		tick : function () {
 			this.stage.update();
@@ -306,15 +321,15 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', function ($http, $rootScope,
 			return {row : row, column : column};
 		},
 		getRow : function (y) {
-			return Math.floor(y / 50);
+			return Math.floor(y / this.gridSize);
 		},
 		getColumn : function (x) {
-			return Math.floor(x / 50);	
+			return Math.floor(x / this.gridSize);	
 		},
 		setupKeys : function () {
 			var self = this;
 			$(document).on('keydown', function (e) {
-				if(self.keys[e.keyCode]){
+				if(self.keys[e.keyCode] && self.zoomLevel > 0){
 					self[self.keys[e.keyCode]]();
 					return false;
 				}
@@ -324,6 +339,16 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', function ($http, $rootScope,
 					top : e.pageY + 30
 				}).show();
 			});
+		},
+		removeChild : function (child) {
+			this.stage.removeChild(child);
+		},
+		removeItem : function (item) {
+			this.items.splice(this.items.indexOf(item), 1);	
+			item.delete();
+		},
+		addChild : function (child) {
+			this.stage.addChild(child);
 		}
 	}
 }]);

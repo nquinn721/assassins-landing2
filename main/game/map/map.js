@@ -10,9 +10,10 @@ define("game/map/map", [
 	
 
 	function Map(mapName, b2d) {
-		var Map = require("game/map/maps/" + mapName);
-		this.map = new Map;
 		
+		// New
+		this.map = require('game/map/maps/map1/layouts/layout1');		
+
 		this.b2d = b2d;
 
 		this.frames = 0;
@@ -44,7 +45,8 @@ define("game/map/map", [
 				if(this.items[i].id === id)return this.items[i];
 		},
 		readMatrix : function () {
-			this.items = matrix.map(this.map.matrix);
+			this.items = matrix.mapItems(this.map);
+			// this.items = matrix.map(this.map.matrix);
 		},
 		contact : function (obj) {
 			this.createContact(obj, 'contact');

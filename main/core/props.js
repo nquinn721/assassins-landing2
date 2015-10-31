@@ -4,7 +4,7 @@ define("core/props", [], function () {
 
 		canvas : {
 			w : 2000,
-			h : 1200,
+			h : 1600,
 			currentX : 0,
 			currentY : 0
 		},

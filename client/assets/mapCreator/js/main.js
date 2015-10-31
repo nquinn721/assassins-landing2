@@ -7,7 +7,7 @@ MC.controller('main', ['$scope', 'stage', '$rootScope', function ($scope, stage,
 	$scope.width = stage.itemWidth;
 	$scope.height = stage.itemHeight;
 	$scope.menuOpen = true;
-	$rootScope.currentItem = '/maps/map1/img/floor.jpg';
+	$rootScope.currentItem = '/game/map/maps/map1/img/floor.jpg';
 
 	$scope.loadMap = function (index, map, layout) {
 		$scope.mapSelected = index;
@@ -16,6 +16,8 @@ MC.controller('main', ['$scope', 'stage', '$rootScope', function ($scope, stage,
 	$scope.setWidth = stage.setWidth.bind(stage);
 	$scope.setHeight = stage.setHeight.bind(stage);
 	$scope.setType = stage.setItem.bind(stage);
+	$scope.zoomOut = stage.zoomOut.bind(stage);
+	$scope.zoomIn = stage.zoomIn.bind(stage);
 	$scope.openMenu = function () {
 		$scope.menuOpen = true;
 		$('.menu-container').animate({
@@ -34,3 +36,5 @@ MC.controller('main', ['$scope', 'stage', '$rootScope', function ($scope, stage,
 	};
 }]);
 
+$('.draggable').draggable({handle : '.title'});
+$('[data-toggle="tooltip"]').tooltip();

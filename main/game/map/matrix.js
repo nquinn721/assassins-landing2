@@ -4,10 +4,21 @@ define("game/map/matrix", [
 	], function (props, element) {
 	
 	function Matrix () {
+		this.newelements = {
+			floor : 'platforms/floor',
+			morefloor : 'platforms/morefloor',
+			wall : 'platforms/wall',
+			elevator : 'platforms/elevator',
+			movingplatform : 'platforms/movingplatform',
+			spikePit : 'pits/spikePit',
+			base : 'structures/base',
+			smallPotion : 'items/potions/smallPotion',
+			box : 'boxes/box',
+			boxWithPotion : 'boxes/boxWithPotion'
+		};
 		this.elements = {
 			f : 'platforms/floor',
 			w : 'platforms/wall',
-			c : 'platforms/ceiling',
 			e : 'platforms/elevator',
 			m : 'platforms/movingplatform',
 			s : 'pits/spikePit',
@@ -17,11 +28,25 @@ define("game/map/matrix", [
 			bwp : 'boxes/boxWithPotion'
 		};
 
-
+		this.items = [];
 		
 	}
 
 	Matrix.prototype = {
+		mapItems : function (items) {
+			for(var i = 0; i < items.length; i++){
+				var it = items[i],
+					item = this.newelements[items[i].id],
+					id = item.split('/')[1];
+				it.id = it.type;
+				it.id = id + this.getItemCount(id)
+
+				this.items.push(element.extend(item, it))
+
+			}
+			console.log(this.items);
+			return this.items;	
+		},
 		map : function (matrix) {
 			var id, i, j, k, h;
 
@@ -71,6 +96,7 @@ define("game/map/matrix", [
 
 			if(this.item)
 				this.items.push(this.item);
+			console.log(this.items);
 			return this.items;
 		},
 		createItem : function (currentRow, currentColumn, matrix, segment) {

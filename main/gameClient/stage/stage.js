@@ -9,7 +9,7 @@ define("gameClient/stage/stage", ['core/emitter'], function (emitter) {
         init : function () {
         },
         loadMap : function (map, cb) {
-            this.queue.loadManifest("/maps/" + map + "/loadManifest.json");
+            this.queue.loadManifest("/game/map/maps/" + map + "/loadManifest.json");
             this.queue.on("complete", cb, this);
         },
 		ticker : function () {

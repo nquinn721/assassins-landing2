@@ -1,5 +1,5 @@
 {
-	"path" : "/maps/map2/img/",
+	"path" : "/game/map/maps/map2/img/",
 	"manifest" : [
 		{ "id" : "floor", "src" : "floor.jpg"},
 		{ "id" : "wall", "src" : "wall.jpg"},

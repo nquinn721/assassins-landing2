@@ -9,8 +9,14 @@ head
 	title Map Creator
 body(ng-controller="main")
 	.map-creator
+		.visual-mode(ng-show="visualMode") Visual Mode
+		.visual-mode-menu.draggable(ng-show="visualMode")
+			.title(ng-mousedown="titleMovingClass='moving'", ng-mouseup="titleMovingClass=''", ng-class="titleMovingClass") Visual Mode Menu
+			.body
+				.item(title="Selection Tool", data-toggle="tooltip", ng-class="visualItem === 'selection' ? 'selected' : ''", ng-click="changeItem('selection')"): i.fa.fa-mouse-pointer
+				.item(title="Tile Fill", data-toggle="tooltip", ng-class="visualItem === 'tileFill' ? 'selected' : ''", ng-click="changeItem('tileFill')"): i.fa.fa-th-large
+				.item(title="Combine Tiles", data-toggle="tooltip", ng-class="visualItem === 'combineTiles' ? 'selected' : ''", ng-click="changeItem('combineTiles')"): i.fa.fa-object-group
 		.currentItem(ng-class="{'cantLay' : cantLay}")
-			.dimen {{width}} x {{height}}
 			img(ng-src="{{currentItem}}")
 		.menu-hidden.animated.fadeIn(ng-show="!menuOpen")
 			i.fa.fa-chevron-right(ng-click="openMenu()")
@@ -18,18 +24,32 @@ body(ng-controller="main")
 			.nav
 				.nav-item(ng-class="menuSelected === 'items' ? 'selected' : ''", ng-click="menuSelected = 'items'")#items Items
 				.nav-item(ng-class="menuSelected === 'maps' ? 'selected' : ''", ng-click="menuSelected = 'maps'")#maps Maps
-				.visual-mode(ng-show="visualMode") Visual Mode
+				.nav-item(ng-class="menuSelected === 'controls' ? 'selected' : ''", ng-click="menuSelected = 'controls'")#controls Controls
 				.minimize(ng-click="closeMenu()"): i.fa.fa-chevron-left
 			.side-menu.items(ng-show="menuSelected == 'items'")
 				item-menu
-				
 			.side-menu.maps(ng-show="menuSelected == 'maps'")
 				map-menu
+			.side-menu.controls(ng-show="menuSelected == 'controls'")
+				controls-menu
+			.info
+				.map 
+					span Map
+					div {{currentMap || 'No File'}}
+				.layout 
+					span Layout
+					div {{currentLayout}}
+				.save(ng-show="saved") {{saved}}
+
 		.dimensions
-			p: input(id="width", step="50", type="number", placeholder="W:",ng-model="width", value="50", ng-click="setWidth(width)")
-			p: input(id="height", step="50", type="number", placeholder="H:",ng-model="height", value="50", ng-click="setHeight(height)")
-		center: canvas#map(width="2000", height="1400")
+			p: i.fa.fa-search-minus.pointer.zoom(ng-click="zoomOut()", ng-class="{disabled : (zoomLevel === 0)}")
+			p: i.fa.fa-search-plus.pointer.zoom(ng-click="zoomIn()", ng-class="{disabled : (zoomLevel === 1)}")
+			//- p: input(id="width", step="25", type="number", placeholder="W:",ng-model="width", value="50", ng-click="setWidth(width)")
+			//- p: input(id="height", step="25", type="number", placeholder="H:",ng-model="height", value="50", ng-click="setHeight(height)")
+		.map-area: canvas#map(width="2000", height="1600")
 	script(src="/lib/jquery/dist/jquery.min.js")
+	script(src="/lib/jqueryui.js")
+	script(src="/lib/bootstrap/dist/js/bootstrap.min.js")
 	script(src="/lib/angular/angular.min.js")
 	script(src="/lib/createjs.js")
 	script(src="/lib/requirejs.js", data-main="/lib/requirejsSiteConfig.js")
@@ -38,3 +58,5 @@ body(ng-controller="main")
 	script(src="/mapCreator/js/item.js")
 	script(src="/mapCreator/js/itemMenuDirective.js")
 	script(src="/mapCreator/js/mapMenuDirective.js")
+	script(src="/mapCreator/js/controlsMenuDirective.js")
+	script(src="/mapCreator/js/visualMode.js")
