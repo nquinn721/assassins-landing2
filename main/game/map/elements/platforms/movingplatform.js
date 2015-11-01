@@ -1,5 +1,5 @@
 define("game/map/elements/platforms/movingplatform", function () {
-	function Elevator (obj) {
+	function Elevator () {
 		this.x = 10;
 		this.y = 10;
 		this.w = 100;
@@ -12,11 +12,10 @@ define("game/map/elements/platforms/movingplatform", function () {
 		this.policies = ['floor', 'movingplatform'];
 		this.b2delement = 'rect';
 		this.elementName = 'movingplatform';
+		this.categoryBits = 0x0001;
 
-		this.originalX = obj.x;
-		this.originalY = obj.y;
+		
 
-		for(var i in obj)this[i] = obj[i];
 		this.frames = 0;
 
 		this.direction = true;
@@ -24,6 +23,10 @@ define("game/map/elements/platforms/movingplatform", function () {
 		
 	}
 	Elevator.prototype = {
+		init : function () {
+			this.originalX = this.x;
+			this.originalY = this.y;
+		},
 	 	tickItem : function () {
 	 		if(!this.body)return;
 

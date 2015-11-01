@@ -1,9 +1,9 @@
 define("game/character/player/player", [
-		'core/emitter', 
 		'core/keys', 
-		'core/props'
+		'core/props',
+		'core/b2d'
 	], 
-	function (emitter, keys, props) {
+	function (keys, props, b2d) {
 
 	function Player (obj) {
 		this.x = 10;
@@ -11,10 +11,20 @@ define("game/character/player/player", [
 		this.w = 50;
 		this.h = 100;
 		this.id = 'player';
-		this.speed = 5;
+		this.speed = 100;
 		this.fixedRotation = true;
 		this.username = '';
+		this.team = 'team0';
+		this.base = 'base0';
+		this.categoryBits;
+		this.maskBits;
+		this.density = 2;
+		this.friction = 0.2;
+		this.elementName = 'player';
+		this.policies = ['player', 'character'];
 
+		this.deaths = 0;
+		this.deathTimer = 3;
 
 		this.previousX = 10;
 		this.previousY = 10;
@@ -25,18 +35,17 @@ define("game/character/player/player", [
 			bottom : this.y + (this.h)
 		}
 
-		// Client Classes
-		this.client = {};
-
+		this.isDirty = false;
 
 		// Property overrides
 		for(var i in obj)
 			this[i] = obj[i];
 
+		
 
 		this.frames = 0;
 
-		this.jumpAvailable = false;
+		this.jumpAvailable = true;
 		this.smallJumpAvailable = false;
 
 
@@ -44,23 +53,35 @@ define("game/character/player/player", [
 		this.visibleMapElements = [];
 		this.visibleMapPlayers = [];
 		this.visibleMapItems = [];
+
+		// Events
+		this.events = {};
+
+		this.isBlur = false;
 	}
 
 	Player.prototype = {
-		init : function (b2d) {
+		init : function (characterClass) {
+			this.characterClass = characterClass;
+			for(var i in characterClass.stats)
+				this[i] = characterClass.stats[i];
+			this.characterClass.init(b2d);
+
+			this.create(b2d);
+			this.started = true;
+		},
+		isStarted : function () {
+			return this.started;
+		},
+		create : function (b2d, obj) {
 			this.body = b2d.rect(this.obj());
-			this.events();
-		},
-		events : function () {
-			emitter.on('contact', this.contact.bind(this));	
-			emitter.on('endContact', this.endContact.bind(this));	
-		},
-		initClient : function (obj) {
-			for(var i in obj)
-				this.client[i] = obj[i];
-		},
-		initServer : function () {
-			
+			if(!obj){
+				this.body.setX(this.x);
+				this.body.setY(this.y);
+			}else{
+				this.body.setX(obj.x);
+				this.body.setY(obj.y);
+			}
 		},
 		tick : function () {
 			// Update Previous Position
@@ -74,13 +95,15 @@ define("game/character/player/player", [
 			
 			this.frames++;
 
-			for(var i in this.client)
-				if(this.client[i].tick)this.client[i].tick(this);
-
 			if(this.right)
 				this.moveRight();
 			if(this.left)
 				this.moveLeft();
+			if(this.moveup)
+				this.moveUp();
+
+			if(this.gettingDamaged)
+				this.damage(this.damageDealt);
 
 
 			// Update Current Position
@@ -108,10 +131,35 @@ define("game/character/player/player", [
 			return 	this.jumping;
 		},
 		contact : function (item) {
-			if(!item || !item.two.policies)return;
+			if(!item.policies)return;
 
-			var colide = item.two.sides,
-				policies = item.two.policies.join('');
+			var colide = item.sides,
+				policies = item.policies.join('');
+
+			
+
+			if(policies.match(/floor|wall/))
+				if(colide.top < this.sides.bottom && colide.bottom > this.sides.top && (this.sides.right < colide.left + 10 || this.sides.left > colide.right - 10))
+					this.smallJumpAvailable = true;
+				
+			
+
+			if(policies.match('constantDamage'))
+				this.constantDamage(item.damage);
+			
+			if(policies.match('bullet') && item.team !== this.team)
+				this.damage(item.damageDealt);
+
+			if(policies.match('item')){
+				if(policies.match('heal'))
+					this.heal(item.heal);
+			}
+
+		},
+		contactPostSolve : function (item) {
+			if(!item.policies)return;
+			var colide = item.sides,
+				policies = item.policies.join('');
 
 			if(policies.match('floor'))
 				if(this.sides.bottom < colide.top && (this.sides.left < colide.right - 5 || this.sides.right > colide.left + 5) ){
@@ -119,38 +167,88 @@ define("game/character/player/player", [
 					this.currentlyJumping = false;
 				}
 
-			if(policies.match(/floor|wall/)){
-				if(colide.top < this.sides.bottom && colide.bottom > this.sides.top && (this.sides.right < colide.left + 6 || this.sides.left > colide.right - 6)){
-					this.smallJumpAvailable = true;
-				}
-			}
-			
-			
 		},
 		endContact : function (item) {
-			if(!item || !item.two.policies)return;
+			if(!item.policies)return;
+			var policies = item.policies.join('');
 
 			this.smallJumpAvailable = false;
+			this.jumpAvailable = false;
+
+			if(policies.match('spikePit'))
+				this.gettingDamaged = false;
+		},
+		die : function () {
+			this.deaths++;
+			this.destroy();
+			this.isDead = true;
+			
+		},
+		revive : function () {
+			this.hp = this.characterClass.stats.hp;
+			this.create(b2d, this.spawnPoint);
+			this.isDirty = true;
+			this.isDead = false;
+			this.deathTimer += (this.deaths * 3);
+		},
+		heal : function (amount) {
+			this.hp += amount;
+			if(this.hp > this.characterClass.stats.hp)this.hp = this.characterClass.stats.hp;
+			this.emit('heal');
+		},
+		damage : function (dmg) {
+			this.hp -= dmg || 0;
+			this.isDirty = true;
+			this.emit('hit');
+		},
+		constantDamage : function (dmg) {
+			this.gettingDamaged = true;
+			this.damageDealt = dmg;
 		},
 		setCoords : function (obj) {
 			this.body.setX(obj.x);
 			this.body.setY(obj.y);
+			this.x = obj.x;
+			this.y = obj.y;
+		},
+		setY : function (y) {
+			this.body.setY(y);
+			this.y = y;
+		},
+		setX : function (x) {
+			this.body.setX(x);
+			this.x = x;
+		},
+		setHP : function (hp) {
+			this.hp = hp;
+		},
+		moveUp : function () {
+			this.body.move('up', 10);
 		},
 		moveRight : function () {
 			this.directionFacing = 'right';
-			this.body.move('right');
+			this.body.move('right', 10);
+			this.emits(['move', 'moveright']);
 		},
 		moveLeft : function () {
 			this.directionFacing = 'left';
-			this.body.move('left');
+			this.body.move('left', 10);
+			this.emits(['move', 'moveleft']);
+		},
+		stopMove : function () {
+			// this.body.stopLinearVelocity();
+			this.body.move('stop');
 		},
 		jump : function () {
+			this.jumped = true;
+			this.jumpAvailable = false;
 			this.currentlyJumping = true;
-			this.body.applyImpulse('up',5);
+			this.body.applyImpulse('up', 5.5 * this.density);
+			this.emits(['move', 'jump']);
 		},
 		smallJump : function () {
 			this.currentlyJumping = true;
-			this.body.applyImpulse('up', 3.5);
+			this.body.applyImpulse('up', 3 * this.density);
 		},
 		destroy : function  () {
 			this.body.destroy();
@@ -162,22 +260,54 @@ define("game/character/player/player", [
 				w : this.w,
 				h : this.h,
 				id : this.id,
+				hp : this.hp,
+				str : this.str,
+				spd : this.spd,
+				agi : this.agi,
+				def : this.def,
+				characterClass : this.characterClass.stats,
 				speed : this.speed,
 				fixedRotation : this.fixedRotation,
 				username : this.username,
-				account : this.account
+				account : this.account,
+				directionFacing : this.directionFacing,
+				team : this.team,
+				spawnPoint : this.spawnPoint,
+				character : this.characterClass.stats.character,
+				base : this.base,
+				characterSelected : this.characterSelected,
+				categoryBits : this.categoryBits,
+				maskBits : this.maskBits,
+				density : this.density,
+				policies : this.policies,
+				elementName : this.elementName,
+				friction : this.friction
 			}
+		},
+		// Return everything except account
+		simpleObj : function () {
+			var obj = this.obj(),
+				newObj = {};
+			for(var i in obj)
+				if(i !== 'account')
+					newObj[i] = obj[i];
+			return 	newObj;
+		},
+		mouseDown : function (obj) {
+			this.characterClass.mouseDown(obj, this.obj());
+		},
+		mouseUp : function () {
+			
 		},
 		keyDown : function (keyCode) {
 			var key = keys[keyCode];
 
 			if(key === 'up' && !this.jumped){
-				this.jumped = true;
-
 				if(this.smallJumpAvailable && !this.jumpAvailable){
 					this.smallJumpAvailable = false;
 					this.smallJump();
 				}
+				
 				if(this.jumpAvailable){
 					this.jumpAvailable = false;
 					this.jump();
@@ -190,12 +320,18 @@ define("game/character/player/player", [
 		
 		keyUp : function (keyCode) {
 			var key = keys[keyCode];
-
+			this.emits(['stopmove', 'stop' + key]);
 			if(key === 'up'){
 				this.jumped = false;
 			}else{
 				this[key] = false;
+				if(key === 'left' || key === 'right')this.stopMove();
 			}
+		},
+		blur : function () {
+			for(var i in keys)this.keyUp(i);
+		},
+		focus : function () {
 		},
 		getVisibleItems : function () {
 			return this.visibleMapItems;
@@ -203,16 +339,20 @@ define("game/character/player/player", [
 		getVisiblePlayers : function () {
 			return this.visibleMapPlayers;
 		},
+		addVisiblePlayer : function (player) {
+			this.visibleMapPlayers.push(player);
+		},
+		removeVisiblePlayer : function (player) {
+			this.visibleMapPlayers.splice(this.visibleMapPlayers.indexOf(player), 1);	
+		},
+		hasVisiblePlayer : function (player) {
+			for(var i = 0; i < this.visibleMapPlayers.length; i++)
+				if(this.visibleMapPlayers[i].id === player.id)return true;	
+		},
 		addVisibleItem : function (item) {
-			if(item.id.match('player'))this.visibleMapPlayers.push(item);
-			else this.visibleMapItems.push(item);
-
 			this.visibleMapElements.push(item);
 		},
 		removeVisibleItem : function (item) {
-			if(item.id.match('player'))this.visibleMapPlayers.splice(this.visibleMapPlayers.indexOf(item), 1);
-			else this.visibleMapItems.splice(this.visibleMapItems.indexOf(item), 1);
-
 			this.visibleMapElements.splice(this.visibleMapElements.indexOf(item), 1);
 		},
 		hasVisibleItem : function (item) {
@@ -227,6 +367,34 @@ define("game/character/player/player", [
 				item.y <= this.y + props.mapShowingDistance
 			)return true;
 			return false;
+		},
+		setTeam : function (team) {
+			this.team = team;
+		},
+		setBase : function (base) {
+			this.base = base;
+		},
+		on : function (event, cb) {
+			if(typeof event === 'object'){
+				for(var i = 0; i < event.length; i++){
+					if(!this.events[event[i]])this.events[event[i]] = [];
+					this.events[event[i]].push(cb);
+				}
+
+			}else{
+				if(!this.events[event])this.events[event] = [];
+				this.events[event].push(cb);
+			}
+		},
+		emit : function (event, data) {
+			if(this.events[event])
+				for(var i = 0; i < this.events[event].length; i++)
+					this.events[event][i](data);
+		},
+		emits : function (events) {
+			for(var i = 0; i < events.length; i++){
+				this.emit(events[i]);
+			}
 		}
 	}
 	return Player;

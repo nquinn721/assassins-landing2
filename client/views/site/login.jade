@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+html(lang="en")
+head
+	meta(charset="UTF-8")
+	title Login
+	link(rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css")
+	link(rel="stylesheet", href="/css/build/site/main.css")
+	script(src="lib/jquery/dist/jquery.min.js")
+	script(src="/socket.io/socket.io.js")
+		
+body
+	.login-page
+		.login.menu
+			.header: h2 Login
+			.main-body
+				form(action="login", method="POST")
+					.form-group
+						label(for="username") Username
+						input.form-control(class="username", id="username", name="username", placeholder="Type username...")
+					.form-group
+						label(for="password") Password
+						input.form-control(class="password", id="password", name="password", type="password", placeholder="Type password...")
+					.form-group
+						input.btn.btn-primary(type="submit", id="submit", value="Login")
+				if error
+					.alert.alert-danger Wrong credentials
+script.
+	$('.username').focus();
+	var socket = io.connect();
+	socket.on('connected baby', function(){console.log('yep')});

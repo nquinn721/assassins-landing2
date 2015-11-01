@@ -18,6 +18,42 @@ define("game/character/player/playerManager", [
 		},
 		events : function () {
 			emitter.on('tick', this.tick.bind(this));
+
+			emitter.on('contact', this.contact.bind(this));	
+			emitter.on('contactPostSolve', this.contactPostSolve.bind(this));	
+			emitter.on('endContact', this.endContact.bind(this));
+			emitter.on('setHP', this.setPlayerHP.bind(this));
+			emitter.on('die', this.die.bind(this));
+			emitter.on('revive', this.revive.bind(this));
+			emitter.on('mousedown', this.mousedown.bind(this));
+		},
+		die : function (player) {
+			var p = this.getById(player.id);
+			if(p) p.die();
+		},
+		revive : function (player) {
+			var p = this.getById(player.id);
+			if(p) p.revive();
+		},
+		contact : function(obj){
+			this.createContact(obj, 'contact');
+		},
+		contactPostSolve : function (obj) {
+			this.createContact(obj, 'contactPostSolve');
+		},
+		endContact : function (obj) {
+			this.createContact(obj, 'endContact');
+		},
+		createContact : function (obj, method) {
+			var a = this.getById(obj.one),
+				b = this.getById(obj.two);
+
+			if(a && a[method])a[method](b || obj.two);
+			if(b && b[method])b[method](a || obj.one);
+		},
+		mousedown : function(obj) {
+			player = this.getById(obj.player.id);
+			player.mouseDown(obj.mouse);
 		},
 		createPlayer : function (obj) {
 			var playerObj = {
@@ -43,11 +79,26 @@ define("game/character/player/playerManager", [
 			return player;
 		},
 		
+		setPlayerHP : function (players) {
+			if(players instanceof Array)
+				for(var i = 0; i < players.length; i++){
+					var p = this.getById(players[i].id);
+					if(p){
+						p.setHP(players[i].hp);
+						if(p.hp <= 0)p.die();
+					}
+					
+				}
+			else {
+				var p = this.getById(players.id);
+				if(p)p.setHP(players.hp);
+			}
+		},
 		
 		destroyPlayer : function (obj) {
 			if(obj instanceof Player)
 				player = obj;
-			else player = this.getPlayer(obj);
+			else player = this.getById(obj);
 
 			if(player){
 				for(var i = 0; i < this.players.length; i++){
@@ -57,15 +108,16 @@ define("game/character/player/playerManager", [
 				}
 				player.destroy();
 			}
+			this.totalPlayers--;
 		},
-		getPlayer : function (obj) {
+		getById : function (obj) {
 			for(var i = 0; i < this.players.length; i++)
-				if(this.players[i].id === obj.id)
+				if(this.players[i].id === (typeof obj === 'object' ? obj.id : obj))
 					return this.players[i];
 		},
 		tick : function () {
 			for(var i = 0; i < this.players.length; i++)
-				this.players[i].tick();
+				if(this.players[i].isStarted())this.players[i].tick();
 		}
 	}
 

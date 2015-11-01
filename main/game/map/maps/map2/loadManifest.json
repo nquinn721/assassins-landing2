@@ -1,0 +1,12 @@
+{
+	"path" : "/game/map/maps/map2/img/",
+	"manifest" : [
+		{ "id" : "floor", "src" : "floor.jpg"},
+		{ "id" : "wall", "src" : "wall.jpg"},
+		{ "id" : "elevator", "src" : "elevator.jpg"},
+		{ "id" : "background", "src" : "background.jpg"},
+		{ "id" : "base", "src" : "base.png"},
+		{ "id" : "spike", "src" : "spike.png"}
+
+	]
+}

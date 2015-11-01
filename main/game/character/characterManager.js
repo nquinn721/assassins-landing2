@@ -1,5 +1,5 @@
 define("game/character/characterManager",[
-	'game/character/player/playerManagerServer',
+	// 'game/character/player/playerManagerServer',
 	], 
 	function (playerManagerServer) {
 	
@@ -9,7 +9,7 @@ define("game/character/characterManager",[
 
 	CharacterManager.prototype = {
 		init : function () {
-			playerManagerServer.init();
+			// playerManagerServer.init();
 		}
 	}
 

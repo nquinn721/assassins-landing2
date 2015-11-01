@@ -3,64 +3,125 @@ var express = require('express'),
 	jade = require('jade'),
 	_ = require('underscore'),
 	requirejs = require('requirejs'),
-	server = app.listen(process.env.PORT || 3000),
+	server = app.listen(3000),
 	io = require('socket.io').listen(server),
 	mongoose = require('mongoose'),
-	session = require('express-session'),
+	uuid = require('node-uuid'),
 	cookieParser = require('cookie-parser'),
-	mongoStore = require('connect-mongo')(session);
+	bodyParser = require('body-parser'),
+	http = require('http'),
+	fs = require('fs');
 
 
 // DB Connection
 mongoose.connect('mongodb://localhost/assassins');
-global.define = require('amdefine')(module);
-global.socketAccounts = {};
 
-requirejs.config({
-    nodeRequire: require,
-    baseUrl: __dirname + '/main/',
-    paths : {
-    	_ : 'underscore'
-    }
-});
+var OPEN_ROUTES = ['/login'];
 
 app.use(express.static(__dirname + '/client/assets'));
-app.use(express.static(__dirname + '/main'));
+app.use(express.static(process.cwd() + '/main'));
+app.use(bodyParser.urlencoded({extended : true}));
+app.use(bodyParser.json());
+app.use(cookieParser());
 app.set('view engine', 'jade');
-app.set('views', __dirname + '/client/');
-// app.use(session({
-// 	secret: '1-0#=1$@!^alfj!F@#GA@G%QQGHY$^#',
-// 	resave: false,
-// 	saveUninitialized: true,
-// 	store : new mongoStore({db : 'mongodb://localhost/assassins'}),
-// 	cookie: { secure: true }
-// }));
-// app.use(function (req, res, next) {
-// 	console.log(req.session);
-// 	req.session.user = 1;
-// 	next();
-// });
+app.set('views', __dirname + '/client');
 
-var DB = require('./lib/db/connection.js');
+// Auth middleware
+app.use(function (req, res, next) {
+	if(OPEN_ROUTES.indexOf(req.originalUrl) < 0){
+		db.getSession(req, function (session) {
+			if(session) {
+				req.session = session;
+				next();
+			}
+			else res.redirect('/login');
+		});
+	} else next();
+});
+// Cookie middleware
+app.use(function (req, res, next) {
+	if(!req.cookies.al) res.cookie('al', uuid.v1());
+	next();
+});
+
+var DB = require(process.cwd() + '/lib/db/connection.js');
 var db = new DB(mongoose);
 db.init();
 
-require('./server/lib/main')(requirejs, io, db);
-
-app.get('/game', function (req, res) {
-	res.cookie('asc', "55f0eca776ef93f3359c1af7");
-	res.render('game');
+io.on('connection', function (socket) {
+	socket.on('join', function (port) {
+		socket.join(port);
+	});
 });
+// Instance
+var instanceManager = require('./lib/instance/instanceManager');
+instanceManager.init(db, io);
+
 
 app.get('/', function (req, res) {
-	res.render('index');
+	res.render('views/site/index');
+});
+app.get('/map-creator', function (req, res) {
+	res.render('views/mapCreator/index');
+});
+app.get('/logout', function (req, res) {
+	res.clearCookie('al');
+	db.logout(req);
+	res.redirect('/login');
+});
+app.get('/login', function (req, res) {
+	res.render('views/site/login');
+});
+app.post('/login', function (req, res) {
+	var obj = req.body;
+	db.login(obj.username, obj.password, function(account){
+		db.saveSession(req, account, function () {
+			res.redirect('/');
+		});
+	}, function () {
+		res.redirect('/login');
+	});
 });
 
 
+require('./server/mapCreator/routes')(app);
 
+/**
+ * Angular Routes
+ */
+app.get('/an-start-game', function (req, res) {
+	if(!req.session.instance || req.session.instance === 'false'){
+		connect(req, res);
+	} else {
+		var request = http.request({host: 'localhost', port : req.session.instance }, function () {
+			res.render('views/site/game-frame', {url : 'http://localhost:' + req.session.instance});
+		});
+		request.on('error', function (err) {
+			db.clearInstance(req, function () {
+				res.send('noinstance');
+			});
+		});
+		request.end();
+	}
+});
+function connect (req, res) {
+	instanceManager.instance(req, function (port) {
+		res.render('views/site/game-frame', {url : 'http://localhost:' + port});
+	});
+}
 
-	
-
-		
-
-
+app.get('/an-home', function (req, res) {
+	res.render('views/site/home');
+});
+app.get('/an-account', function (req, res) {
+	res.render('views/site/account');
+});
+app.get('/an-game-stats', function (req, res) {
+	res.render('views/site/gameStats');
+});
+app.get('/an-game', function (req, res) {
+	res.render('views/site/game');
+});
+app.use(function (req, res) {
+	res.redirect('/');
+});

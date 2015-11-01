@@ -4,6 +4,9 @@ var uglify = require('gulp-uglify');
 var imagemin = require('gulp-imagemin');
 var sourcemaps = require('gulp-sourcemaps');
 var del = require('del');
+var stylus = require('gulp-stylus');
+var sourcemaps = require('gulp-sourcemaps');
+var minifyCss = require('gulp-minify-css');
 
 var paths = {
   scripts: ['client/assets/js/**/*.js'],
@@ -38,9 +41,32 @@ gulp.task('images', ['clean'], function() {
 
 // Rerun the task when a file changes
 gulp.task('watch', function() {
-  gulp.watch(paths.scripts, ['scripts']);
-  gulp.watch(paths.images, ['images']);
+  // gulp.watch(paths.scripts, ['scripts']);
+  // gulp.watch(paths.images, ['images']);
+  gulp.watch('./client/assets/site/style/*.styl', ['css']);
+  gulp.watch('./client/assets/game/style/*.styl', ['css']);
+  gulp.watch('./client/assets/common/style/*.styl', ['css']);
+  gulp.watch('./client/assets/mapCreator/style/*.styl', ['css']);
+});
+
+gulp.task('css', function () {
+  gulp.src(['./client/assets/site/style/*.styl', './client/assets/common/style/*.styl'])
+    .pipe(stylus())
+    .pipe(concat('main.css'))
+    .pipe(minifyCss())
+    .pipe(gulp.dest('./client/assets/css/build/site'));
+  gulp.src(['./client/assets/game/style/*.styl', './client/assets/common/style/*.styl'])
+    .pipe(stylus())
+    .pipe(concat('main.css'))
+    .pipe(minifyCss())
+    .pipe(gulp.dest('./client/assets/css/build/game'));
+  gulp.src(['./client/assets/mapCreator/style/*.styl'])
+    .pipe(stylus())
+    .pipe(concat('main.css'))
+    .pipe(minifyCss())
+    .pipe(gulp.dest('./client/assets/css/build/mapCreator'));
 });
 
 // The default task (called when you run `gulp` from cli)
-gulp.task('default', ['watch', 'scripts', 'images']);
+// gulp.task('default', ['watch', 'scripts', 'images']);
+gulp.task('default', ['watch', 'css']);

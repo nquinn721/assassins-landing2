@@ -1,0 +1,18 @@
+doctype html
+html(lang='en')
+	head
+		meta(charset='UTF-8')
+		title Assassins Landing
+		script(src='/lib/jquery/dist/jquery.min.js')
+		link(rel='stylesheet', href='/lib/bootstrap/dist/css/bootstrap.min.css', type='text/css')
+		link(rel='stylesheet', href='/css/build/game/main.css')
+		link(rel="stylesheet", href="/lib/fontawesome/css/font-awesome.min.css")
+		link(rel="stylesheet", href="/lib/animate.css")
+			
+	body
+		.menu-cover
+		include ../utils/loader
+		block content
+		script(src="/lib/createjs.js")
+		script(src="/lib/requirejs.js", data-main="/lib/requirejsconfig.js")
+		

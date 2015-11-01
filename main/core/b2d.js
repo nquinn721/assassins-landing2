@@ -3,9 +3,9 @@ define("core/b2d", [
 	'core/body', 
 	'core/lib/underscore',
 	'core/shapes', 
-	'core/emitter'
-	], function (Box2D, Body, _, Shapes, emitter) {
-
+	'core/emitter',
+	'core/props'
+	], function (Box2D, Body, _, Shapes, emitter, props) {
 	var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	    b2AABB = Box2D.Collision.b2AABB,
 	    b2BodyDef = Box2D.Dynamics.b2BodyDef,
@@ -19,6 +19,7 @@ define("core/b2d", [
 	    b2MouseJointDef =  Box2D.Dynamics.Joints.b2MouseJointDef,
 	    b2WeldJointDef =  Box2D.Dynamics.Joints.b2WeldJointDef,
 	    b2RevoluteJointDef = Box2D.Dynamics.Joints.b2RevoluteJointDef,
+	    b2RevoluteJointDef = Box2D.Dynamics.Joints.b2DistanceJointDef,
 	    b2Shape = Box2D.Collision.Shapes.b2Shape;
 
 	function B2D() {
@@ -48,8 +49,8 @@ define("core/b2d", [
 			var contact = new Box2D.Dynamics.b2ContactListener;
 			contact.BeginContact = this.beginContact.bind(this);
 			contact.EndContact = this.endContact.bind(this);
-			// contact.PreSolve = this.contact;
-			// contact.PostSolve = this.contact;
+			contact.PreSolve = this.contactPreSolve.bind(this);
+			contact.PostSolve = this.contactPostSolve.bind(this);
 
 			this.world.SetContactListener(contact);
 
@@ -60,8 +61,18 @@ define("core/b2d", [
 		endContact : function (contact) {
 			this.contact(contact, 'endContact');
 		},
+		contactPreSolve : function (contact) {
+			this.contact(contact, 'contactPreSolve');
+		},
+		contactPostSolve : function (contact) {
+			this.contact(contact, 'contactPostSolve');
+		},
 		contact : function (contact, event) {
 			if(!contact.GetFixtureA)return;
+			// if(event == 'contact')
+				// console.log(contact.GetFixtureA(), contact.GetFixtureB());
+
+
 			var one = contact.GetFixtureA().GetBody(),
 			  	two = contact.GetFixtureB().GetBody(),
 			  	oneData = one.GetUserData(),
@@ -72,6 +83,12 @@ define("core/b2d", [
 			oneData.hit = {};
 			oneData.hit.x = one.GetWorldPoint(contact_point).x * 30;
 			oneData.hit.y = one.GetWorldPoint(contact_point).y * 30;
+			oneData.sides = {
+				left : oneData.x,
+				right : oneData.x + oneData.w,
+				top : oneData.y,
+				bottom : oneData.y + oneData.h
+			}
 
 			twoData.hit = {};
 			twoData.hit.x = two.GetWorldPoint(contact_point).x * 30;
@@ -82,7 +99,6 @@ define("core/b2d", [
 				top : twoData.y,
 				bottom : twoData.y + twoData.h
 			}
-
 			emitter.emit(event, {one : oneData, two : twoData});
 	
 		},
@@ -104,16 +120,48 @@ define("core/b2d", [
 			else
 				joint = this.createJoint(body, body1);
 
-			return this.createBody(body, options);
+			return [this.createBody(body, options), this.createBody(body1, options1)];
 		},
-		rect : function (opts) {
-			var options = _.extend({
+		rect : function (o) {
+			var opts = _.compactObject(o);
+				options = _.extend({
 					shape : 'rect'
 				}, opts),
 				body = this.bodyDef(options),
 				fixDef = this.fixDef(options, body);
 
+			if(opts.id.match('player')){
+				var obj = {
+					w : opts.w + 5,
+					h : opts.h,
+					density : 0,
+					friction : 0,
+					shape : 'rect',
+					elementName : opts.elementName
+				}
+				this.fixDef(obj, body);
+				
+			}
 			return this.createBody(body, options);
+		},
+		rects : function (opts) {
+			var options = [],
+				bodies = [],
+				fixtures = [],
+				bodyClass = [];
+
+			for(var i = 0; i < opts.length; i++){
+				options.push(_.extend({
+					shape : 'rect'
+				}, _.compactObject(opts[i])));
+				bodies.push(this.bodyDef(options[i]));
+				fixtures.push(this.fixDef(options[i], bodies[i]));
+				bodyClass.push(this.createBody(bodies[i], options[i]));
+			}
+
+			for(var i = 0; i < bodies.length; i += 2)
+				this.createJoint(bodies[i], opts[i], bodies[i + 1], opts[i + 1]);
+			return bodyClass;
 		},
 		polygon : function (opts) {
 			var body = this.bodyDef(opts);
@@ -122,7 +170,7 @@ define("core/b2d", [
 			return this.createBody(body, opts);
 		},
 		createBody : function (body, opts) {
-			return new Body(body, b2Vec2, opts)	
+			return new Body(body, b2Vec2, opts);
 		},
 		fixDef : function (opts, body) {
 			var options = _.extend({
@@ -134,9 +182,15 @@ define("core/b2d", [
 			}, opts);
 
 			var fixDef = new b2FixtureDef();
-				fixDef.restitution = options.restitution;
-				fixDef.density = options.density;
-				fixDef.friction = options.friction;
+
+
+			for(var i in options)fixDef[i] = options[i];
+
+			// Set collision based of props file
+			if(props.collision[opts.elementName]){
+				fixDef.filter.categoryBits = props.collision[opts.elementName].categoryBits || fixDef.filter.categoryBits;
+				fixDef.filter.maskBits = props.collision[opts.elementName].maskBits || fixDef.filter.maskBits;
+			}
 
 
 			if(options.shape === 'polygon'){
@@ -155,15 +209,15 @@ define("core/b2d", [
 			body.CreateFixture(fixDef);
 
 		},
-		createJoint : function (body1, body2) {
+		createJoint : function (body1, opts1, body2, opts2) {
 			//create distance joint between b and c
 			var joint_def = new b2WeldJointDef();
 			joint_def.bodyA = body1;
 			joint_def.bodyB = body2;
 			     
 			//connect the centers - center in local coordinate - relative to body is 0,0
-			joint_def.localAnchorA = new b2Vec2(-0.5, -0.5);
-			joint_def.localAnchorB = new b2Vec2(0.5, 0.5);
+			joint_def.localAnchorA = new b2Vec2(0,0);
+			joint_def.localAnchorB = new b2Vec2(0,0);
 			    
 			//difference in angle of each body
 			joint_def.referenceAngle = 0 * Math.PI / 3;
@@ -172,6 +226,15 @@ define("core/b2d", [
 			this.world.CreateJoint(joint_def);
 			return body1;
 			
+		},
+		distanceJoint : function (body1, fix1, body2, fix2) {
+			// Create distance joint
+			var jointDef = new b2.DistanceJointDef();
+			jointDef.Initialize(body1, body2, fix1.position, topBodyDef.position);
+			jointDef.collideConnected = true;
+			jointDef.frequencyHz = 100;
+			jointDef.dampingRatio = 1;
+			var joint = this.world.CreateJoint(jointDef);
 		},
 		createRevoluteJoint : function (body1, body2) {
 			var joint = new b2RevoluteJointDef();
@@ -219,7 +282,7 @@ define("core/b2d", [
 
 			var debugDraw = new b2DebugDraw();
 			debugDraw.SetSprite(debugCanvas);
-			debugDraw.SetFillAlpha(0.3);
+			debugDraw.SetFillAlpha(0.7);
 			debugDraw.SetDrawScale(this.SCALE);
 			debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
 			this.world.SetDebugDraw(debugDraw);
@@ -234,6 +297,8 @@ define("core/b2d", [
 				window.requestAnimationFrame(this.tick.bind(this));
 		}
 	}
-	return B2D;
+	var b2d = new B2D;
+	b2d.init();
+	return b2d;
 
 });

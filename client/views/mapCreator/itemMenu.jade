@@ -1,0 +1,7 @@
+.body
+	for item, index in items.manifest
+		if item.id !== 'background'
+			div(ng-click="setType('#{item.id}', '#{items.path + item.src}')")
+				.item(ng-class="{selected: #{index} === itemSelected}", id="#{item.id}", ng-click="itemSelected = #{index}")
+					img(src="#{items.path + item.src}")
+					span #{item.name}

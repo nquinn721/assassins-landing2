@@ -1,6 +1,6 @@
 define("game/map/elements/platforms/ceiling", [], function () {
 
-	function Ceiling (obj) {
+	function Ceiling () {
 		this.x = 10;
 		this.y = 10;
 		this.w = 100;
@@ -10,8 +10,6 @@ define("game/map/elements/platforms/ceiling", [], function () {
 		this.policies = ['ceiling'];
 		this.b2delement = 'rect';
 		this.elementName = 'ceiling';
-
-		for(var i in obj)this[i] = obj[i];
 
 	}
 	return Ceiling;

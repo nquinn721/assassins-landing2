@@ -1,5 +1,5 @@
 define("game/map/elements/platforms/elevator", function () {
-	function Elevator (obj) {
+	function Elevator () {
 		this.x = 10;
 		this.y = 10;
 		this.w = 100;
@@ -11,12 +11,9 @@ define("game/map/elements/platforms/elevator", function () {
 		this.moveBounds = 300;
 		this.b2delement = 'rect';
 		this.elementName = 'elevator';
+		this.categoryBits = 0x0001;
 
-		this.originalX = obj.x;
-		this.originalY = obj.y;
-
-		if(obj)
-			for(var i in obj)this[i] = obj[i];
+		
 
 
 		this.frames = 0;
@@ -26,11 +23,15 @@ define("game/map/elements/platforms/elevator", function () {
 		
 	}
 	Elevator.prototype = {
+		init : function () {
+			this.originalX = this.x;
+			this.originalY = this.y;
+		},
 	 	tickItem : function () {
 	 		if(!this.body)return;
 
-	 		this.frames++;
 
+	 		this.frames++;
 	 		if(this.y >= this.originalY + 10 || this.y <= this.originalY - this.moveBounds)
 	 			this.direction = !this.direction;
 

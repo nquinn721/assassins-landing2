@@ -4,15 +4,15 @@ define(function () {
 		38 : 'up',
 		39 : 'right',
 		40 : 'down',
-		32 : 'spacebar',
-		65 : 'a',
+		32 : 'up', 		//spacebar
+		65 : 'left', 	//a
 		66 : 'b',
 		67 : 'c',
-		68 : 'd',
+		68 : 'right',	//d
 		69 : 'e',
 		70 : 'f',	
 		71 : 'g',	
-		72 : 'h',	
+		// 72 : 'h',	
 		73 : 'i',	
 		74 : 'j',	
 		75 : 'k',	
@@ -23,13 +23,15 @@ define(function () {
 		80 : 'p',	
 		81 : 'q',	
 		82 : 'r',	
-		83 : 's',	
+		83 : 'down', 	//s	
 		84 : 't',	
 		85 : 'u',	
 		86 : 'v',	
-		87 : 'w',	
+		87 : 'up', 	//w
 		88 : 'x',	
 		89 : 'y',	
-		90 : 'z'	
+		90 : 'z',
+		1 : 'leftmouse',
+		2 : 'rightmouse'	
 	}
 });

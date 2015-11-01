@@ -1,0 +1,23 @@
+.match-making.menu
+	.header: h3: center {{mm.title}}
+	.body
+		.team1.team.left
+			h3: center Team 1
+			.characters
+				.character.animated(ng-class="{lightSpeedIn : $last}", ng-repeat="team1 in mm.playersWaiting", ng-if="team1.team === 'team1'")
+					div 
+						.username {{team1.username}}
+						img(ng-src="/characters/{{team1.character}}-standstill.png")
+						.character-name {{team1.character}}
+		.team2.team.right
+			h3: center Team2
+			.characters
+				.character.animated(ng-class="{lightSpeedIn : $last}", ng-repeat="team2 in mm.playersWaiting", ng-if="team2.team === 'team2'")
+					div 
+						.username {{team2.username.toUpper()}}
+						img(ng-src="/characters/{{team2.character}}-standstill.png")
+						.character-name {{team2.character}}
+		.bottom(ng-show="mm.loadingGame")
+			.bottom-loader 
+				.loader-overlay
+				.bar(ng-style="{width : mm.loadingWidth}")

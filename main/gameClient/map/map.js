@@ -1,29 +1,38 @@
 define("gameClient/map/map", [
 		'gameClient/map/elements/platforms/floor',
+		'gameClient/map/elements/platforms/morefloor',
 		'gameClient/map/elements/platforms/wall',
-		'gameClient/map/elements/platforms/ceiling',
 		'gameClient/map/elements/platforms/elevator',
 		'gameClient/map/elements/platforms/movingplatform',
+		'gameClient/map/elements/pits/spikePit',
+		'gameClient/map/elements/structures/base',
+		'gameClient/map/elements/items/potions/smallPotion',
+		'gameClient/map/elements/boxes/box',
+		'gameClient/map/elements/boxes/boxWithPotion',
 		'gameClient/map/element'
-	], function (Floor, Wall, Ceiling, Elevator, MovingPlatform, Element) {
-	
+	], function (Floor, MoreFloor, Wall, Elevator, MovingPlatform, SpikePit, Base, SmallPotion, Box, BoxWithPotion, Element) {
 	function Map () {
 		this.mapElements = {
 			floor : Floor,
+			morefloor : MoreFloor,
 			wall : Wall,
-			ceiling : Ceiling,
 			elevator : Elevator,
-			movingplatform : MovingPlatform
-		}
+			movingplatform : MovingPlatform,
+			spikePit : SpikePit,
+			base0 : Base,
+			base1 : Base,
+			smallPotion : SmallPotion,
+			box : Box,
+			boxWithPotion : BoxWithPotion
+		};
 		this.element = new Element;
+		
 	}
 
 	Map.prototype = {
-		create : function (b2d, obj) {
+		create : function (obj) {
 			var item = new this.mapElements[obj.elementName](obj);
-			this.element.extend(item);
-			item.create(b2d, obj);
-			item.init();
+			this.element.extend(item, obj);
 			return item;
 		}
 	}

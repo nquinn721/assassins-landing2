@@ -10,8 +10,7 @@ define("game/map/elements/platforms/wall", [], function () {
 		this.policies = ['wall'];
 		this.b2delement = 'rect';
 		this.elementName = 'wall';
-
-		for(var i in obj)this[i] = obj[i];
+		this.categoryBits = 0x0001;
 
 	}
 	return Wall;

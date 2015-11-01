@@ -1,26 +1,29 @@
 define("gameClient/background/background", [
-		"js/createjs", 
-		"core/props"
-	], function (createjs, props) {
+		"gameClient/stage/stage", 
+		"core/props",
+		"core/emitter"
+	], function (stage, props, emitter) {
 	function Background () {
 		
 	}
 
 	Background.prototype = {
 		init : function () {
-			this.image = new Image();
-			this.image.src = "/img/background.jpg";
-			this.image.onload = this.onload.bind(this);
-			
+			this.create();			
 		},
-		onload : function () {
-			this.img = new createjs.createjs.Bitmap(this.image);
-
+		setImage : function () {
 			this.img.x = 0;
 			this.img.y = 0;
-	        this.img.scaleY = props.canvas.h / this.image.height;
-	        this.img.scaleX = props.canvas.w / this.image.width;
-	        createjs.stage.addChild(this.img);
+	        this.img.scaleY = props.canvas.h / this.img.image.height;
+	        this.img.scaleX = props.canvas.w / this.img.image.width;
+	        stage.index(this.img, 1);
+
+		},
+		create : function () {
+			if(this.img)
+				stage.destroy(this.img);
+			this.img = stage.image("background");
+			this.setImage();
 		}
 	}
 
