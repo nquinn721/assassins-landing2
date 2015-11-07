@@ -8,6 +8,7 @@ head
 	link(rel='stylesheet', href='/css/build/mapCreator/main.css')
 	title Map Creator
 body(ng-controller="main")
+	include ../nav
 	.map-creator
 		.visual-mode(ng-show="visualMode") Visual Mode
 		.visual-mode-menu.draggable(ng-show="visualMode")

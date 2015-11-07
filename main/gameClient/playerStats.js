@@ -5,6 +5,9 @@ define("gameClient/playerStats", ["core/emitter"], function (emitter) {
 		this.menu = $('.character-stats');
 		this.totalhp = this.menu.find('.total-hp');
 		this.hp = this.menu.find('.current-hp');
+		this.kills = this.menu.find('.kills');
+		// this.assists = this.menu.find('.assists');
+		this.deaths = this.menu.find('.deaths');
 		this.character = this.menu.find('.character');
 		this.characterImg = this.menu.find('.character-img img');
 	}
@@ -15,7 +18,8 @@ define("gameClient/playerStats", ["core/emitter"], function (emitter) {
 			this.initStats();
 		},
 		events : function () {
-			this.player.on(['hit', 'heal'], this.changeHP.bind(this));
+			this.player.on('changeHP', this.changeHP.bind(this));
+			this.player.on(['addKill', 'die'], this.updateKD.bind(this));
 		},
 		initStats : function () {
 			var character = this.player.characterClass,
@@ -30,6 +34,10 @@ define("gameClient/playerStats", ["core/emitter"], function (emitter) {
 		changeHP : function () {
 			if(this.player.hp >= 0)
 				this.hp.text(this.player.hp);
+		},
+		updateKD : function () {
+			this.kills.text(this.player.kills);
+			this.deaths.text(this.player.deaths);
 		}
 
 	}

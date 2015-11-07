@@ -26,4 +26,6 @@
 					img.animated.fadeIn(ng-src="/characters/{{account.character}}-stats.png", ng-if="account.character")
 				.user-info.right
 					.stat {{account.username.toUpper()}}
-		.bottom: center(ng-show="ch.startButton"): a.wide-button.btn.btn-danger(ng-href="#/match-making") Start
+		.bottom: center
+			span(ng-hide="ch.charactersReady") Waiting for more players!
+			a(ng-show="ch.startButton").wide-button.btn.btn-danger(ng-href="#/match-making") Start

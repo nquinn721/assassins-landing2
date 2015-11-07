@@ -1,0 +1,20 @@
+doctype html
+html(lang='en', ng-app="admin")
+	head
+		meta(charset='UTF-8')
+		title Admin
+		script(src='/lib/jquery/dist/jquery.min.js')
+		link(rel='stylesheet', href='/lib/bootstrap/dist/css/bootstrap.min.css', type='text/css')
+		link(rel="stylesheet", href="/lib/fontawesome/css/font-awesome.min.css")
+		link(rel="stylesheet", href="/lib/animate.css")
+		link(rel='stylesheet', href='/css/build/admin/main.css')
+			
+	body
+		include nav
+		block content
+		script(src="/lib/jquery/dist/jquery.min.js")
+		script(src="/lib/jqueryui.js")
+		script(src="/lib/bootstrap/dist/js/bootstrap.min.js")
+		script(src="/lib/angular/angular.min.js")
+		script(src="/admin/js/main.js")
+		

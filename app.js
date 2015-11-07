@@ -61,9 +61,7 @@ instanceManager.init(db, io);
 app.get('/', function (req, res) {
 	res.render('views/site/index');
 });
-app.get('/map-creator', function (req, res) {
-	res.render('views/mapCreator/index');
-});
+
 app.get('/logout', function (req, res) {
 	res.clearCookie('al');
 	db.logout(req);
@@ -85,6 +83,7 @@ app.post('/login', function (req, res) {
 
 
 require('./server/mapCreator/routes')(app);
+require('./server/admin/routes')(app);
 
 /**
  * Angular Routes

@@ -34,6 +34,7 @@ define("game/character/abilities/shootBullet/bullet", function () {
 		destroy : function () {
 			this.destroyed = true;
 			this.body.destroy();
+			console.log('destroy bullet');
 		},
 		shoot : function () {
 			var yBound = 6,
@@ -57,7 +58,7 @@ define("game/character/abilities/shootBullet/bullet", function () {
 				owner : this.owner,
 				base : this.base,
 				team : this.team,
-				isSensor : true,
+				// isSensor : true,
 				categoryBits : this.categoryBits,
 				maskBits : this.maskBits,
 				damageDealt : this.damageDealt,

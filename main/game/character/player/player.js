@@ -24,6 +24,10 @@ define("game/character/player/player", [
 		this.policies = ['player', 'character'];
 
 		this.deaths = 0;
+		this.kills = 0;
+		this.damagedBy = [];
+		this.killedBy = [];
+		this.killed = [];
 		this.deathTimer = 3;
 
 		this.previousX = 10;
@@ -58,6 +62,7 @@ define("game/character/player/player", [
 		this.events = {};
 
 		this.isBlur = false;
+
 	}
 
 	Player.prototype = {
@@ -147,8 +152,11 @@ define("game/character/player/player", [
 			if(policies.match('constantDamage'))
 				this.constantDamage(item.damage);
 			
-			if(policies.match('bullet') && item.team !== this.team)
-				this.damage(item.damageDealt);
+			if(policies.match('bullet') && item.team !== this.team && !item.hitPlayer){
+				this.damage(item.damageDealt, item.owner);
+				item.hitPlayer = true;
+			}
+			
 
 			if(policies.match('item')){
 				if(policies.match('heal'))
@@ -182,7 +190,13 @@ define("game/character/player/player", [
 			this.deaths++;
 			this.destroy();
 			this.isDead = true;
-			
+			this.damagedBy = [];
+			this.emit('die');
+		},
+		addKill : function (p) {
+			this.kills++;
+			this.killed.push(p);	
+			this.emit('addKill');
 		},
 		revive : function () {
 			this.hp = this.characterClass.stats.hp;
@@ -194,16 +208,24 @@ define("game/character/player/player", [
 		heal : function (amount) {
 			this.hp += amount;
 			if(this.hp > this.characterClass.stats.hp)this.hp = this.characterClass.stats.hp;
-			this.emit('heal');
+			this.emits(['heal', 'changeHP']);
 		},
-		damage : function (dmg) {
+		damage : function (dmg, owner) {
 			this.hp -= dmg || 0;
 			this.isDirty = true;
-			this.emit('hit');
+
+			if(owner && this.damagedBy.indexOf(owner) < 0)this.damagedBy.push(owner);
+			if(owner && this.hp <= 0){
+				this.killer = owner;
+				this.killedBy.push(owner);
+
+			}
+			this.emits(['hit', 'changeHP']);
 		},
 		constantDamage : function (dmg) {
 			this.gettingDamaged = true;
 			this.damageDealt = dmg;
+			this.emits(['changeHP']);
 		},
 		setCoords : function (obj) {
 			this.body.setX(obj.x);
