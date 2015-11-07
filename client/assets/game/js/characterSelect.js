@@ -32,6 +32,7 @@ define("game/js/characterSelect",  function () {
 		};
 		this.instanceFull = function () {
 			instance.setFull();
+			this.charactersReady = true;
 			if(this.user && this.user.character)
 				this.startButton = true;
 		};

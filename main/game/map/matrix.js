@@ -44,7 +44,6 @@ define("game/map/matrix", [
 				this.items.push(element.extend(item, it))
 
 			}
-			console.log(this.items);
 			return this.items;	
 		},
 		map : function (matrix) {
@@ -96,7 +95,6 @@ define("game/map/matrix", [
 
 			if(this.item)
 				this.items.push(this.item);
-			console.log(this.items);
 			return this.items;
 		},
 		createItem : function (currentRow, currentColumn, matrix, segment) {

@@ -28,8 +28,12 @@ define("game/character/player/playerManager", [
 			emitter.on('mousedown', this.mousedown.bind(this));
 		},
 		die : function (player) {
-			var p = this.getById(player.id);
-			if(p) p.die();
+			var p = this.getById(player.id),
+				killer = this.getById(p.killer);
+			if(p){
+				killer.addKill(p.id);
+				p.die();	
+			} 
 		},
 		revive : function (player) {
 			var p = this.getById(player.id);

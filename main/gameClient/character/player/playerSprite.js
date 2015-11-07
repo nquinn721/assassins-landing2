@@ -12,6 +12,7 @@ define("gameClient/character/player/playerSprite", [
 		this.lookingLeft = true;
 		this.isHit = false;
 
+		this.frames = 0;
 		this.onUsersTeam = onUsersTeam;
 	}
 
@@ -85,11 +86,11 @@ define("gameClient/character/player/playerSprite", [
 			this.animation.x = this.player.x;
 			this.animation.y = this.player.y;
 			this.updateName();
-			this.updateHp();
 
 			if(this.player.jumpAvailable && this.isJumping)
 				this.stopJumping();
 			this.moveHitMarker();
+			this.updateHp();
 
 		},
 		mouseDown : function () {
@@ -145,6 +146,10 @@ define("gameClient/character/player/playerSprite", [
 		},
 		updateHp : function () {
 			if(this.player.hp < 0)return;
+			this.frames++;
+			if(this.frames % 100 === 0){
+				console.log(this.player.id, this.player.hp);
+			}
 			
 			this.hp.x = this.player.x - (this.hpx - 2);
 			this.hp.y = this.player.y - (this.hpy - 2);
@@ -187,7 +192,6 @@ define("gameClient/character/player/playerSprite", [
 				this.destroy();
 		},
 		revive : function (player) {
-			console.log('revive spritee', player, this.player);
 			if(player.id === this.player.id)
 				this.create();
 		},

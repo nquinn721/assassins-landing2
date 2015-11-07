@@ -8,4 +8,6 @@
 	.body
 		.main
 		.sidebar
-		.bottom: center: a(href="/#/game"): input.btn.btn-danger.wide-button(type="button", value="Play")
+		.bottom: center 
+			a.game-selects(href="/#/game?players=2"): input.btn.btn-danger.wide-button(type="button", value="Play 1 vs 1")
+			a.game-selects(href="/#/game?players=4"): input.btn.btn-danger.wide-button(type="button", value="Play 2 vs 2")

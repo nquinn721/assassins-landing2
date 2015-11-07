@@ -6,12 +6,14 @@ define("gameServer/playerManagerServer", [
 		], function (b2d, playerManager, props, emitter) {
 	function PlayerManagerServer () {
 		this.players = [];
+		this.frames = 0;
 	}
 	PlayerManagerServer.prototype = {
 		init : function (manager) {
 			this.manager = manager;
 		},
 		tick : function () {
+			this.frames++;
 			this.updateCoords();
 		},
 		create : function (socket) {
@@ -47,6 +49,12 @@ define("gameServer/playerManagerServer", [
 
 			}
 			this.manager.io.emit('playerCoords', playerCoords);
+
+			if(this.frames % 10 === 0){
+				var p = [];
+				for(var i = 0; i < players.length; i++)p.push(players[i].obj());
+				this.manager.io.emit('updatePlayersHP', p);
+			}
 
 		},
 		hit : function (socket) {

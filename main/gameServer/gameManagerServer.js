@@ -6,9 +6,10 @@ define("gameServer/gameManagerServer", [
 		'game/map/map',
 		'core/b2d'
 	], function (emitter, props, playerManagerServer, mapManagerServer, Map, b2d) {
-	function GameManagerServer(io, PLAYERS_ALOUD, db) {
+	function GameManagerServer(io, PLAYERS_ALOUD, db, port) {
 		this.io = io;
 		this.db = db;
+		this.port = port;
 		this.PLAYERS_ALOUD = parseInt(PLAYERS_ALOUD);
 		this.mapName = 'map1';
 		this.map = new Map(this.mapName, b2d);
@@ -126,8 +127,7 @@ define("gameServer/gameManagerServer", [
 				if(player.base === winner)winners.push({id : player.account.id, socketId : player.socketId});
 				else losers.push({id : player.account.id, socketId : player.socketId})
 
-				// Clear Instance
-				this.db.clearInstance(player.account.cookie);
+				
 			}
 
 			for(var i = 0; i < winners.length; i++){
@@ -140,6 +140,7 @@ define("gameServer/gameManagerServer", [
 			for(var i = 0; i < losers.length; i++)
 				this.emitToPlayer(losers[i], 'lose');
 
+			this.db.clearAllInstances(this.port);
 			setTimeout(function () {
 				process.exit();
 			}, 5000)

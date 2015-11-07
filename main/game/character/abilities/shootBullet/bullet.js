@@ -5,7 +5,7 @@ define("game/character/abilities/shootBullet/bullet", function () {
 		this.w = 10;
 		this.h = 10;
 		this.type = 'dynamic';
-		this.speed = 1;
+		this.speed = 7;
 		this.groupId = -1;
 		this.policies = ['bullet'];
 		this.damageDealt = 400;
@@ -38,7 +38,7 @@ define("game/character/abilities/shootBullet/bullet", function () {
 		shoot : function () {
 			var yBound = 6,
 				y = this.step.y > yBound ? yBound : this.step.y < -yBound ? -yBound : this.step.y;
-			this.body.applyForce([this.step.x < 0 ? -5 : 5, y], 15);
+			this.body.applyForce([this.step.x < 0 ? -this.speed : this.speed, y]);
 		},
 		tick : function () {
 			this.body.applyForce('up', 0.25);	
@@ -57,7 +57,7 @@ define("game/character/abilities/shootBullet/bullet", function () {
 				owner : this.owner,
 				base : this.base,
 				team : this.team,
-				isSensor : true,
+				// isSensor : true,
 				categoryBits : this.categoryBits,
 				maskBits : this.maskBits,
 				damageDealt : this.damageDealt,

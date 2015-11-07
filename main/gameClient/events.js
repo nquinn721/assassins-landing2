@@ -135,6 +135,10 @@ define("gameClient/events", [
 			mapCoords : function (obj) {
 				emitter.emit('mapCoords', obj);
 			},
+			updatePlayersHP : function (players) {
+				for(var i = 0; i < players.length; i++)
+					emitter.emit('setHP', players[i]);	
+			},
 			setHP : function (player) {
 				emitter.emit('setHP', player);
 			},
@@ -148,7 +152,6 @@ define("gameClient/events", [
 				emitter.emit('die', player);
 			},
 			revive : function (player) {
-				console.log('revive', player);
 				emitter.emit('revive', player);
 			}
 		},
