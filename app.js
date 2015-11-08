@@ -13,6 +13,10 @@ var express = require('express'),
 	fs = require('fs');
 
 
+process.on('uncaughtException', function (a,b,c) {
+	console.log('Error: ' + a + b + c);
+});
+
 // DB Connection
 // mongoose.connect('mongodb://localhost/assassins');
 mongoose.connect('mongodb://nate:nate12345@ds051534.mongolab.com:51534/assassins');
