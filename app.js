@@ -86,6 +86,7 @@ app.post('/login', function (req, res) {
 
 
 require('./server/mapCreator/routes')(app);
+require('./server/admin/routes')(app);
 
 /**
  * Angular Routes
