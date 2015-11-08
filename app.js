@@ -14,7 +14,8 @@ var express = require('express'),
 
 
 // DB Connection
-mongoose.connect('mongodb://75.180.54.187/assassins');
+// mongoose.connect('mongodb://localhost/assassins');
+mongoose.connect('mongodb://nate:nate12345@ds051534.mongolab.com:51534/assassins');
 
 var OPEN_ROUTES = ['/login'];
 
@@ -25,10 +26,10 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.set('view engine', 'jade');
 app.set('views', __dirname + '/client');
+
 // Auth middleware
 app.use(function (req, res, next) {
 	if(OPEN_ROUTES.indexOf(req.originalUrl) < 0){
-		console.log('getting session in route');
 		db.getSession(req, function (session) {
 			if(session) {
 				req.session = session;
@@ -61,7 +62,9 @@ instanceManager.init(db, io);
 app.get('/', function (req, res) {
 	res.render('views/site/index');
 });
-
+app.get('/map-creator', function (req, res) {
+	res.render('views/mapCreator/index');
+});
 app.get('/logout', function (req, res) {
 	res.clearCookie('al');
 	db.logout(req);
@@ -83,7 +86,6 @@ app.post('/login', function (req, res) {
 
 
 require('./server/mapCreator/routes')(app);
-require('./server/admin/routes')(app);
 
 /**
  * Angular Routes
