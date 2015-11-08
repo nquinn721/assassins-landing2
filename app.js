@@ -25,9 +25,6 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.set('view engine', 'jade');
 app.set('views', __dirname + '/client');
-app.get('/', function (req, res) {
-	res.send('Welcome');
-});
 // Auth middleware
 // app.use(function (req, res, next) {
 // 	if(OPEN_ROUTES.indexOf(req.originalUrl) < 0){
