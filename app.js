@@ -28,6 +28,7 @@ app.set('views', __dirname + '/client');
 // Auth middleware
 app.use(function (req, res, next) {
 	if(OPEN_ROUTES.indexOf(req.originalUrl) < 0){
+		console.log('getting session in route');
 		db.getSession(req, function (session) {
 			if(session) {
 				req.session = session;
