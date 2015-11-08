@@ -14,7 +14,7 @@ var express = require('express'),
 
 
 // DB Connection
-mongoose.connect('mongodb://localhost/assassins');
+mongoose.connect('mongodb://75.180.54.187/assassins');
 
 var OPEN_ROUTES = ['/login'];
 
