@@ -14,7 +14,7 @@ var express = require('express'),
 
 
 process.on('uncaughtException', function (a,b,c) {
-	console.log('Error: ' + a + b + c);
+	console.log('Error: ' + a);
 });
 
 // DB Connection
