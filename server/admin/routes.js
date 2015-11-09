@@ -26,6 +26,7 @@ module.exports = function (app) {
 	});
 	app.post('/create-user', isAdmin, function (req, res) {
 		var acc = new Account(req.body);
+		acc.characters = ['assassin', 'brute'];
 		acc.save();
 
 		res.send(acc);
