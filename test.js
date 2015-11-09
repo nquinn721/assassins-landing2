@@ -6,7 +6,7 @@ process.on('uncaughtException', function (err) {
 })
 
 app.get('/', function (req, res) {
-	res.send('<a href="http://ec2-54-165-181-175.compute-1.amazonaws.com:3001">page</a>');
+	res.send('<iframe src="http://ec2-54-165-181-175.compute-1.amazonaws.com:3001"></iframe>');
 });
 
 app.listen(3000);
