@@ -31,9 +31,9 @@ module.exports = function (app) {
 		res.render('views/admin/mapCreator/controlsMenu');
 	});
 	app.get('/mapcreator-menu-get-maps', isAdmin, function (req, res) {
-		var map1 = fs.readdirSync(process.cwd() + '/main/game/map/maps/map1/layouts').map(function(v){return v.split('.')[0]}),
-			map2 = fs.readdirSync(process.cwd() + '/main/game/map/maps/map2/layouts').map(function(v){return v.split('.')[0]});
-		res.render('views/admin/mapCreator/mapMenu', {map1 : map1, map2 : map2});
+		var map1 = fs.readdirSync(process.cwd() + '/main/game/map/maps/map1/layouts').map(function(v){return v.split('.')[0]});
+			// map2 = fs.readdirSync(process.cwd() + '/main/game/map/maps/map2/layouts').map(function(v){return v.split('.')[0]});
+		res.render('views/admin/mapCreator/mapMenu', {map1 : map1});
 	});
 	
 }
