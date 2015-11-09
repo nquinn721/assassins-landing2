@@ -1,5 +1,5 @@
-// var PLAYERS_ALOUD = process.argv.pop();
-// var PORT = process.argv.pop();
+var PLAYERS_ALOUD = process.argv.pop();
+var PORT = process.argv.pop();
 var express = require('express'),
 	app = express(),
 	// cookieParser = require('cookie-parser'),
