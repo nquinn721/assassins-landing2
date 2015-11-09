@@ -1,16 +1,14 @@
 var PLAYERS_ALOUD = process.argv.pop();
 var PORT = process.argv.pop();
-var app = require('express')();
-app.listen(PORT);
-// var express = require('express'),
-// 	app = express(),
-// 	cookieParser = require('cookie-parser'),
-// 	requirejs = require('requirejs'),
-// 	server = app.listen(PORT, function  () {
-// 		// This log is used to tell instance the server is ready
-// 		console.log('started'); // DO NOT DELETE
-// 		console.log('Game Server started on port: ', PORT);
-// 	}),
+var express = require('express'),
+	app = express(),
+	cookieParser = require('cookie-parser'),
+	requirejs = require('requirejs'),
+	server = app.listen(PORT, function  () {
+		// This log is used to tell instance the server is ready
+		console.log('started'); // DO NOT DELETE
+		console.log('Game Server started on port: ', PORT);
+	});
 // 	_ = require('underscore'),
 // 	io = require('socket.io').listen(server),
 // 	mongoose = require('mongoose'),
