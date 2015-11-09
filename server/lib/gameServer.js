@@ -12,6 +12,7 @@ var express = require('express'),
 	_ = require('underscore'),
 	io = require('socket.io').listen(server),
 	mongoose = require('mongoose'),
+	jade = require('jade'),
 	socketCookieParser = require('socket.io-cookie-parser'),
 	bodyParser = require('body-parser');
 
