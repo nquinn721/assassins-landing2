@@ -9,10 +9,10 @@ var express = require('express'),
 		console.log('started'); // DO NOT DELETE
 		console.log('Game Server started on port: ', PORT);
 	}),
-// 	_ = require('underscore'),
-// 	io = require('socket.io').listen(server),
-// 	mongoose = require('mongoose'),
-// 	socketCookieParser = require('socket.io-cookie-parser'),
+	_ = require('underscore'),
+	io = require('socket.io').listen(server),
+	mongoose = require('mongoose'),
+	socketCookieParser = require('socket.io-cookie-parser'),
 	bodyParser = require('body-parser');
 
 
@@ -25,26 +25,26 @@ app.set('view engine', 'jade');
 app.set('views', process.cwd() + '/client');
 
 
-// global.define = require('amdefine')(module);
-// // mongoose.connect('mongodb://localhost/assassins');
-// mongoose.connect('mongodb://nate:nate12345@ds051534.mongolab.com:51534/assassins');
-// var DB = require(process.cwd() + '/lib/db/connection.js');
-// var db = new DB(mongoose);
-// db.init();
+global.define = require('amdefine')(module);
+// mongoose.connect('mongodb://localhost/assassins');
+mongoose.connect('mongodb://nate:nate12345@ds051534.mongolab.com:51534/assassins');
+var DB = require(process.cwd() + '/lib/db/connection.js');
+var db = new DB(mongoose);
+db.init();
 
-// requirejs.config({
-//     nodeRequire: require,
-//     baseUrl: process.cwd() + '/main/',
-//     paths : {
-//     	_ : 'underscore'
-//     }
-// });
+requirejs.config({
+    nodeRequire: require,
+    baseUrl: process.cwd() + '/main/',
+    paths : {
+    	_ : 'underscore'
+    }
+});
 
-// io.use(socketCookieParser());
+io.use(socketCookieParser());
 
 
-// // Main
-// require('./main')(requirejs, io, db, PORT, PLAYERS_ALOUD);
+// Main
+require('./main')(requirejs, io, db, PORT, PLAYERS_ALOUD);
 
 
 app.get('/', function (req, res) {
