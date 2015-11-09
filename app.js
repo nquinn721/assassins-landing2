@@ -112,7 +112,7 @@ app.get('/an-start-game', function (req, res) {
 });
 function connect (req, res) {
 	instanceManager.instance(req, function (port) {
-		res.render('views/site/game-frame', {url : 'http://localhost:' + port});
+		res.render('views/site/game-frame', {url : 'http://ec2-54-165-181-175.compute-1.amazonaws.com:' + port});
 	});
 }
 
