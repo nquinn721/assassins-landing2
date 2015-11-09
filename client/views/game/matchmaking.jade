@@ -7,7 +7,7 @@
 				.character.animated(ng-class="{lightSpeedIn : $last}", ng-repeat="team1 in mm.playersWaiting", ng-if="team1.team === 'team1'")
 					div 
 						.username {{team1.username}}
-						img(ng-src="/characters/{{team1.character}}-standstill.png")
+						img(ng-src="/characters/{{team1.character.toLowerCase()}}-standstill.png")
 						.character-name {{team1.character}}
 		.team2.team.right
 			h3: center Team2
@@ -15,7 +15,7 @@
 				.character.animated(ng-class="{lightSpeedIn : $last}", ng-repeat="team2 in mm.playersWaiting", ng-if="team2.team === 'team2'")
 					div 
 						.username {{team2.username.toUpper()}}
-						img(ng-src="/characters/{{team2.character}}-standstill.png")
+						img(ng-src="/characters/{{team2.character.toLowerCase()}}-standstill.png")
 						.character-name {{team2.character}}
 		.bottom(ng-show="mm.loadingGame")
 			.bottom-loader 
