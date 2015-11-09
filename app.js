@@ -100,7 +100,7 @@ app.get('/an-start-game', function (req, res) {
 		connect(req, res);
 	} else {
 		var request = http.request({host: 'localhost', port : req.session.instance }, function () {
-			res.render('views/site/game-frame', {url : 'http://localhost:' + req.session.instance});
+			res.render('views/site/game-frame', {url : 'http://ec2-54-165-181-175.compute-1.amazonaws.com:' + req.session.instance});
 		});
 		request.on('error', function (err) {
 			db.clearInstance(req, function () {
