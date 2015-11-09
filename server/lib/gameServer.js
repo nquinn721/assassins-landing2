@@ -25,7 +25,7 @@ app.set('view engine', 'jade');
 app.set('views', process.cwd() + '/client');
 
 
-global.define = require('amdefine')(module);
+// global.define = require('amdefine')(module);
 // mongoose.connect('mongodb://localhost/assassins');
 mongoose.connect('mongodb://nate:nate12345@ds051534.mongolab.com:51534/assassins');
 var DB = require(process.cwd() + '/lib/db/connection.js');
@@ -44,7 +44,7 @@ io.use(socketCookieParser());
 
 
 // Main
-require('./main')(requirejs, io, db, PORT, PLAYERS_ALOUD);
+// require('./main')(requirejs, io, db, PORT, PLAYERS_ALOUD);
 
 
 app.get('/', function (req, res) {
