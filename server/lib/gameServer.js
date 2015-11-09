@@ -26,7 +26,8 @@ app.set('views', process.cwd() + '/client');
 
 
 global.define = require('amdefine')(module);
-mongoose.connect('mongodb://localhost/assassins');
+// mongoose.connect('mongodb://localhost/assassins');
+mongoose.connect('mongodb://nate:nate12345@ds051534.mongolab.com:51534/assassins');
 var DB = require(process.cwd() + '/lib/db/connection.js');
 var db = new DB(mongoose);
 db.init();
