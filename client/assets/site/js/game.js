@@ -5,7 +5,7 @@ app.controller('game', ['$http','$scope','$sce', '$rootScope', '$location', '$ti
   	$scope.html = function(val) {
         return $sce.trustAsHtml(val);
     };
-    
+
 	$http.get('/an-start-game?players=' + window.location.hash.split('=')[1]).then(function (game) {
 		if(game.data == 'noinstance'){
 			$rootScope.noInstance = true;
@@ -15,7 +15,7 @@ app.controller('game', ['$http','$scope','$sce', '$rootScope', '$location', '$ti
 			return;
 		}
 
-		socket.emit('join', parseInt(game.data.match(/src="http:\/\/localhost:([0-9]+)"/)[1]));
+		socket.emit('join', parseInt(game.data.match(/amazonaws\.com:([0-9]+)"/)[1]));
 		$scope.gameLoaded = true;
 		$scope.gameFrame = game.data;
 		$rootScope.showLoader = false;
