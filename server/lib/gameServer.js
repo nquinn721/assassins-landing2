@@ -50,24 +50,24 @@ app.set('views', process.cwd() + '/client');
 app.get('/', function (req, res) {
 	res.render('views/game/index');
 });
-// app.get('/home', function (req, res) {
-// 	res.render('views/game/home');
-// });
-// app.get('/account', function (req, res) {
-// 	res.render('views/game/account');
-// });
-// app.get('/match-making', function (req, res) {
-// 	res.render('views/game/matchmaking');
-// });
-// app.get('/game-stats', function (req, res) {
-// 	res.render('views/game/gameStats');
-// });
-// app.get('/viewport', function (req, res) {
-// 	res.render('views/game/viewport');
-// });
-// app.get('/character-select', function (req, res) {
-// 	res.render('views/game/characterSelect');
-// });
-// app.get('/test', function (req, res) {
-// 	res.send(true);
-// });
+app.get('/home', function (req, res) {
+	res.render('views/game/home');
+});
+app.get('/account', function (req, res) {
+	res.render('views/game/account');
+});
+app.get('/match-making', function (req, res) {
+	res.render('views/game/matchmaking');
+});
+app.get('/game-stats', function (req, res) {
+	res.render('views/game/gameStats');
+});
+app.get('/viewport', function (req, res) {
+	res.render('views/game/viewport');
+});
+app.get('/character-select', function (req, res) {
+	res.render('views/game/characterSelect');
+});
+app.get('/test', function (req, res) {
+	res.send(true);
+});
