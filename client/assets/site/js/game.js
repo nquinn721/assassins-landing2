@@ -1,11 +1,11 @@
 app.controller('game', ['$http','$scope','$sce', '$rootScope', '$location', '$timeout', 'message','io',
 	function ($http, $scope, $sce, $rootScope, $location, $timeout, message, io) {
-	$rootScope.showLoader = true;
+	// $rootScope.showLoader = true;
 	$scope.gameLoaded = false;
   	$scope.html = function(val) {
         return $sce.trustAsHtml(val);
     };
-    console.log(window.location.hash.split('=')[1]);
+    
 	$http.get('/an-start-game?players=' + window.location.hash.split('=')[1]).then(function (game) {
 		if(game.data == 'noinstance'){
 			$rootScope.noInstance = true;
