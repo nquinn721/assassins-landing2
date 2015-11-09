@@ -28,4 +28,4 @@
 					.stat {{account.username.toUpper()}}
 		.bottom: center
 			span(ng-hide="ch.charactersReady") Waiting for more players!
-			a(ng-show="ch.startButton").wide-button.btn.btn-danger(ng-href="#/match-making") Start
+			a.wide-button.btn.btn-danger(ng-href="#/match-making",ng-show="ch.startButton") Start
