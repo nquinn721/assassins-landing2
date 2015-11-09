@@ -5,11 +5,11 @@
 		ul
 			for map, index in map1
 				li(ng-class="{selected: #{index} === mapSelected}", ng-click="loadMap(#{index}, 'map1', '#{map}')", id="#{map}") #{map.substr(0,1).toUpperCase() + map.substr(1, map.length - 2) + ' ' + map.substr(-1)}
-if map2.length
-	.map#map2
-		.title Map 2
-			.create(title="Create Map"): i.fa.fa-plus
-		.body
-			ul
-				for map in map2
-					li(ng-click="loadMap('#{map}', 'map2')", id="#{map}") #{map.substr(0,1).toUpperCase() + map.substr(1, map.length - 2) + ' ' + map.substr(-1)}
+//- if map2.length
+//- 	.map#map2
+//- 		.title Map 2
+//- 			.create(title="Create Map"): i.fa.fa-plus
+//- 		.body
+//- 			ul
+//- 				for map in map2
+//- 					li(ng-click="loadMap('#{map}', 'map2')", id="#{map}") #{map.substr(0,1).toUpperCase() + map.substr(1, map.length - 2) + ' ' + map.substr(-1)}
