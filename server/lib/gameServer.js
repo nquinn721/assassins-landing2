@@ -8,12 +8,12 @@ var express = require('express'),
 		// This log is used to tell instance the server is ready
 		console.log('started'); // DO NOT DELETE
 		console.log('Game Server started on port: ', PORT);
-	});
+	}),
 // 	_ = require('underscore'),
 // 	io = require('socket.io').listen(server),
 // 	mongoose = require('mongoose'),
 // 	socketCookieParser = require('socket.io-cookie-parser'),
-// 	bodyParser = require('body-parser');
+	bodyParser = require('body-parser');
 
 
 app.use(express.static(process.cwd() + '/client/assets'));
