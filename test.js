@@ -7,7 +7,7 @@ var io = require('socket.io').listen(server);
 app.get('/', function (req, res) {
 	res.send('<iframe src="http://ec2-54-165-181-175.compute-1.amazonaws.com:3001"></iframe>'+
 		'<script src="/socket.io/socket.io.js"></script>'+
-		'<script>var io = io.connect(); io.on("hi", function(){ console.log("connected")});'+
+		'<script>var io = io.connect(); io.on("hi", function(){ console.log("connected")});'
 		);
 });
 
