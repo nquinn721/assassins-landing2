@@ -2,9 +2,6 @@ var PLAYERS_ALOUD = process.argv.pop();
 var PORT = process.argv.pop();
 var app = require('express')();
 app.listen(PORT);
-app.get('/', function (req, res) {
-	res.send('hi');
-});
 // var express = require('express'),
 // 	app = express(),
 // 	cookieParser = require('cookie-parser'),
@@ -21,13 +18,13 @@ app.get('/', function (req, res) {
 // 	bodyParser = require('body-parser');
 
 
-// app.use(express.static(process.cwd() + '/client/assets'));
-// app.use(express.static(process.cwd() + '/main'));
-// app.use(bodyParser.urlencoded({extended : true}));
-// app.use(bodyParser.json());
-// app.use(cookieParser());
-// app.set('view engine', 'jade');
-// app.set('views', process.cwd() + '/client');
+app.use(express.static(process.cwd() + '/client/assets'));
+app.use(express.static(process.cwd() + '/main'));
+app.use(bodyParser.urlencoded({extended : true}));
+app.use(bodyParser.json());
+app.use(cookieParser());
+app.set('view engine', 'jade');
+app.set('views', process.cwd() + '/client');
 
 
 // global.define = require('amdefine')(module);
@@ -52,9 +49,9 @@ app.get('/', function (req, res) {
 // require('./main')(requirejs, io, db, PORT, PLAYERS_ALOUD);
 
 
-// app.get('/', function (req, res) {
-// 	res.render('views/game/index');
-// });
+app.get('/', function (req, res) {
+	res.render('views/game/index');
+});
 // app.get('/home', function (req, res) {
 // 	res.render('views/game/home');
 // });
