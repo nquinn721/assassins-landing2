@@ -1,6 +1,6 @@
 app.controller('game', ['$http','$scope','$sce', '$rootScope', '$location', '$timeout', 'message','io',
 	function ($http, $scope, $sce, $rootScope, $location, $timeout, message, io) {
-	// $rootScope.showLoader = true;
+	$rootScope.showLoader = true;
 	$scope.gameLoaded = false;
   	$scope.html = function(val) {
         return $sce.trustAsHtml(val);
