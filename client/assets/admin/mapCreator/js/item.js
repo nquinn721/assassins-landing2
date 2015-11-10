@@ -1,4 +1,4 @@
-MC.factory('Item', [function () {
+ADMIN.factory('Item', [function () {
 	function Item(stage, img, obj) {
 		this.id = 'floor';
 		this.w = 50;

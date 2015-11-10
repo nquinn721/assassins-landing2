@@ -1,6 +1,5 @@
-var MC = angular.module('mapCreator', []);
 
-MC.controller('main', ['$scope', 'stage', '$rootScope', function ($scope, stage, $rootScope) {
+ADMIN.controller('main', ['$scope', 'stage', '$rootScope', function ($scope, stage, $rootScope) {
 	stage.init();
 	$scope.menuSelected = 'items';
 	$scope.itemSelected = 0;

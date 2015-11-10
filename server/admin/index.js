@@ -1,6 +1,5 @@
 module.exports = function (app) {
 	function isAdmin(req, res, next) {
-		console.log(req.session);
 	    if (req.session.account.admin)
 	        return next();
 	    res.redirect('/');

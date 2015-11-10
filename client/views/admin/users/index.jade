@@ -23,6 +23,21 @@ block content
 				.submit.form-group
 					input.btn.btn-primary(type='submit')
 			.add(ng-click="showUserForm = !showUserForm"): i.fa.fa-plus
+		br
+		br
+		h3 Sessions
+		table.table.table-striped
+			thead
+				tr
+					th Username
+					th
+			tbody
+				tr.animated.fadeIn(ng-hide="session{{session._id}}", ng-repeat="session in sessions")
+					td {{session.account.username}}
+					td(width="80px").edit-delete
+						.delete
+							i.fa.fa-trash(ng-click="deleteSession(session._id)")
+		h3 Users
 		table.table.table-striped
 			thead
 				tr
@@ -32,6 +47,7 @@ block content
 					th Email
 					th Games
 					th isAdmin
+					th
 			tbody
 				tr.animated.fadeIn(ng-hide="user{{user._id}}", ng-repeat="user in users")
 					td {{user.username}}
@@ -49,4 +65,6 @@ block content
 							i.fa.fa-pencil
 						.delete
 							i.fa.fa-trash(ng-click="deleteUser(user._id)")
+	script(src="/admin/main.js")
 	script(src="/admin/users/js/main.js")
+	script(src="/admin/angulario.js")

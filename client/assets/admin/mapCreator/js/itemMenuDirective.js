@@ -1,4 +1,4 @@
-MC.directive('itemMenu', ['stage', function (stage) {
+ADMIN.directive('itemMenu', ['stage', function (stage) {
 	var templateUrl = '/mapcreator-menu-items/' + stage.map;
 	return {
 		restrict: 'E',

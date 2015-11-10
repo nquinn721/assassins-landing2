@@ -1,4 +1,4 @@
-MC.factory('stage', ['$http', '$rootScope', 'Item', 'visualMode', function ($http, $rootScope, Item, visualMode) {
+ADMIN.factory('stage', ['$http', '$rootScope', 'Item', 'visualMode', function ($http, $rootScope, Item, visualMode) {
 	return {
 		stage : new createjs.Stage(document.getElementById('map')),
 		queue : new createjs.LoadQueue(true),

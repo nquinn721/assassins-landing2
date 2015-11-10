@@ -6,10 +6,15 @@ module.exports = function (app) {
 	}
 
 	app.get('/all-users', isAdmin, function (req, res) {
-		Account.find().exec(function (err, users) {
-			res.send(users);
+		Session.find().exec(function (err, sessions) {
+			Account.find().exec(function (err, users) {
+				res.send({users : users, sessions : sessions});
+			});
 		});
-	})
+	});
+	app.post('/delete-session', isAdmin, function (req, res) {
+		Session.remove({'_id': req.body.session}).exec();
+	});
 	app.post('/delete-user', isAdmin, function (req, res) {
 		var user = req.body.user;
 		Account.remove({'_id' : user}).exec();

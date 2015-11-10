@@ -56,10 +56,12 @@ io.on('connection', function (socket) {
 	});
 });
 
+
+
 /**
  * Middleware
  */
-require('./server/middleware/index')(app, db);
+require('./server/middleware/index')(app, db, io);
 
 
 /**

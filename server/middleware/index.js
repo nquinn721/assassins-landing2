@@ -1,4 +1,4 @@
-module.exports = function (app, db) {
+module.exports = function (app, db, io) {
 	var uuid = require('node-uuid'),
 		OPEN_ROUTES = ['/login'];
 	
@@ -10,6 +10,15 @@ module.exports = function (app, db) {
 				if(session) {
 					req.session = session;
 					app.locals.session = session;
+
+					// Setup admin socket namespace
+					if(session.account.admin && !global.ADMIN_SOCKET){
+						global.ADMIN_SOCKET = io.of('/admin');
+						ADMIN_SOCKET.on('connection', function(socket){
+						  global.ADMIN_SOCKETE = socket;
+						});
+						ADMIN_SOCKET.emit('hi')
+					}
 					next();
 				}
 				else res.redirect('/login');

@@ -32,7 +32,6 @@ module.exports = function(app, db, instanceManager){
 		if(!req.session.instance || req.session.instance === 'false'){
 			connect(req, res);
 		} else {
-			console.log('checking ' + host + ':' + req.session.instance);
 			http.get(host + ':' + req.session.instance, function () {
 				res.render('views/site/game-frame', {url : host + ':' + req.session.instance});
 				

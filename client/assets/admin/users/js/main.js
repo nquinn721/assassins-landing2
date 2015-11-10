@@ -1,12 +1,15 @@
-var admin = angular.module('admin', []);
-
-admin.controller('manageUser', ['$scope', '$http', '$document', function ($scope, $http, $document) {
+ADMIN.controller('manageUser', ['$scope', '$http', '$document', 'socket', function ($scope, $http, $document, socket) {
 	$http.get('/all-users').then(function (users) {
-		$scope.users = users.data;
+		$scope.users = users.data.users;
+		$scope.sessions = users.data.sessions;
 	});
 	$scope.deleteUser = function (id) {
 		$http.post('/delete-user', {user : id});
 		$scope['user' + id] = true;
+	}
+	$scope.deleteSession = function (id) {
+		$http.post('/delete-session', {session : id});
+		$scope['session' + id] = true;
 	}
 
 	$scope.addUser = function () {
@@ -31,25 +34,12 @@ admin.controller('manageUser', ['$scope', '$http', '$document', function ($scope
 		})
 	}
 
-}]);
+	socket.on('newSession', function (session) {
+		$scope.sessions.push(session);
+	});
+	socket.on('destroySession', function (session) {
+		console.log('destroy', session);
+		$scope.sessions.splice($scope.sessions.indexOf(session), 1);
+	});
 
-admin.directive('focusMe', function($timeout, $parse) {
-  return {
-    //scope: true,   // optionally create a child scope
-    link: function(scope, element, attrs) {
-      var model = $parse(attrs.focusMe);
-      scope.$watch(model, function(value) {
-        if(value === true) { 
-          $timeout(function() {
-            element[0].focus(); 
-          });
-        }
-      });
-      // to address @blesh's comment, set attribute value to 'false'
-      // on blur event:
-      element.bind('blur', function() {
-         scope.$apply(model.assign(scope, false));
-      });
-    }
-  };
-});
+}]);

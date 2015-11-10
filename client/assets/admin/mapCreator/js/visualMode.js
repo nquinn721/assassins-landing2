@@ -1,4 +1,4 @@
-MC.factory('visualMode', ['$rootScope', function ($rootScope) {
+ADMIN.factory('visualMode', ['$rootScope', function ($rootScope) {
 	$rootScope.changeItem = function (mode) {
 		$rootScope.visualItem = mode;
 		visualMode.changeMode(mode);
