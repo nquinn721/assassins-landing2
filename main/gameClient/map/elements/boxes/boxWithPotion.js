@@ -9,7 +9,7 @@ define("gameClient/map/elements/boxes/boxWithPotion", [
 		this.spritesDestroyed = 0;
 	}
 	BoxWithPotion.prototype = {
-		setupSprite : function (opts) {
+		setupSprite : function (stage, opts) {
 			for(var i = 0; i < this.sprites.length; i++){
 				var img = stage.image(this.sprites[i], opts);
 				img.x = this.bodies[i].opts.x;

@@ -79,8 +79,10 @@ define("gameClient/stage/stage", ['core/emitter'], function (emitter) {
         },
         handleOptions : function (bitmap, options) {
               if(options){
-                for(var option in options)
-                    this[option](bitmap, options[option]);
+                for(var option in options){
+                    if(typeof this[option] === 'function')
+                        this[option](bitmap, options[option]);
+                }
             }
         },
         filters : function  (el, filtersArray) {

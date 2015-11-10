@@ -278,7 +278,7 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', 'visualMode', function ($htt
 			this.currentFile = 'game/map/maps/' + this.map + '/layouts/' + this.layout;
 			this.stage.removeAllChildren();
 			this.items = [];
-
+			console.log(map);
 			$rootScope.currentMap = map;
 			$rootScope.currentLayout = layout;
 			

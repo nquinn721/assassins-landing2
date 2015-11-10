@@ -1,6 +1,6 @@
 module.exports = function(app, db, instanceManager){
 	var http = require('http'),
-	host = ENV === 'dev' ? 'http://localhost:' : 'http://ec2-54-165-181-175.compute-1.amazonaws.com:';
+	host = ENV === 'dev' ? 'http://localhost' : 'http://ec2-54-165-181-175.compute-1.amazonaws.com';
 	
 	app.get('/', function (req, res) {
 		res.render('views/site/index');
@@ -32,22 +32,22 @@ module.exports = function(app, db, instanceManager){
 		if(!req.session.instance || req.session.instance === 'false'){
 			connect(req, res);
 		} else {
-			console.log('session instance', req.session.instance);
-			var request = http.request({host: host, port : req.session.instance }, function () {
-				res.render('views/site/game-frame', {url : host + req.session.instance});
-			});
-			request.on('error', function (err) {
+			console.log('checking ' + host + ':' + req.session.instance);
+			http.get(host + ':' + req.session.instance, function () {
+				res.render('views/site/game-frame', {url : host + ':' + req.session.instance});
+				
+			}).on('error', function () {
 				db.clearInstance(req, function () {
 					res.send('noinstance');
 				});
-			});
-			request.end();
+			})
+			
 		}
 	});
 	function connect (req, res) {
 		instanceManager.instance(req, function (port) {
 			console.log('new port', port);
-			res.render('views/site/game-frame', {url : host + port});
+			res.render('views/site/game-frame', {url : host + ':' + port});
 		});
 	}
 

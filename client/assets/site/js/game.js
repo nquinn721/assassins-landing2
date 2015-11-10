@@ -15,6 +15,7 @@ app.controller('game', ['$http','$scope','$sce', '$rootScope', '$location', '$ti
 			$location.path('/');
 			return;
 		}
+		console.log(game.data);
 		if(game.data.match(/amazonaws\.com/))
 			g = game.data.match(/amazonaws\.com:([0-9]+)/);
 		else g = game.data.match(/localhost:([0-9]+)/);
