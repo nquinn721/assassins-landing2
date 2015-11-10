@@ -68,6 +68,6 @@ require('./server/admin/user-routes')(app);
 
 
 // Final redirect
-app.use(function (req, res) {
-	res.redirect('/');
-});
+// app.use(function (req, res) {
+// 	res.redirect('/');
+// });
