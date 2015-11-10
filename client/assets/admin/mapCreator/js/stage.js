@@ -26,7 +26,7 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', 'visualMode', function ($htt
 		},
 		init : function () {
 			var self = this;
-			this.queue.loadManifest("/game/map/maps/map1/loadManifest.json");
+			this.queue.loadManifest("game/map/maps/map1/loadManifest.json");
 			createjs.Ticker.setFPS(30);
 			createjs.Ticker.addEventListener('tick', this.tick.bind(this));
 			this.stage.on("stagemousedown", this.chooseMouseDown.bind(this));
