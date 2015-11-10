@@ -25,10 +25,16 @@ app.use(cookieParser());
 app.set('view engine', 'jade');
 app.set('views', process.cwd() + '/client');
 
+// Set global environment
+if(process.env.HOME.match(/\/Users\/nate/))
+	global.ENV = 'dev';
+else global.ENV = 'prod';
 
 global.define = require('amdefine')(module);
-// mongoose.connect('mongodb://localhost/assassins');
-mongoose.connect('mongodb://nate:nate12345@ds051534.mongolab.com:51534/assassins');
+if(ENV == 'dev')
+	mongoose.connect('mongodb://localhost/assassins');
+else
+	mongoose.connect('mongodb://nate:nate12345@ds051534.mongolab.com:51534/assassins');
 var DB = require(process.cwd() + '/lib/db/connection.js');
 var db = new DB(mongoose);
 db.init();

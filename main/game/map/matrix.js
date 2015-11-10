@@ -10,7 +10,7 @@ define("game/map/matrix", [
 			wall : 'platforms/wall',
 			elevator : 'platforms/elevator',
 			movingplatform : 'platforms/movingplatform',
-			spike : 'pits/spikePit',
+			spikePit : 'pits/spikePit',
 			base : 'structures/base',
 			smallPotion : 'items/potions/smallPotion',
 			box : 'boxes/box',
@@ -39,7 +39,11 @@ define("game/map/matrix", [
 					item = this.newelements[items[i].id],
 					id = item.split('/')[1];
 				it.id = it.type;
-				it.id = id + this.getItemCount(id)
+				it.id = id + this.getItemCount(id);
+				if(items[i].id.match('spikePit')){
+					items[i].y += items[i].h / 2;
+					items[i].h = items[i].h / 2;
+				}
 
 				this.items.push(element.extend(item, it))
 

@@ -1,7 +1,7 @@
 define("gameClient/map/elements/pits/spikePit", ["game/map/elements/pits/spikePit"], function (spikePit) {
 	function SpikePit (obj) {
 		this.el = new spikePit;
-		this.sprite = 'spike';
+		this.sprite = 'spikePit';
 		this.images = [];
 	}
 

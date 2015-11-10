@@ -1,5 +1,6 @@
 module.exports = function(app, db, instanceManager){
-	var http = require('http');
+	var http = require('http'),
+	host = ENV === 'dev' ? 'http://localhost:' : 'http://ec2-54-165-181-175.compute-1.amazonaws.com:';
 	
 	app.get('/', function (req, res) {
 		res.render('views/site/index');
@@ -31,8 +32,9 @@ module.exports = function(app, db, instanceManager){
 		if(!req.session.instance || req.session.instance === 'false'){
 			connect(req, res);
 		} else {
-			var request = http.request({host: 'localhost', port : req.session.instance }, function () {
-				res.render('views/site/game-frame', {url : 'http://ec2-54-165-181-175.compute-1.amazonaws.com:' + req.session.instance});
+			console.log('session instance', req.session.instance);
+			var request = http.request({host: host, port : req.session.instance }, function () {
+				res.render('views/site/game-frame', {url : host + req.session.instance});
 			});
 			request.on('error', function (err) {
 				db.clearInstance(req, function () {
@@ -44,7 +46,8 @@ module.exports = function(app, db, instanceManager){
 	});
 	function connect (req, res) {
 		instanceManager.instance(req, function (port) {
-			res.render('views/site/game-frame', {url : 'http://ec2-54-165-181-175.compute-1.amazonaws.com:' + port});
+			console.log('new port', port);
+			res.render('views/site/game-frame', {url : host + port});
 		});
 	}
 
