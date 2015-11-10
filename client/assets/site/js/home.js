@@ -1,6 +1,16 @@
-app.controller('home', ["message", "$timeout", "$window", '$scope', function (message, $timeout, $window, $scope) {
+app.controller('home', ['$scope', '$http', function ($scope, $http) {
 
-	// message.show("You are in a game instance are you sure you want to leave the page?", 2);
+	$scope.searchUsers = function (search) {
+		$scope.searchingUsers = true;
+		$http.post('/search-users', {username : search}).then(function (acc) {
+			if(acc.data.length){
+				$scope.foundUsers = true;
+				$scope.searchedUsers = acc.data;
+			}else {
+				$scope.foundUsers = false;
+			}
+		});
+	}
 	window.onbeforeunload = function(){}
 }]);
 

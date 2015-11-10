@@ -1,14 +1,30 @@
 .home.menu
-	.header: h1 Welcome To Assassin's Landing #{session.account.firstName}
+	.header: h1 Welcome To Assassin's Landing 
 		span.no-game.alert.alert-danger(ng-if='noInstance') Game Not Available!
 		.right-header
-			| 
-			| XP #{session.account.xp} Gold #{session.account.gold}
-			| &nbsp;&nbsp;
 			a(href="/logout") Log Out
 	.body
 		.main
 		.sidebar
+			.user-info
+				div #{session.account.username}
+				div 
+					span XP 
+					span #{session.account.xp}
+				div 
+					span Gold 
+					span #{session.account.gold}
+			.search-users
+				.found-users.animated.fadeInUp(ng-show='searchingUsers')
+					div(ng-hide='foundUsers') No user found
+					div(ng-show='foundUsers', ng-repeat="user in searchedUsers", id="user.id") 
+						div(ng-if="user.online"): span.online
+						div(ng-if="!user.online"): span.offline
+						div {{user.username}} 
+
+				.input-group
+					input.form-control(ng-keyup="searchUsers(searchUsername)", ng-blur="searchingUsers = !searchingUsers;searchUsername = ''", ng-model="searchUsername", placeholder="Search for user...", aria-describedby="basic-addon1")
+					span.input-group-addon#basic-addon1: i.fa.fa-search
 		.bottom: center 
 			a.game-selects(href="/#/game?players=2"): input.btn.btn-danger.wide-button(type="button", value="Play 1 vs 1")
 			a.game-selects(href="/#/game?players=4"): input.btn.btn-danger.wide-button(type="button", value="Play 2 vs 2")

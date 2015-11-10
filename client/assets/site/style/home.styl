@@ -1,0 +1,42 @@
+.sidebar
+    position relative
+.user-info 
+    width 100%
+    background-color #111
+    padding 7px
+
+
+    > div:first-child 
+        font-size 21px  
+        border-bottom 1px solid #555
+        margin-bottom 15px
+        padding-bottom 5px
+
+
+    span 
+        display inline-block
+        width 50%
+        margin-bottom 5px
+        
+.search-users 
+    position absolute
+    width 89%
+    bottom 60px
+    input 
+        background-color #121212
+        border 1px solid #555
+    span
+        cursor pointer
+        &:hover
+            background-color #111
+    .found-users 
+        background-color #111
+        padding 10px
+        height 100px
+        overflow-y auto
+        border 1px solid #555
+        font-size: 20px;
+        > div > div:first-child {
+            width 9%
+            float left
+

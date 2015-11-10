@@ -31,10 +31,12 @@ block content
 				tr
 					th Username
 					th
+					th
 			tbody
 				tr.animated.fadeIn(ng-hide="session{{session._id}}", ng-repeat="session in sessions")
 					td {{session.account.username}}
-					td(width="80px").edit-delete
+					td {{session}}
+					td.edit-delete
 						.delete
 							i.fa.fa-trash(ng-click="deleteSession(session._id)")
 		h3 Users

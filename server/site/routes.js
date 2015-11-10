@@ -1,6 +1,7 @@
 module.exports = function(app, db, instanceManager){
 	var http = require('http'),
-	host = ENV === 'dev' ? 'http://localhost' : 'http://ec2-54-165-181-175.compute-1.amazonaws.com';
+		_ = require('underscore'),
+		host = ENV === 'dev' ? 'http://localhost' : 'http://ec2-54-165-181-175.compute-1.amazonaws.com';
 	
 	app.get('/', function (req, res) {
 		res.render('views/site/index');
@@ -24,6 +25,30 @@ module.exports = function(app, db, instanceManager){
 		});
 	});
 
+	app.post('/search-users', function (req, res) {
+		if(req.body.username === ''){
+			res.send('');
+		}else{
+			var regexp = new RegExp("^"+ req.body.username);
+
+			Session.find({"account.username" : regexp}, function (err, session) {
+				Account.find({ username: regexp}, function (err, accounts) {
+					var acc = accounts.map(function(v){
+						var online = _.filter(session, function(obj) {
+						    return _.where(obj, {username : v.username});
+						});
+
+						return {
+							username : v.username, 
+							id : v._id, 
+							online : online.length ? true : false
+						};
+					});
+					res.send(acc);
+				});
+			});
+		}
+	});
 
 	/**
 	 * Angular Routes
@@ -45,7 +70,6 @@ module.exports = function(app, db, instanceManager){
 	});
 	function connect (req, res) {
 		instanceManager.instance(req, function (port) {
-			console.log('new port', port);
 			res.render('views/site/game-frame', {url : host + ':' + port});
 		});
 	}
