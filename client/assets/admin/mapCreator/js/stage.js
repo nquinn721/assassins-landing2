@@ -26,13 +26,15 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', 'visualMode', function ($htt
 		},
 		init : function () {
 			var self = this;
-			this.queue.loadManifest("game/map/maps/map1/loadManifest.json");
+
+			this.queue.loadManifest("/game/map/maps/map1/loadManifest.json");
 			createjs.Ticker.setFPS(30);
 			createjs.Ticker.addEventListener('tick', this.tick.bind(this));
 			this.stage.on("stagemousedown", this.chooseMouseDown.bind(this));
 			this.stage.on("stagemousemove", this.chooseMouseMove.bind(this));
 			this.stage.on("stagemouseup", this.chooseMouseUp.bind(this));
 			this.queue.on("complete", this.begin, this);
+			this.queue.on("error", this.failedQueue, this);
 			this.setupKeys();
 			$rootScope.zoomLevel = this.zoomLevel;
 
@@ -349,6 +351,9 @@ MC.factory('stage', ['$http', '$rootScope', 'Item', 'visualMode', function ($htt
 		},
 		addChild : function (child) {
 			this.stage.addChild(child);
+		},
+		failedQueue : function (a,b,c) {
+			console.log('failed to load q', a,b,c);
 		}
 	}
 }]);
