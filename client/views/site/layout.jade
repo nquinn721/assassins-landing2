@@ -10,6 +10,8 @@ html(lang='en', ng-app="site")
 		link(rel="stylesheet", href="/lib/animate.css")
 		script(src='/socket.io/socket.io.js')
 	body
+		if session.account.admin
+			include ../admin/nav
 		.menu-cover
 		include ../utils/loader
 		include ../utils/message

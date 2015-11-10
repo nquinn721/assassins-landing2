@@ -5,10 +5,6 @@ module.exports = function (app) {
 	    res.redirect('/');
 	}
 
-	app.get('/admin', isAdmin, function (req, res) {
-		res.render('views/admin/index', {page : 'admin'});
-		
-	});
 	app.get('/all-users', isAdmin, function (req, res) {
 		Account.find().exec(function (err, users) {
 			res.send(users);

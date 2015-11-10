@@ -1,8 +1,9 @@
 .home.menu
-	.header: h1 Welcome To Assassin's Landing
+	.header: h1 Welcome To Assassin's Landing #{session.account.firstName}
 		span.no-game.alert.alert-danger(ng-if='noInstance') Game Not Available!
 		.right-header
-			| XP {{home.user.xp}} Gold {{home.user.gold}}
+			| 
+			| XP #{session.account.xp} Gold #{session.account.gold}
 			| &nbsp;&nbsp;
 			a(href="/logout") Log Out
 	.body

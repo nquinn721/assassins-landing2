@@ -10,7 +10,14 @@ admin.controller('manageUser', ['$scope', '$http', '$document', function ($scope
 	}
 
 	$scope.addUser = function () {
-		$http.post('/create-user', {username : $scope.username, password : $scope.password}).then(function (user) {
+		$http.post('/create-user', {
+			username : $scope.username,
+			password : $scope.password,
+			email : $scope.email,
+			firstName : $scope.firstName,
+			lastName : $scope.lastName,
+			
+		}).then(function (user) {
 			$scope.users.push(user.data);
 			$scope.showUserForm = false;
 			$scope.username = '';

@@ -46,8 +46,7 @@ gulp.task('watch', function() {
   gulp.watch('./client/assets/site/style/*.styl', ['css']);
   gulp.watch('./client/assets/game/style/*.styl', ['css']);
   gulp.watch('./client/assets/common/style/*.styl', ['css']);
-  gulp.watch('./client/assets/mapCreator/style/*.styl', ['css']);
-  gulp.watch('./client/assets/admin/style/*.styl', ['css']);
+  gulp.watch('./client/assets/admin/*/style/*.styl', ['css']);
 });
 
 gulp.task('css', function () {
@@ -61,12 +60,7 @@ gulp.task('css', function () {
     .pipe(concat('main.css'))
     .pipe(minifyCss())
     .pipe(gulp.dest('./client/assets/css/build/game'));
-  gulp.src(['./client/assets/mapCreator/style/*.styl'])
-    .pipe(stylus())
-    .pipe(concat('main.css'))
-    .pipe(minifyCss())
-    .pipe(gulp.dest('./client/assets/css/build/mapCreator'));
-  gulp.src(['./client/assets/admin/style/*.styl'])
+  gulp.src(['./client/assets/admin/mapCreator/style/*.styl', './client/assets/admin/users/style/*.styl'])
     .pipe(stylus())
     .pipe(concat('main.css'))
     .pipe(minifyCss())

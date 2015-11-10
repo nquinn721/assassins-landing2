@@ -11,10 +11,12 @@ nav.navbar.navbar-inverse
       ul.nav.navbar-nav
         li(class="#{page === 'admin' ? 'active' : ''}")
           a(href='/admin')
-            | Admin 
+            | Users 
             span.sr-only (current)
         li(class="#{page === 'mapcreator' ? 'active' : ''}")
           a(href='/map-creator') Map Creator
+        li
+          a(href='/') Game
       ul.nav.navbar-nav.navbar-right
         li.dropdown
           a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-haspopup='true', aria-expanded='false')

@@ -1,4 +1,4 @@
-extends layout
+extends ../layout
 
 block content
 	.container(ng-controller="manageUser")
@@ -7,10 +7,19 @@ block content
 			form.add-user-form(ng-show="showUserForm", ng-submit="addUser()")
 				.username.form-group
 					label(for="username") Username
-					input.form-control(focus-me="showUserForm", id="username", ng-model="username", name="username")
+					input.form-control(id="username", ng-model="username", name="username")
 				.password.form-group
 					label(for="password") Password
 					input.form-control(id="password", ng-model="password", name="password")
+				.firstName.form-group
+					label(for="firstName") First Name
+					input.form-control(id="firstName", ng-model="firstName", name="firstName")
+				.lastName.form-group
+					label(for="lastName") Last Name
+					input.form-control(id="lastName", ng-model="lastName", name="lastName")
+				.email.form-group
+					label(for="email") Email
+					input.form-control(id="email", ng-model="email", name="email")
 				.submit.form-group
 					input.btn.btn-primary(type='submit')
 			.add(ng-click="showUserForm = !showUserForm"): i.fa.fa-plus
@@ -18,17 +27,26 @@ block content
 			thead
 				tr
 					th Username
+					th First Name
+					th Last Name
+					th Email
+					th Games
 					th isAdmin
 			tbody
 				tr.animated.fadeIn(ng-hide="user{{user._id}}", ng-repeat="user in users")
-					td {{user.username}} {{user.admin}}
+					td {{user.username}}
+					td {{user.firstName}}
+					td {{user.lastName}}
+					td {{user.email}}
+					td {{user.totalGames}}
 					td(ng-if="user.admin") 
 						input(type="checkbox", ng-click="toggleAdmin(user._id, user.admin)", checked)
 					td(ng-if="!user.admin")
 						input(type="checkbox", ng-click="toggleAdmin(user._id, user.admin)")
 
-					td 
+					td.edit-delete
 						.edit
 							i.fa.fa-pencil
 						.delete
 							i.fa.fa-trash(ng-click="deleteUser(user._id)")
+	script(src="/admin/users/js/main.js")
