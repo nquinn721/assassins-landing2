@@ -10,7 +10,7 @@ define("game/map/matrix", [
 			wall : 'platforms/wall',
 			elevator : 'platforms/elevator',
 			movingplatform : 'platforms/movingplatform',
-			spikePit : 'pits/spikePit',
+			spike : 'pits/spikePit',
 			base : 'structures/base',
 			smallPotion : 'items/potions/smallPotion',
 			box : 'boxes/box',
