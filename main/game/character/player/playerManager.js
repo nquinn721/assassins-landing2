@@ -31,7 +31,7 @@ define("game/character/player/playerManager", [
 			var p = this.getById(player.id),
 				killer = this.getById(p.killer);
 			if(p){
-				killer.addKill(p.id);
+				if(killer) killer.addKill(p.id);
 				p.die();	
 			} 
 		},
