@@ -3,8 +3,8 @@ define("core/props", [], function () {
 		mapShowingDistance : 800,
 
 		canvas : {
-			w : 2000,
-			h : 1600,
+			w : 4000,
+			h : 2000,
 			currentX : 0,
 			currentY : 0
 		},

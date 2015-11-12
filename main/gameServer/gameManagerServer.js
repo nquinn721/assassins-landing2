@@ -14,6 +14,7 @@ define("gameServer/gameManagerServer", [
 		this.mapName = 'map1';
 		this.map = new Map(this.mapName, b2d);
 		this.map.init();
+		this.xpGained = 10;
 
 		this.totalPlayers = 0;
 		this.readyPlayers = 0;
@@ -124,21 +125,47 @@ define("gameServer/gameManagerServer", [
 
 			for(var i = 0; i < players.length; i++){
 				var player = players[i];
-				if(player.base === winner)winners.push({id : player.account.id, socketId : player.socketId});
-				else losers.push({id : player.account.id, socketId : player.socketId})
+
+				if(player.base === winner) winners.push({id : player.account.id, socketId : player.socketId});
+				else losers.push({id : player.account.id, socketId : player.socketId});
+
+				(function(player, winner){
+
+					Session.findOne({'account._id' : player.account.id}, function (err, session) {
+						session.gameStats = {
+							result : player.base === winner ? 'won' : 'lost',
+							kills : player.kills,
+							deaths : player.deaths,
+							killedBy : player.killedBy,
+							killed : player.killed
+						}
+						session.save();
+					});
+					
+				}(player, winner));
 
 				
 			}
+
+	
 
 			for(var i = 0; i < winners.length; i++){
 				this.emitToPlayer(winners[i], 'win');
 				Account.findOne({_id : winners[i].id}, function (err, acc) {
 					acc.xp += self.xpGained;
+					acc.gamesWon++;
+					acc.totalGames++;
 					acc.save();
 				});
 			}
-			for(var i = 0; i < losers.length; i++)
+			for(var i = 0; i < losers.length; i++){
 				this.emitToPlayer(losers[i], 'lose');
+				Account.findOne({_id : losers[i].id}, function (err, acc) {
+					acc.gamesLost++;
+					acc.totalGames++;
+					acc.save();
+				});
+			}
 
 			this.db.clearAllInstances(this.port);
 			setTimeout(function () {

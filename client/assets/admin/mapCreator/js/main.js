@@ -18,13 +18,20 @@ ADMIN.controller('main', ['$scope', 'stage', '$rootScope', function ($scope, sta
 	$scope.zoomOut = stage.zoomOut.bind(stage);
 	$scope.zoomIn = stage.zoomIn.bind(stage);
 	$scope.openMenu = function () {
-		$scope.menuOpen = true;
-		$('.menu-container').animate({
-			left : 0
-		});
+		openMenu();
 	};
 	$scope.closeMenu = function () {
-		$scope.menuOpen = false;
+		closeMenu();
+	};
+	$(document).on('keyup', function (e) {
+		if(e.keyCode === 77){
+			if($scope.menuOpen)
+				closeMenu(true);
+			else openMenu(true);
+		}
+	});
+
+	function closeMenu (apply) {
 		$('.menu-container').animate({
 			left : -400,
 		},{
@@ -32,7 +39,16 @@ ADMIN.controller('main', ['$scope', 'stage', '$rootScope', function ($scope, sta
 				$('.menu-hidden').show();
 			}
 		});
+		$scope.menuOpen = false;
+		if(apply) $scope.$apply();
 	};
+	function openMenu (apply) {
+		$('.menu-container').animate({
+			left : 0
+		});
+		$scope.menuOpen = true;
+		if(apply) $scope.$apply();
+	}
 }]);
 
 $('.draggable').draggable({handle : '.title'});

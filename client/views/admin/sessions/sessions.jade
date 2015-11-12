@@ -1,0 +1,23 @@
+extends ../layout
+
+block content
+	.container(ng-controller="manageSessions")
+		h3 Sessions
+			table.table.table-striped
+				thead
+					tr
+						th Username
+						th Instance
+						th Session
+						th
+				tbody
+					tr.animated.fadeIn(ng-hide="session{{session._id}}", ng-repeat="session in sessions")
+						td {{session.account.username}}
+						td {{session.instance || 'Not joined yet'}}
+						td: pre {{session.pretty}}
+						td.edit-delete
+							.delete
+								i.fa.fa-trash(ng-click="deleteSession(session._id)")
+	script(src="/admin/main.js")
+	script(src="/admin/sessions/js/session.js")
+	script(src="/admin/angulario.js")

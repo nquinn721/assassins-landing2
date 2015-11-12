@@ -13,6 +13,9 @@ nav.navbar.navbar-inverse
           a(href='/admin')
             | Users 
             span.sr-only (current)
+        li(class="#{page === 'sessions' ? 'active' : ''}")
+          a(href='/sessions')
+            | Sessions
         li(class="#{page === 'mapcreator' ? 'active' : ''}")
           a(href='/map-creator') Map Creator
         li
@@ -20,7 +23,7 @@ nav.navbar.navbar-inverse
       ul.nav.navbar-nav.navbar-right
         li.dropdown
           a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-haspopup='true', aria-expanded='false')
-            | Dropdown 
+            | #{session.account.username} 
             span.caret
           ul.dropdown-menu
             li

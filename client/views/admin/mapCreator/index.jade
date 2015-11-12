@@ -11,12 +11,7 @@ body(ng-controller="main")
 	include ../nav
 	.map-creator
 		.visual-mode(ng-show="visualMode") Visual Mode
-		.visual-mode-menu.draggable(ng-show="visualMode")
-			.title(ng-mousedown="titleMovingClass='moving'", ng-mouseup="titleMovingClass=''", ng-class="titleMovingClass") Visual Mode Menu
-			.body
-				.item(title="Selection Tool", data-toggle="tooltip", ng-class="visualItem === 'selection' ? 'selected' : ''", ng-click="changeItem('selection')"): i.fa.fa-mouse-pointer
-				.item(title="Tile Fill", data-toggle="tooltip", ng-class="visualItem === 'tileFill' ? 'selected' : ''", ng-click="changeItem('tileFill')"): i.fa.fa-th-large
-				.item(title="Combine Tiles", data-toggle="tooltip", ng-class="visualItem === 'combineTiles' ? 'selected' : ''", ng-click="changeItem('combineTiles')"): i.fa.fa-object-group
+		include visualMode
 		.currentItem(ng-class="{'cantLay' : cantLay}")
 			img(ng-src="{{currentItem}}")
 		.menu-hidden.animated.fadeIn(ng-show="!menuOpen")
@@ -47,7 +42,7 @@ body(ng-controller="main")
 			p: i.fa.fa-search-plus.pointer.zoom(ng-click="zoomIn()", ng-class="{disabled : (zoomLevel === 1)}")
 			//- p: input(id="width", step="25", type="number", placeholder="W:",ng-model="width", value="50", ng-click="setWidth(width)")
 			//- p: input(id="height", step="25", type="number", placeholder="H:",ng-model="height", value="50", ng-click="setHeight(height)")
-		.map-area: canvas#map(width="2000", height="1600")
+		.map-area: canvas#map(width="4000", height="2000")
 	script(src="/lib/jquery/dist/jquery.min.js")
 	script(src="/lib/jqueryui.js")
 	script(src="/lib/bootstrap/dist/js/bootstrap.min.js")

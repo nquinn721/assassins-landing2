@@ -1,5 +1,18 @@
 .game-stats.menu
 	.header: h3 Game Stats
-		.right-header: a.btn.btn-primary(ng-href="#/character-select") Home
+		.right-header: a.btn.btn-primary(href="/#/") Home
 	.body
-		| This is game stats
+		.container
+			table.stats.table.table-striped
+				thead
+					tr
+						th Kills
+						th Deaths
+						th Killed By
+						th Killed
+				tbody
+					tr
+						td {{kills}}
+						td {{deaths}}
+						td.killedby: span(ng-repeat="kby in killedBy") {{kby.username}}
+						td.killed: span(ng-repeat="k in killed") {{k.username}}

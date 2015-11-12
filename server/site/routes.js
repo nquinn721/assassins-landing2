@@ -50,6 +50,12 @@ module.exports = function(app, db, instanceManager){
 		}
 	});
 
+	app.get('/game-stats', function (req, res) {
+		db.getSession(req, function (session) {
+			res.send(session.gameStats);
+		});
+	});
+
 	/**
 	 * Angular Routes
 	 */	

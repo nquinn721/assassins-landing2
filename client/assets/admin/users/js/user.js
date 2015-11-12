@@ -1,15 +1,10 @@
 ADMIN.controller('manageUser', ['$scope', '$http', '$document', 'socket', function ($scope, $http, $document, socket) {
 	$http.get('/all-users').then(function (users) {
-		$scope.users = users.data.users;
-		$scope.sessions = users.data.sessions;
+		$scope.users = users.data;
 	});
 	$scope.deleteUser = function (id) {
 		$http.post('/delete-user', {user : id});
 		$scope['user' + id] = true;
-	}
-	$scope.deleteSession = function (id) {
-		$http.post('/delete-session', {session : id});
-		$scope['session' + id] = true;
 	}
 
 	$scope.addUser = function () {
@@ -33,13 +28,5 @@ ADMIN.controller('manageUser', ['$scope', '$http', '$document', 'socket', functi
 			
 		})
 	}
-
-	socket.on('newSession', function (session) {
-		$scope.sessions.push(session);
-	});
-	socket.on('destroySession', function (session) {
-		console.log('destroy', session);
-		$scope.sessions.splice($scope.sessions.indexOf(session), 1);
-	});
 
 }]);

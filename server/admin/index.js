@@ -7,4 +7,7 @@ module.exports = function (app) {
 	app.get('/admin', isAdmin, function (req, res) {
 		res.render('views/admin/users/index', {page : 'admin'});
 	});
+	app.get('/sessions', isAdmin, function (req, res) {
+		res.render('views/admin/sessions/sessions', {page : 'sessions'});
+	});
 }

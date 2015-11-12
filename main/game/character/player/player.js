@@ -11,7 +11,7 @@ define("game/character/player/player", [
 		this.w = 50;
 		this.h = 100;
 		this.id = 'player';
-		this.speed = 100;
+		this.speed = 25;
 		this.fixedRotation = true;
 		this.username = '';
 		this.team = 'team0';
@@ -186,9 +186,10 @@ define("game/character/player/player", [
 			if(policies.match('spikePit'))
 				this.gettingDamaged = false;
 		},
-		die : function () {
+		die : function (killer) {
 			this.deaths++;
 			this.destroy();
+			if(killer)this.killedBy.push(killer);
 			this.isDead = true;
 			this.damagedBy = [];
 			this.emit('die');
@@ -217,7 +218,6 @@ define("game/character/player/player", [
 			if(owner && this.damagedBy.indexOf(owner) < 0)this.damagedBy.push(owner);
 			if(owner && this.hp <= 0){
 				this.killer = owner;
-				this.killedBy.push(owner);
 
 			}
 			this.emits(['hit', 'changeHP']);
@@ -245,16 +245,16 @@ define("game/character/player/player", [
 			this.hp = hp;
 		},
 		moveUp : function () {
-			this.body.move('up', 10);
+			this.body.move('up', this.speed);
 		},
 		moveRight : function () {
 			this.directionFacing = 'right';
-			this.body.move('right', 10);
+			this.body.move('right', this.speed);
 			this.emits(['move', 'moveright']);
 		},
 		moveLeft : function () {
 			this.directionFacing = 'left';
-			this.body.move('left', 10);
+			this.body.move('left', this.speed);
 			this.emits(['move', 'moveleft']);
 		},
 		stopMove : function () {
@@ -265,12 +265,12 @@ define("game/character/player/player", [
 			this.jumped = true;
 			this.jumpAvailable = false;
 			this.currentlyJumping = true;
-			this.body.applyImpulse('up', 5.5 * this.density);
+			this.body.applyImpulse('up', 7 * this.density);
 			this.emits(['move', 'jump']);
 		},
 		smallJump : function () {
 			this.currentlyJumping = true;
-			this.body.applyImpulse('up', 3 * this.density);
+			this.body.applyImpulse('up', 4 * this.density);
 		},
 		destroy : function  () {
 			this.body.destroy();
@@ -316,6 +316,8 @@ define("game/character/player/player", [
 			return 	newObj;
 		},
 		mouseDown : function (obj) {
+			if(this.isDead)return;
+
 			this.characterClass.mouseDown(obj, this.obj());
 		},
 		mouseUp : function () {

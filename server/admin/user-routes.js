@@ -6,10 +6,13 @@ module.exports = function (app) {
 	}
 
 	app.get('/all-users', isAdmin, function (req, res) {
+		Account.find().exec(function (err, users) {
+			res.send(users);
+		});
+	});
+	app.get('/all-sessions', isAdmin, function (req, res) {
 		Session.find().exec(function (err, sessions) {
-			Account.find().exec(function (err, users) {
-				res.send({users : users, sessions : sessions});
-			});
+			res.send(sessions);
 		});
 	});
 	app.post('/delete-session', isAdmin, function (req, res) {

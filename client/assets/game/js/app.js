@@ -7,9 +7,8 @@ define("game/js/app", [
 		'game/js/characterSelect',
 		'game/js/events',
 		'game/js/viewport',
-		'game/js/gameStats',
 		'game/js/matchMaking'
-	], function (require, angular, io, player, instance, characterSelect, events, viewport, gameStats, matchMaking) {
+	], function (require, angular, io, player, instance, characterSelect, events, viewport, matchMaking) {
 		
 		require(['ngRoute'], function () {
 			
@@ -40,7 +39,6 @@ define("game/js/app", [
 			})
 			.controller('characterSelect', characterSelect)
 			.controller('viewport', viewport)
-			.controller('gameStats', gameStats)
 			.controller('matchMaking', matchMaking)
 			.factory('events', events)
 			.factory('player', player)

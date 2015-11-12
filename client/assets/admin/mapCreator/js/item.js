@@ -20,10 +20,12 @@ ADMIN.factory('Item', [function () {
 			this.img.on('click', this.chooseSelect.bind(this));
 		},
 		chooseSelect : function () {
+			if(this.stage.visualMode)return;
 			if(!this.selected)this.select();	
 			else if(!this.moving && this.selected)this.deselectByItem();
 		},
 		startMove : function() {
+			if(this.stage.visualMode && this.stage.visualModeClass.visualItem !== 'move')return;
 			if(!this.selected){
 				this.stage.deselect();
 				this.select();

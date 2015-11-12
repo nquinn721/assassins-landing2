@@ -1,0 +1,7 @@
+.visual-mode-menu.draggable(ng-show="visualMode")
+	.title(ng-mousedown="titleMovingClass='moving'", ng-mouseup="titleMovingClass=''", ng-class="titleMovingClass") Visual Mode Menu
+	.body
+		.item(title="Selection Tool", data-toggle="tooltip", ng-class="visualItem === 'selection' ? 'selected' : ''", ng-click="changeItem('selection')"): i.fa.fa-mouse-pointer
+		.item(title="Move Tool", data-toggle="tooltip", ng-class="visualItem === 'move' ? 'selected' : ''", ng-click="changeItem('move')"): i.fa.fa-arrows
+		.item(title="Tile Fill", data-toggle="tooltip", ng-class="visualItem === 'tileFill' ? 'selected' : ''", ng-click="changeItem('tileFill')"): i.fa.fa-th-large
+		.item(title="Combine Tiles", data-toggle="tooltip", ng-class="visualItem === 'combineTiles' ? 'selected' : ''", ng-click="changeItem('combineTiles')"): i.fa.fa-object-group

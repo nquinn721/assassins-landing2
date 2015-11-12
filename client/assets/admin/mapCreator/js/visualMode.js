@@ -14,7 +14,10 @@ ADMIN.factory('visualMode', ['$rootScope', function ($rootScope) {
 		},
 		changeMode : function (mode) {
 			this.visualItem = mode;
-			if(mode === 'combineTiles')this.combineSelected();
+			if(mode === 'combineTiles') this.combineSelected();
+			if(mode === 'move')$('canvas').css('cursor', 'move');
+			else if(mode === 'tileFill') $('canvas').css('cursor', 'context-menu');
+			else $('canvas').css('cursor', 'auto');
 		},
 		destroyVisualBox : function () {
 			this.stage.removeChild(this.visualBox);
@@ -86,31 +89,36 @@ ADMIN.factory('visualMode', ['$rootScope', function ($rootScope) {
 
 		},
 		fillTiles : function (x, y, w, h) {
-			var column = Math.floor(x / 50),
-				row = Math.floor(y / 50),
-				columns = column + Math.floor(w / 50),
-				rows = row + Math.floor(h / 50);
+			var selection = this.getRowsAndColumns(x,y,w,h),
+				columns = selection.columns,
+				rows = selection.rows;
 
-			for(var i = column; i <= columns; i++)
-				for(var j = row; j <= rows; j++)
-					this.stage.createItem({x : i * this.stage.gridSize, y : j * this.stage.gridSize}, true);
+			for(var i = 0; i < columns.length; i++)
+				for(var j = 0; j < rows.length; j++){
+					this.stage.createItem({row : rows[j], column : columns[i]});
+				}
 		},
 		selectItems : function (bx, by, bw, bh) {
+			var selection = this.getRowsAndColumns(bx,by,bw,bh),
+				rows = selection.rows,
+				columns = selection.columns;
+
 			this.stage.selected = [];
 			for(var i = 0; i < this.stage.items.length; i++){
 				var item = this.stage.items[i],
-					x = item.x,
-					y = item.y,
-					w = item.w,
-					h = item.h;
+					row = item.row,
+					column = item.column;
 
 
 				item.deselect();
 
+				for(var j = 0; j < rows.length; j++)
+					for(var k = 0; k < columns.length; k++)
+						if(row === rows[j] && column === columns[k] && !item.selected)item.select();
 
-				for(var j = x; j < x + w; j++)
-					for(var k = y; k < y + h; k++)
-						if(j >= bx && j <= bx + bw && k >= by && k <= by + bh && !item.selected)item.select();
+				// for(var j = x; j < x + w; j++)
+				// 	for(var k = y; k < y + h; k++)
+				// 		if(j >= bx && j <= bx + bw && k >= by && k <= by + bh && !item.selected)item.select();
 			}
 		},
 		combineTiles : function (x, y, w, h) {
@@ -118,10 +126,10 @@ ADMIN.factory('visualMode', ['$rootScope', function ($rootScope) {
 
 			for(var l = 0; l < this.stage.selected.length; l++){
 				var item = this.stage.selected[l];
-				if(typeof newItem.type === 'undefined')newItem.type = item.type;
+				if(typeof newItem.id === 'undefined')newItem.id = item.id;
 				if(typeof newItem.x !== 'number')newItem.x = item.x;
 				if(typeof newItem.y !== 'number')newItem.y = item.y;
-				console.log(newItem);
+
 				if(newItem.xs.indexOf(item.x) < 0){
 					newItem.w += item.w;
 					newItem.xs.push(item.x);
@@ -161,6 +169,19 @@ ADMIN.factory('visualMode', ['$rootScope', function ($rootScope) {
 				$rootScope.visualItem = 'selection';
 				$rootScope.$apply();
 			}, 500);
+		},
+		getRowsAndColumns : function (x,y,w,h) {
+			var rows = [],
+				columns = [],
+				row1y = y - (y % 50),
+				column1x = x - (x % 50),
+				row1 = row1y / 50,
+				column1 = column1x / 50;
+
+			for(var i = column1x; i < x + w; i += 50)columns.push(i / 50);
+			for(var i = row1y; i < y + h; i += 50)rows.push(i / 50);
+
+			return {rows : rows, columns : columns};
 		}
 	}
 	var visualMode = new VisualMode;

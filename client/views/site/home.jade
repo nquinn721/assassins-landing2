@@ -14,6 +14,15 @@
 				div 
 					span Gold 
 					span #{session.account.gold}
+				div 
+					span Games 
+					span #{session.account.totalGames}
+				div 
+					span Won 
+					span #{session.account.gamesWon}
+				div 
+					span Lost 
+					span #{session.account.gamesLost}
 			.search-users
 				.found-users.animated.fadeInUp(ng-show='searchingUsers')
 					div(ng-hide='foundUsers') No user found

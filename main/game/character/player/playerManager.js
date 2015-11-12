@@ -31,8 +31,10 @@ define("game/character/player/playerManager", [
 			var p = this.getById(player.id),
 				killer = this.getById(p.killer);
 			if(p){
-				if(killer) killer.addKill(p.id);
-				p.die();	
+				if(killer) killer.addKill({id : p.id, username : p.account.username});
+
+				p.die((killer ? {id : killer.id, username : killer.account.username} : null));
+
 			} 
 		},
 		revive : function (player) {

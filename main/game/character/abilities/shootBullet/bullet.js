@@ -8,7 +8,7 @@ define("game/character/abilities/shootBullet/bullet", function () {
 		this.speed = 7;
 		this.groupId = -1;
 		this.policies = ['bullet'];
-		this.damageDealt = 400;
+		this.damageDealt = 200;
 		this.elementName = 'bullet';
 
 		this.mousex = 10;

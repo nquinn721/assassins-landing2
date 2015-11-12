@@ -26,7 +26,7 @@ define("gameClient/character/player/playerSprite", [
 			emitter.on('doneloading', this.setup.bind(this));
 			emitter.on('hit', this.hit.bind(this));
 			emitter.on('win', this.win.bind(this));
-			emitter.on('win', this.win.bind(this));
+			emitter.on('lose', this.lose.bind(this));
 			emitter.on('die', this.die.bind(this));
 			emitter.on('revive', this.revive.bind(this));
 		},
@@ -147,9 +147,6 @@ define("gameClient/character/player/playerSprite", [
 		updateHp : function () {
 			if(this.player.hp < 0)return;
 			this.frames++;
-			if(this.frames % 100 === 0){
-				console.log(this.player.id, this.player.hp);
-			}
 			
 			this.hp.x = this.player.x - (this.hpx - 2);
 			this.hp.y = this.player.y - (this.hpy - 2);

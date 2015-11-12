@@ -25,20 +25,6 @@ block content
 			.add(ng-click="showUserForm = !showUserForm"): i.fa.fa-plus
 		br
 		br
-		h3 Sessions
-		table.table.table-striped
-			thead
-				tr
-					th Username
-					th
-					th
-			tbody
-				tr.animated.fadeIn(ng-hide="session{{session._id}}", ng-repeat="session in sessions")
-					td {{session.account.username}}
-					td {{session}}
-					td.edit-delete
-						.delete
-							i.fa.fa-trash(ng-click="deleteSession(session._id)")
 		h3 Users
 		table.table.table-striped
 			thead
@@ -68,5 +54,5 @@ block content
 						.delete
 							i.fa.fa-trash(ng-click="deleteUser(user._id)")
 	script(src="/admin/main.js")
-	script(src="/admin/users/js/main.js")
+	script(src="/admin/users/js/user.js")
 	script(src="/admin/angulario.js")

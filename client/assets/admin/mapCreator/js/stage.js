@@ -22,7 +22,7 @@ ADMIN.factory('stage', ['$http', '$rootScope', 'Item', 'visualMode', function ($
 			8 : 'deleteItem',
 			70 : 'f',
 			86 : 'toggleVisualMode',
-			27 : 'deselect'
+			27 : 'deselect',
 		},
 		init : function () {
 			var self = this;
@@ -118,10 +118,10 @@ ADMIN.factory('stage', ['$http', '$rootScope', 'Item', 'visualMode', function ($
 		setHeight : function (h) {
 			this.itemHeight = h;
 		},
-		createItem : function (obj, setItems) {
+		createItem : function (obj) {
 			if(!this.canLayItem())return;
-			var column = this.getColumn(obj.x),
-				row = this.getRow(obj.y),
+			var column = typeof obj.column === 'number' ? obj.column : this.getColumn(obj.x),
+				row = typeof obj.row === 'number' ? obj.row : this.getRow(obj.y),
 				obj = {
 					x : column * this.gridSize, 
 					y : row * this.gridSize,
@@ -133,9 +133,10 @@ ADMIN.factory('stage', ['$http', '$rootScope', 'Item', 'visualMode', function ($
 				},
 				img = new createjs.Bitmap(this.queue.getResult(obj.id)),
 				item = new Item(this, img, obj);
+
 			item.init();
 			this.stage.addChild(item.img);
-
+			
 			this.items.push(item);
 			return img;
 		},
@@ -206,8 +207,10 @@ ADMIN.factory('stage', ['$http', '$rootScope', 'Item', 'visualMode', function ($
 		},
 		chooseMouseMove : function (e) {
 			if(this.zoomLevel === 0)return;
-			if(this.visualMode)this.visualModeClass.stageMouseMove(e);
-			else this.stageMouseMove(e);	
+			if(this.visualMode && this.visualModeClass.visualItem !== 'move')this.visualModeClass.stageMouseMove(e);
+			else this.stageMouseMove(e);
+
+			this.updateMousePosition(e);	
 		},
 		chooseMouseUp : function (e) {
 			if(this.zoomLevel === 0)return;
@@ -231,15 +234,13 @@ ADMIN.factory('stage', ['$http', '$rootScope', 'Item', 'visualMode', function ($
 		toggleVisualMode : function () {
 			$rootScope.visualMode = !$rootScope.visualMode;
 			this.visualMode = !this.visualMode;
-			this.visualModeClass.resetVisualBox();	
+			this.visualModeClass.resetVisualBox();
+
+			$('canvas').css('cursor', 'auto');	
 		},
 		stageMouseMove : function (e) {
-			var obj = {
-		   		row : Math.floor(e.stageY / this.gridSize), 
-		   		column : Math.floor(e.stageX / this.gridSize),
-		   		x : Math.floor(e.stageX / this.gridSize) * this.gridSize, 
-		   		y : Math.floor(e.stageY / this.gridSize) * this.gridSize,
-		   	}, c = this.currentMousePos;
+			var obj = this.createMousePosition(e),
+				c = this.currentMousePos;
 
 		   	if(c){
 			   	if(obj.row > c.row || obj.row < c.row){
@@ -251,7 +252,6 @@ ADMIN.factory('stage', ['$http', '$rootScope', 'Item', 'visualMode', function ($
 			   		obj.movedX = (obj.column - c.column) * this.gridSize;
 			   	}
 		   	}
-		   	this.currentMousePos = obj;
 			if(this.mouseDown && !this.selected.length){
 				this.createItem({x : this.currentMousePos.x, y : this.currentMousePos.y});
 				this.isDirty = true;
@@ -259,6 +259,17 @@ ADMIN.factory('stage', ['$http', '$rootScope', 'Item', 'visualMode', function ($
 
 			if(this.movingItems)this.moveItems();
 
+		},
+		updateMousePosition : function (e) {
+		   	this.currentMousePos = this.createMousePosition(e);
+		},
+		createMousePosition : function (e) {
+			return {
+		   		row : Math.floor(e.stageY / this.gridSize), 
+		   		column : Math.floor(e.stageX / this.gridSize),
+		   		x : Math.floor(e.stageX / this.gridSize) * this.gridSize, 
+		   		y : Math.floor(e.stageY / this.gridSize) * this.gridSize,
+		   	};
 		},
 		moveItems : function () {
 			for(var i = 0; i < this.selected.length; i++)this.selected[i].move(this.currentMousePos);	
