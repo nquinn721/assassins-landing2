@@ -7,22 +7,22 @@
 		.main
 		.sidebar
 			.user-info
-				div #{session.account.username}
+				div #{account.username}
 				div 
 					span XP 
-					span #{session.account.xp}
+					span #{account.xp}
 				div 
 					span Gold 
-					span #{session.account.gold}
+					span #{account.gold}
 				div 
 					span Games 
-					span #{session.account.totalGames}
+					span #{account.totalGames}
 				div 
 					span Won 
-					span #{session.account.gamesWon}
+					span #{account.gamesWon}
 				div 
 					span Lost 
-					span #{session.account.gamesLost}
+					span #{account.gamesLost}
 			.search-users
 				.found-users.animated.fadeInUp(ng-show='searchingUsers')
 					div(ng-hide='foundUsers') No user found

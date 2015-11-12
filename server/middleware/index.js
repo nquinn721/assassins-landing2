@@ -6,10 +6,11 @@ module.exports = function (app, db, io) {
 	// Auth middleware
 	app.use(function (req, res, next) {
 		if(OPEN_ROUTES.indexOf(req.originalUrl) < 0){
-			db.getSession(req, function (session) {
+			db.getSessionAndAccount(req, function (session, account) {
 				if(session) {
 					req.session = session;
 					app.locals.session = session;
+					app.locals.account = account;
 
 					// Setup admin socket namespace
 					if(session.account.admin && !global.ADMIN_SOCKET){
