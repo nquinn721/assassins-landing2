@@ -1,6 +1,6 @@
 define("game/map/elements/boxes/box", function () {
 	function Box () {
-		this.hp = 1200;
+		this.hp = 600;
 		this.x = 10;
 		this.y = 10;
 		this.w = 15;

@@ -1,6 +1,6 @@
 define("game/map/elements/boxes/boxWithPotion", ["game/map/elements/items/potions/smallPotion"], function (smallPotion) {
 	function BoxWithPotion () {
-		this.hp = 1200;
+		this.hp = 600;
 		this.x = 100;
 		this.y = 200;
 		this.w = 15;
