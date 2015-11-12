@@ -136,7 +136,7 @@ ADMIN.factory('stage', ['$http', '$rootScope', 'Item', 'visualMode', function ($
 
 			item.init();
 			this.stage.addChild(item.img);
-			
+
 			this.items.push(item);
 			return img;
 		},
@@ -297,6 +297,7 @@ ADMIN.factory('stage', ['$http', '$rootScope', 'Item', 'visualMode', function ($
 			else this.setupLines();
 
 			require([this.currentFile], function (items) {
+				console.log(items);
 				if(items)
 					for(var i = 0; i < items.length; i++){
 						var item = items[i];
