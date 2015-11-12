@@ -11,7 +11,7 @@ define("game/character/player/player", [
 		this.w = 50;
 		this.h = 100;
 		this.id = 'player';
-		this.speed = 25;
+		this.speed = 100;
 		this.fixedRotation = true;
 		this.username = '';
 		this.team = 'team0';
@@ -249,12 +249,12 @@ define("game/character/player/player", [
 		},
 		moveRight : function () {
 			this.directionFacing = 'right';
-			this.body.move('right', this.speed);
+			this.body.move('right', 12);
 			this.emits(['move', 'moveright']);
 		},
 		moveLeft : function () {
 			this.directionFacing = 'left';
-			this.body.move('left', this.speed);
+			this.body.move('left', 12);
 			this.emits(['move', 'moveleft']);
 		},
 		stopMove : function () {
