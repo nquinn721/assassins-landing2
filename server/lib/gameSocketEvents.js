@@ -1,17 +1,17 @@
-module.exports =function (socket, io, emitter, require, db, port, gameManagerServer) {
+module.exports =function (socket, io, emitter, require, db, port, gameManagerServer, app) {
 	var IS_BLURRED = false,
 		cookie = socket.request.cookies.al;
 	
 
 	// Get current user
 	socket.on('getUser', function () {
-		db.getSession(cookie, function (session) {
+		db.getSessionAndAccount(cookie, function (session, account) {
 			session.account.character = session.character;
 			session.account.team = session.team;
 			session.account.socketId = socket.id;
 			session.account.started = session.started;
 			session.account.socketId = this.id;
-
+			app.locals.account = account;
 			socket.join(session.account.team);
 			gameManagerServer.join(socket.account);
 

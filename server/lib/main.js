@@ -1,4 +1,4 @@
-function setupRequire (requirejs, io, db, PORT, PLAYERS_ALOUD) {
+function setupRequire (requirejs, io, db, PORT, PLAYERS_ALOUD, app) {
 
 	requirejs([
 		'require',
@@ -25,7 +25,8 @@ function setupRequire (requirejs, io, db, PORT, PLAYERS_ALOUD) {
 				requirejs, 
 				db, 
 				PORT,
-				gameManagerServer
+				gameManagerServer,
+				app
 			);
 		});
 	});

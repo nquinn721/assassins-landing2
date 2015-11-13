@@ -24,31 +24,11 @@ module.exports = function(app, db, instanceManager){
 			res.redirect('/login');
 		});
 	});
-
-	app.post('/search-users', function (req, res) {
-		if(req.body.username === ''){
-			res.send('');
-		}else{
-			var regexp = new RegExp("^"+ req.body.username);
-
-			Session.find({"account.username" : regexp}, function (err, session) {
-				Account.find({ username: regexp}, function (err, accounts) {
-					var acc = accounts.map(function(v){
-						var online = _.filter(session, function(obj) {
-						    return _.where(obj, {username : v.username});
-						});
-
-						return {
-							username : v.username, 
-							id : v._id, 
-							online : online.length ? true : false
-						};
-					});
-					res.send(acc);
-				});
-			});
-		}
+	app.get('/ping', function (req, res) {
+		res.end();
 	});
+
+	
 
 	app.get('/game-stats', function (req, res) {
 		db.getSession(req, function (session) {

@@ -19,7 +19,7 @@ app.controller('game', ['$http','$scope','$sce', '$rootScope', '$location', '$ti
 			g = game.data.match(/amazonaws\.com:([0-9]+)/);
 		else g = game.data.match(/localhost:([0-9]+)/);
 		
-		socket.emit('join', parseInt(g[1]));
+		io.emit('join', parseInt(g[1]));
 		$scope.gameLoaded = true;
 		$scope.gameFrame = game.data;
 		$rootScope.showLoader = false;

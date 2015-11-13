@@ -32,7 +32,7 @@ block content
 					th Username
 					th First Name
 					th Last Name
-					th Email
+					th Status
 					th Games
 					th isAdmin
 					th
@@ -41,7 +41,7 @@ block content
 					td {{user.username}}
 					td {{user.firstName}}
 					td {{user.lastName}}
-					td {{user.email}}
+					td {{user.status}}
 					td {{user.totalGames}}
 					td(ng-if="user.admin") 
 						input(type="checkbox", ng-click="toggleAdmin(user._id, user.admin)", checked)

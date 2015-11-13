@@ -7,7 +7,7 @@
 		.main
 		.sidebar
 			.user-info
-				div #{account.username}
+				.title #{account.username}
 				div 
 					span XP 
 					span #{account.xp}
@@ -23,17 +23,30 @@
 				div 
 					span Lost 
 					span #{account.gamesLost}
+			.friends
+				.title Friends
+				for friend in account.friends
+					.friend(ng-if="isFriends('#{friend._id}')")
+						div: span(class="#{friend.status}", ng-class="status#{friend._id}")
+						div #{friend.username}
+						div: i.fa.fa-user-times(ng-click="removeFriend('#{friend._id}')")
+				.more-friends
+					.friend(ng-if="isFriends(friend.id)", ng-repeat="friend in friends")
+						div: span(class="{{friend.status}}", ng-class="status{{friend.id}}")
+						div {{friend.username}}
+						div: i.fa.fa-user-times(ng-click="removeFriend(friend.id)")
+			
 			.search-users
 				.found-users.animated.fadeInUp(ng-show='searchingUsers')
 					div(ng-hide='foundUsers') No user found
-					div(ng-show='foundUsers', ng-repeat="user in searchedUsers", id="user.id") 
-						div(ng-if="user.online"): span.online
-						div(ng-if="!user.online"): span.offline
-						div {{user.username}} 
+					div(ng-show='foundUsers', ng-repeat="user in searchedUsers", class='user-found') 
+						div: span(ng-class="[user.status, status{{user.id}}]")
+						div {{user.username}}
+						div
+							i.fa.fa-comment-o
+							i.fa.fa-user-plus(ng-if="!user.alreadyFriend", ng-click="addUser(user)")
 
-				.input-group
-					input.form-control(ng-keyup="searchUsers(searchUsername)", ng-blur="searchingUsers = !searchingUsers;searchUsername = ''", ng-model="searchUsername", placeholder="Search for user...", aria-describedby="basic-addon1")
-					span.input-group-addon#basic-addon1: i.fa.fa-search
+				input.form-control(ng-keyup="searchUsers(searchUsername)", ng-blur="", ng-model="searchUsername", placeholder="Search for user...", aria-describedby="basic-addon1")
 		.bottom: center 
 			a.game-selects(href="/#/game?players=2"): input.btn.btn-danger.wide-button(type="button", value="Play 1 vs 1")
 			a.game-selects(href="/#/game?players=4"): input.btn.btn-danger.wide-button(type="button", value="Play 2 vs 2")

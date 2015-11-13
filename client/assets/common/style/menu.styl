@@ -13,7 +13,8 @@
     border 1px solid black
     position absolute
     overflow hidden
-.offline, .online
+
+.offline, .online, .active, .away, .idle
     width 15px
     display inline-block
     height 15px
@@ -21,10 +22,17 @@
     border 1px solid #111
 .offline
     background-color #981717
-.online
+.online, .active
     background-color green
+.offline-important
+    background-color #981717 !important
+.online-important, .active-important
+    background-color green !important
+.idle
+    background-color #FFB800
+.idle-important
+    background-color #FFB800 !important
 
-.online {}
 .menu-cover 
     position absolute
     z-index 12

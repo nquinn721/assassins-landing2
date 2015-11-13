@@ -51,7 +51,7 @@ io.use(socketCookieParser());
 
 
 // Main
-require('./main')(requirejs, io, db, PORT, PLAYERS_ALOUD);
+require('./main')(requirejs, io, db, PORT, PLAYERS_ALOUD, app);
 
 
 app.get('/', function (req, res) {

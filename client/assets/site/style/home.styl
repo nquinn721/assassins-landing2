@@ -1,25 +1,39 @@
 .sidebar
     position relative
-.user-info 
-    width 100%
-    background-color #111
-    padding 7px
+    > div
+        width 100%
+        background-color #111
+        padding 7px
+        .title
+            font-size 21px  
+            border-bottom 1px solid #555
+            margin-bottom 15px
+            padding-bottom 5px
+    .user-info
+        span 
+            display inline-block
+            width 50%
+            margin-bottom 5px
 
 
-    > div:first-child 
-        font-size 21px  
-        border-bottom 1px solid #555
-        margin-bottom 15px
-        padding-bottom 5px
+ .friends  
+    .friend 
+        height 30px
+        > div
+            float left
+            &:first-child 
+                width 9%
+            &:nth-child(2)
+                width 70%
+            &:last-child 
+                width 21%
+                i 
+                    float right
+                    cursor pointer
+                    margin-left 8px
 
-
-    span 
-        display inline-block
-        width 50%
-        margin-bottom 5px
         
 .search-users 
-    position absolute
     width 89%
     bottom 60px
     input 
@@ -35,7 +49,36 @@
         height 100px
         overflow-y auto
         border 1px solid #555
-        font-size: 20px;
-        > div > div:first-child 
-            width 9%
-            float left
+        font-size 20px
+        cursor default
+        i
+            cursor pointer
+        .user-found
+            height 30px
+            > div
+                float left
+                &:first-child 
+                    width 9%
+                &:nth-child(2)
+                    width 70%
+            > div:last-child 
+                width 21%
+                i 
+                    float right
+                    margin-left 8px
+
+.found-context-menu
+    position fixed
+    background-color #111
+    width 200px
+    font-size 15px
+    display none
+
+    i
+        width 20%
+        text-align center
+    > div 
+        padding 10px
+        cursor pointer
+        &:hover
+            background-color #380B0B

@@ -1,6 +1,5 @@
-var app = angular.module('site', ['ngRoute', 'ngSanitize']);
+var app = angular.module('site', ['ngRoute', 'ngSanitize', 'ng-context-menu']);
 
-var socket = io.connect();
 
 app.config(function ($routeProvider) {
 	$routeProvider
@@ -28,3 +27,6 @@ app.config(function ($routeProvider) {
 			redirectTo : '/'
 		});
 });
+window.onfocus = function () {
+	$.ajax({url : '/ping'});
+}

@@ -1,16 +1,17 @@
 .character-select.menu(ng-if="ch.notStarted")
-	.header: h2 {{ch.user.upper()}}
+	.header: h2 #{account.username}
 	.body
 		.main
 			.title Choose a character
 			.characters
-				br
-				.left.text-center.character(ng-repeat="(char, set) in ch.user.characterSelect")
-					img.animated.fadeIn(
-						ng-src="/characters/{{char}}-stats.png",
-						ng-click="ch.selectCharacter(char)",
-						ng-class="{selected : set}"
-					)
+				br 
+				for character in account.characters
+					.left.text-center.character()
+						img.animated.fadeIn(
+							ng-src="/characters/#{character.name}-stats.png",
+							ng-click="ch.selectCharacter('#{character.name}')",
+							ng-class="{selected : set}"
+						)
 		.sidebar
 			.user.character-chosen
 				.character-chosen-name {{ch.user.character ? ch.user.character.toUpper() : 'No Character'}}

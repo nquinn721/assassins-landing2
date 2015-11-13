@@ -12,6 +12,9 @@ module.exports = function (app, db, io) {
 					app.locals.session = session;
 					app.locals.account = account;
 
+					// Set active if not already
+					if(account.status !== 'active') db.setActive(req);
+
 					// Setup admin socket namespace
 					if(session.account.admin && !global.ADMIN_SOCKET){
 						global.ADMIN_SOCKET = io.of('/admin');
@@ -30,6 +33,18 @@ module.exports = function (app, db, io) {
 	// Cookie middleware
 	app.use(function (req, res, next) {
 		if(!req.cookies.al) res.cookie('al', uuid.v1());
+		next();
+	});
+
+	// User Away middleware
+	app.use(function (req, res, next) {
+		if(!req.session) return next();
+		
+		clearTimeout(req.session.idle);
+		req.session.idle = setTimeout(function () {
+			clearTimeout(req.session.idle);
+			db.setIdle(req);
+		}, req.session.account.idleTime);
 		next();
 	});
 }

@@ -29,10 +29,17 @@ module.exports = function (app) {
 		});
 	});
 	app.post('/create-user', isAdmin, function (req, res) {
-		var acc = new Account(req.body);
-		acc.characters = ['assassin', 'brute'];
-		acc.save();
+		Character.find().exec(function (e, chars) {
+			console.log(chars);
+			var acc = new Account(req.body);
+			acc.characters = chars.map(function(v){return v._id;});
+			console.log(chars.map(function(v){return v._id;}));
+			acc.save(function (a,b) {
+				console.log(a,b);
+			});
 
-		res.send(acc);
+			res.send(acc);
+			
+		});
 	});
 }

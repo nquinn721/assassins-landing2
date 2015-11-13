@@ -9,12 +9,13 @@ var express = require('express'),
 	io = require('socket.io').listen(server),
 	mongoose = require('mongoose'),
 	cookieParser = require('cookie-parser'),
+	socketCookieParser = require('socket.io-cookie-parser'),
 	bodyParser = require('body-parser');
 
 
-process.on('uncaughtException', function (a,b,c) {
-	console.log('Error: ' + a);
-});
+// process.on('uncaughtException', function (a,b,c) {
+// 	console.log('Error: ' + a);
+// });
 
 // Set global environment
 if(process.env.HOME.match(/\/Users\/nate/))
@@ -50,31 +51,54 @@ instanceManager.init(db, io);
 
 
 
-io.on('connection', function (socket) {
-	socket.on('join', function (port) {
-		socket.join(port);
-	});
-});
-
-
 
 /**
  * Middleware
  */
-require('./server/middleware/index')(app, db, io);
+require('./server/middleware/middleware')(app, db, io);
 
 
 /**
  * Site Routes
  */
 require('./server/site/routes')(app, db, instanceManager);
+require('./server/site/home/routes')(app, db, instanceManager);
 /**
  * Admin Routes
  */
 require('./server/admin/index')(app);
 require('./server/admin/map-creator-routes')(app);
 require('./server/admin/user-routes')(app);
+/**
+ * Sockets
+ */
+io.use(socketCookieParser());
+io.on('connection', function (socket) {
+	var cookie = socket.request.cookies.al;
+	
+	db.addSocketIdToSession(cookie, socket.id);
 
+	// socket.on('join', function (port) {
+	// 	socket.join(port);
+	// });
+	require('./server/chat/chat')(socket, io, cookie, db);
+	require('./server/site/home/sockets')(socket, io, cookie, db);
+});
+db.on('setAccountActive', function (acc) {
+	io.emit('active', parseAccount(acc));
+});
+db.on('setAccountOffline', function (acc) {
+	io.emit('offline', parseAccount(acc));
+});
+db.on('setAccountIdle', function (acc) {
+	io.emit('idle', parseAccount(acc));
+});
+function parseAccount (acc) {
+	var obj = acc.account ? 
+		{username : acc.account.username, id : acc.account._id} : 
+		{username : acc.username, id : acc._id};
+	return obj;
+}
 
 // Final redirect
 app.use(function (req, res) {
