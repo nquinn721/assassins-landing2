@@ -41,7 +41,7 @@ block content
 					td {{user.username}}
 					td {{user.firstName}}
 					td {{user.lastName}}
-					td: span(class="status", ng-class="user.status")
+					td: span(class="status", ng-class="[user.status, status{{user._id}}]")
 					td {{user.totalGames}}
 					td(ng-if="user.admin") 
 						input(type="checkbox", ng-click="toggleAdmin(user._id, user.admin)", checked)
@@ -56,3 +56,4 @@ block content
 	script(src="/admin/main.js")
 	script(src="/admin/users/js/user.js")
 	script(src="/admin/angulario.js")
+	script(src="/admin/io.js")

@@ -1,5 +1,5 @@
-ADMIN.factory('adminSocket', ['$rootScope', function ($rootScope) {
-	var socket = io(window.location.origin + '/admin');
+ADMIN.factory('socket', ['$rootScope', function ($rootScope) {
+	var socket = io();
 	return {
 		on: function (eventName, callback) {
 		  socket.on(eventName, function () {  

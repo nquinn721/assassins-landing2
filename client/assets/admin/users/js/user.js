@@ -28,5 +28,14 @@ ADMIN.controller('manageUser', ['$scope', '$http', '$document', 'socket', functi
 			
 		})
 	}
+	socket.on('active', function (acc) {
+		$scope['status' + acc.id] = 'active-important';
+	});
+	socket.on('offline', function (acc) {
+		$scope['status' + acc.id] = 'offline-important';
+	});
+	socket.on('idle', function (acc) {
+		$scope['status' + acc.id] = 'away-important';
+	});
 
 }]);

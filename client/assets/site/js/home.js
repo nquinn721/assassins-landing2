@@ -31,15 +31,12 @@ app.controller('home', ['$scope', '$http', 'io', function ($scope, $http, io) {
 		return !$scope['removed-friend-' + user];
 	}
 	io.on('active', function (acc) {
-		console.log('active', acc.username);
 		$scope['status' + acc.id] = 'active-important';
 	});
 	io.on('offline', function (acc) {
-		console.log('offline', acc.username);
 		$scope['status' + acc.id] = 'offline-important';
 	});
 	io.on('idle', function (acc) {
-		console.log('idle', acc.username);
 		$scope['status' + acc.id] = 'away-important';
 	});
 	window.onbeforeunload = function(){}

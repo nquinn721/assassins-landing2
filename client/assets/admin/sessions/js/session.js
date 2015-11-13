@@ -1,4 +1,4 @@
-ADMIN.controller('manageSessions', ['$scope', '$http', '$document', 'socket', function ($scope, $http, $document, socket) {
+ADMIN.controller('manageSessions', ['$scope', '$http', '$document', 'adminSocket', function ($scope, $http, $document, adminSocket) {
 	$http.get('/all-sessions').then(function (sessions) {
 		sessions.data.forEach(function (v) {
 			v.pretty = JSON.stringify(v, null, 2);
@@ -12,18 +12,18 @@ ADMIN.controller('manageSessions', ['$scope', '$http', '$document', 'socket', fu
 	}
 
 
-	socket.on('newSession', function (session) {
+	adminSocket.on('newSession', function (session) {
 		session.pretty = JSON.stringify(session, null, 2)
 		$scope.sessions.push(session);
 	});
-	socket.on('destroySession', function (session) {
+	adminSocket.on('destroySession', function (session) {
 		$scope.sessions.splice($scope.sessions.indexOf(session), 1);
 	});
-	socket.on('joined', function (obj) {
+	adminSocket.on('joined', function (obj) {
 		var session = getSession('cookie', obj.cookie);
 		session.instance = obj.port;
 	});
-	socket.on('leftInstance', function (obj) {
+	adminSocket.on('leftInstance', function (obj) {
 		var session = getSession('cookie', obj.cookie);
 		session.instance = undefined;
 	});
