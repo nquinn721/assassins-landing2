@@ -11,7 +11,6 @@ module.exports = function (app, db, io) {
 					req.session = session;
 					app.locals.session = session;
 					app.locals.account = account;
-
 					// Set active if not already
 					if(account.status !== 'active') db.setActive(req);
 
@@ -44,7 +43,7 @@ module.exports = function (app, db, io) {
 		req.session.idle = setTimeout(function () {
 			clearTimeout(req.session.idle);
 			db.setIdle(req);
-		}, req.session.account.idleTime);
+		}, 1000 * 60 * 30);
 		next();
 	});
 }

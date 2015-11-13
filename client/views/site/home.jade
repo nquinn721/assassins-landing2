@@ -26,6 +26,7 @@
 			.friends
 				.title Friends
 				for friend in account.friends
+					| #{friend.status}
 					.friend(ng-if="isFriends('#{friend._id}')")
 						div: span(class="#{friend.status}", ng-class="status#{friend._id}")
 						div #{friend.username}

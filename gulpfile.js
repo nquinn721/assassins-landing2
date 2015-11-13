@@ -60,7 +60,7 @@ gulp.task('css', function () {
     .pipe(concat('main.css'))
     .pipe(minifyCss())
     .pipe(gulp.dest('./client/assets/css/build/game'));
-  gulp.src(['./client/assets/admin/mapCreator/style/*.styl', './client/assets/admin/users/style/*.styl'])
+  gulp.src(['./client/assets/admin/*/style/*.styl'])
     .pipe(stylus())
     .pipe(concat('main.css'))
     .pipe(minifyCss())

@@ -41,7 +41,7 @@ block content
 					td {{user.username}}
 					td {{user.firstName}}
 					td {{user.lastName}}
-					td {{user.status}}
+					td: span(class="status", ng-class="user.status")
 					td {{user.totalGames}}
 					td(ng-if="user.admin") 
 						input(type="checkbox", ng-click="toggleAdmin(user._id, user.admin)", checked)
