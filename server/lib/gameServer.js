@@ -48,7 +48,7 @@ requirejs.config({
 });
 
 io.use(socketCookieParser());
-
+require(process.cwd() + '/server/middleware/middleware')(app, db, io);
 
 // Main
 require('./main')(requirejs, io, db, PORT, PLAYERS_ALOUD, app);
