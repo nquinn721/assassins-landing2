@@ -1,5 +1,5 @@
 .home.menu
-	.header: h1 Welcome To Assassin's Landing 
+	.header: h1 Welcome
 		span.no-game.alert.alert-danger(ng-if='noInstance') Game Not Available!
 		.right-header
 			a(href="/logout") Log Out
@@ -65,7 +65,6 @@
 									i.fa.fa-comment-o
 									i.fa.fa-user-plus(ng-if="!user.alreadyFriend", ng-click="addUser(user)")
 				.search-users
-
 					input.form-control(ng-keyup="searchUsers(searchUsername)", ng-blur="", ng-model="searchUsername", placeholder="Search for user...", aria-describedby="basic-addon1")
 		.bottom: center 
 			a.game-selects(href="/#/game?players=2"): input.btn.btn-danger.wide-button(type="button", value="Play 1 vs 1")
