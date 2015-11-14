@@ -27,7 +27,7 @@ app.controller('home', ['$scope', '$http', 'io', '$document', function ($scope, 
 
 		for(var i = 0; i < $scope.friends.length; i++)
 			if($scope.friends[i].id === user)$scope.friends.splice(i,1);
-	}
+	} 
 	$scope.isFriends = function (user) {
 		return !$scope['removed-friend-' + user];
 	}
