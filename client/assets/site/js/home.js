@@ -1,8 +1,9 @@
-app.controller('home', ['$scope', '$http', 'io', function ($scope, $http, io) {
+app.controller('home', ['$scope', '$http', 'io', '$document', function ($scope, $http, io, $document) {
 	$scope.friends = [];
 
 	$scope.searchUsers = function (search) {
 		$scope.searchingUsers = true;
+		$scope.showUsersFoundBox = true;
 		$http.post('/search-users', {username : search}).then(function (acc) {
 			if(acc.data.length){
 				$scope.foundUsers = true;
@@ -38,6 +39,14 @@ app.controller('home', ['$scope', '$http', 'io', function ($scope, $http, io) {
 	});
 	io.on('idle', function (acc) {
 		$scope['status' + acc.id] = 'away-important';
+	});
+
+	$document.on('click', function (e) {
+		if($(e.target).parents('.search-users').length == 0 && $(e.target).parents('.found-users').length === 0){
+			$scope.searchingUsers = false;
+			$scope.searchUsername = '';
+			$scope.$apply();
+		}
 	});
 	window.onbeforeunload = function(){}
 }]);
