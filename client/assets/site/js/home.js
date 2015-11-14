@@ -49,5 +49,9 @@ app.controller('home', ['$scope', '$http', 'io', '$document', function ($scope, 
 		}
 	});
 	window.onbeforeunload = function(){}
+	$('[data-toggle="tooltip"]').tooltip();
+	$('.add-friend').on('click', function () {
+		$('.search-users input').focus();
+	})
 }]);
 

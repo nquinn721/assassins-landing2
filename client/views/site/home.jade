@@ -42,6 +42,7 @@
 			.friends-area
 				.friends
 					.title Friends
+						span.right: i.fa.fa-user-plus.add-friend(title="Add Friend", data-toggle='tooltip')
 					for friend in account.friends
 						.friend(ng-if="isFriends('#{friend._id}')")
 							div: span(class="#{friend.status}", ng-class="status#{friend._id}")
