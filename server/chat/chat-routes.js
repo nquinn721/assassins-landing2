@@ -7,7 +7,6 @@ module.exports = function (app, db, io) {
 
 		db.getSessionAndAccountByUserId(to, function (acc, session) {
 			var room = '/chat-' + from + '-' + to;
-			console.log(session);
 			if(session)
 				if(session.socketId && io.sockets.connected[session.socketId])
 					io.sockets.connected[session.socketId].emit('startChat', room);
