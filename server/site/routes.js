@@ -17,9 +17,13 @@ module.exports = function(app, db, instanceManager){
 	app.post('/login', function (req, res) {
 		var obj = req.body;
 		db.login(obj.username, obj.password, function(account){
-			db.saveSession(req, account, function () {
-				res.redirect('/');
-			});
+			if(account === 'logged'){
+				res.redirect('/login?error=accountlogged')
+			}else{
+				db.saveSession(req, account, function () {
+					res.redirect('/');
+				});
+			}
 		}, function () {
 			res.redirect('/login');
 		});
