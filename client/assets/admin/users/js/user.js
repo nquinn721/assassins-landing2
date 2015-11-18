@@ -22,6 +22,9 @@ ADMIN.controller('manageUser', ['$scope', '$http', '$document', 'socket', functi
 			$scope.password = '';
 		});
 	}
+	$scope.orderOnline = function(user) {
+	   return user.status === 'online';
+	};
 
 	$scope.toggleAdmin = function (id, admin) {
 		$http.post('/update-user', {_id : id, admin : !admin}).then(function () {

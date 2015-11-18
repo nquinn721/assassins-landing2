@@ -50,7 +50,7 @@ block content
 
 					td.edit-delete
 						.edit
-							i.fa.fa-pencil
+							a(ng-href="/edit-user/{{user._id}}"): i.fa.fa-pencil
 						.delete
 							i.fa.fa-trash(ng-click="deleteUser(user._id)")
 	script(src="/admin/main.js")

@@ -66,7 +66,7 @@ require('./server/site/home/routes')(app, db, instanceManager);
  */
 require('./server/admin/index')(app);
 require('./server/admin/map-creator-routes')(app);
-require('./server/admin/user-routes')(app);
+require('./server/admin/user-routes')(app, db);
 /**
  * Chat Routes
  */

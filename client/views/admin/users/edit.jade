@@ -1,0 +1,114 @@
+extends ../layout
+	
+block content
+	.container
+		h2 Account
+			.right.success-color.none.account-success: i.fa.fa-check 
+				| Saved
+		table.table.table-striped.account-table
+			thead
+				tr
+					th Username
+					th First Name
+					th Last Name
+					th Email
+					th Total Games
+			tbody
+				tr
+					td: input.form-control(id="account-username", value="#{userAccount.username}")
+					td: input.form-control(id="account-firstName", value="#{userAccount.firstName}")
+					td: input.form-control(id="account-lastName", value="#{userAccount.lastName}")
+					td: input.form-control(id="account-email", value="#{userAccount.email}")
+					td: input.form-control(id="account-totalGames", value="#{userAccount.totalGames}")
+		table.table.table-striped.account-table
+			thead
+				tr
+					th Games Won
+					th Games Lost
+					th XP
+					th Characters
+					th Gold
+					th Admin
+			tbody
+				tr
+					td: input.form-control(id="account-gamesWon", value="#{userAccount.gamesWon}")
+					td: input.form-control(id="account-gamesLost", value="#{userAccount.gamesLost}")
+					td: input.form-control(id="account-xp", value="#{userAccount.xp}")
+					td: textarea.form-control#account-characters #{userAccount.characters.join('\n')}
+					td: input.form-control(id="account-gold", value="#{userAccount.gold}")
+					td: input.form-control(id="account-admin", value="#{userAccount.admin}")
+		table.table.table-striped.account-table
+			thead
+				tr
+					th Friends
+					th Status
+					th Messages Waiting
+					th Created
+					th Updated
+					th Deleted
+			tbody
+				tr
+					td: textarea.form-control#account-friends #{userAccount.friends.join('\n')}
+					td: input.form-control(id="account-status", value="#{userAccount.status}")
+					td: textarea.form-control#account-messagesWaiting #{userAccount.messagesWaiting.join('\n')}
+					td: input.form-control(id="account-created", value="#{userAccount.created}")
+					td: input.form-control(id="account-updated", value="#{userAccount.updated}")
+					td: input.form-control(id="account-deleted", value="#{userAccount.deleted}")
+		if userSession
+			h2 Session
+			.right.success-color.none.session-success: i.fa.fa-check 
+				| Saved
+			table.table.table-striped.session-table
+				thead
+					tr
+						th Cookie
+						th Instance
+						th Team
+						th Character
+						th Started
+						th GameStats
+						th SocketId
+						th Chats
+						th IdleTime
+				tbody
+					tr
+						td: input.form-control(id="session-cookie", value="#{userSession.cookie}")
+						td: input.form-control(id="session-instance", value="#{userSession.instance}")
+						td: input.form-control(id="session-team", value="#{userSession.team}")
+						td: input.form-control(id="session-character", value="#{userSession.character}")
+						td: input.form-control(id="session-started", value="#{userSession.started}")
+						td: input.form-control(id="session-gameStats", value="#{userSession.gameStats}")
+						td: input.form-control(id="session-socketId", value="#{userSession.socketId}")
+						td: input.form-control(id="session-chats", value="#{JSON.stringify(userSession.chats)}")
+						td: input.form-control(id="session-idleTime", value="#{userSession.idleTime}")
+	script(src="/admin/main.js")
+	script.
+		var account = "#{userAccount._id}",
+			session = "#{userSession ? userSession._id : ''}";
+		$('.account-table').on('keyup', 'input', function(e){
+			if(e.keyCode === 13){
+				var obj = {acc : account},
+					prop = $(this).attr('id').split('-')[1],
+					val = $(this).val();
+				obj[prop] = val;
+				$.post('/edit-account', obj);
+				success('.account-success');
+			}
+		});
+		$('.session-table').on('keyup', 'input', function(e){
+			if(e.keyCode === 13){
+				var obj = {session : session},
+					prop = $(this).attr('id').split('-')[1],
+					val = $(this).val();
+				obj[prop] = val;
+				$.post('/edit-session', obj);
+				success('.session-success');
+			}
+		});
+
+		function success(cl){
+			$(cl).removeClass('none');
+			setTimeout(function(){
+				$(cl).addClass('none');
+			}, 3000);
+		}

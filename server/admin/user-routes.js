@@ -1,4 +1,4 @@
-module.exports = function (app) {
+module.exports = function (app, db) {
 	function isAdmin(req, res, next) {
 	    if (req.session.account.admin)
 	        return next();
@@ -28,6 +28,14 @@ module.exports = function (app) {
 			user.save();
 		});
 	});
+	app.get('/edit-user/:user', isAdmin, function (req, res) {
+		db.getSessionAndAccountByUserId(req.params.user, function (acc, session) {
+			res.render('views/admin/users/edit', {
+				userAccount : acc,
+				userSession : session
+			})
+		});
+	});
 	app.post('/create-user', isAdmin, function (req, res) {
 		Character.find().exec(function (e, chars) {
 			var acc = new Account(req.body);
@@ -36,6 +44,26 @@ module.exports = function (app) {
 
 			res.send(acc);
 			
+		});
+	});
+
+	app.post('/edit-session', isAdmin, function (req, res) {
+		Session.findOne({'_id' : req.body.session}, function (err, session) {
+			delete req.body.session;
+			for(var i in req.body)session[i] = req.body[i];
+			session.save(function () {
+				res.send(session);
+			});
+		});
+	});
+
+	app.post('/edit-account', isAdmin, function (req, res) {
+		Account.findOne({'_id' : req.body.acc}, function (err, acc) {
+			delete req.body.acc;
+			for(var i in req.body)acc[i] = req.body[i];
+			acc.save(function () {
+				res.send(acc);
+			});
 		});
 	});
 }
