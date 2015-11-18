@@ -1,0 +1,32 @@
+.friends-area
+	.friends
+		.title Friends
+			span.right: i.fa.fa-user-plus.add-friend(title="Add Friend", data-toggle='tooltip')
+		for friend in account.friends
+			.friend(ng-if="isFriends('#{friend._id}', true)")
+				div: span(class="#{friend.status}", ng-class="status#{friend._id}")
+				div #{friend.username}
+				div 
+					i.fa.fa-user-times(ng-click="removeFriend('#{friend._id}')")
+					i.fa.fa-comment-o(ng-click="chat.startChat('#{friend._id}')")
+
+		.more-friends
+			.friend(ng-if="isFriends(friend.id)", ng-repeat="friend in friends")
+				div: span(class="{{friend.status}}", ng-class="status{{friend.id}}")
+				div {{friend.username}}
+				div
+					i.fa.fa-user-times(ng-click="removeFriend(friend.id)")
+					i.fa.fa-comment-o(ng-click="chat.startChat(friend.id)")
+	
+	.found-users.animated(ng-class="{fadeInUp : searchingUsers, fadeOutDown : !searchingUsers}", ng-show="showUsersFoundBox")
+		.found-users-area
+			.each-found-user
+				div(ng-hide='foundUsers') No user found
+				div(ng-show='foundUsers', ng-repeat="user in searchedUsers", class='user-found') 
+					div: span(ng-class="[user.status, status{{user.id}}]")
+					div {{user.username}}
+					div
+						i.fa.fa-comment-o(ng-click="chat.startChat(user.id)")
+						i.fa.fa-user-plus(ng-if="!user.alreadyFriend", ng-click="addFriend(user)")
+	.search-users
+		input.form-control(ng-keyup="searchUsers(searchUsername)", ng-blur="", ng-model="searchUsername", placeholder="Search for user...", aria-describedby="basic-addon1")

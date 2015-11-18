@@ -1,0 +1,65 @@
+.friends 
+    .title
+        margin-bottom 10px
+    .add-friend
+        cursor pointer
+    .friend 
+        height 30px
+        > div
+            float left
+            &:first-child 
+                width 9%
+            &:nth-child(2)
+                width 70%
+            &:last-child 
+                width 21%
+                i 
+                    float right
+                    cursor pointer
+                    margin-left 8px
+
+        
+.search-users 
+    position absolute
+    width 100%
+    left 0
+    bottom 0
+    input 
+        background-color #121212
+        border 1px solid #555
+    span
+        cursor pointer
+        &:hover
+            background-color #111
+.found-users 
+    position absolute
+    width 100%
+    left 0
+    height: 150px;
+    font-size: 20px;
+    cursor: default;
+    bottom: 34px;
+
+    .found-users-area
+        overflow-y auto
+        border-right 1px solid #555
+        border-top 1px solid #555
+        border-left 1px solid #555
+        padding 10px
+        height 100%
+        background-color #111
+    i
+        cursor pointer
+    .user-found
+        height 30px
+        > div
+            float left
+            &:first-child 
+                width 9%
+            &:nth-child(2)
+                width 70%
+        > div:last-child 
+            width 21%
+            i 
+                float right
+                margin-left 8px

@@ -24,6 +24,10 @@ module.exports = function(app, db, instanceManager){
 			res.redirect('/login');
 		});
 	});
+
+	app.get('/get-session', function (req, res) {
+		res.send(req.session);
+	});
 	app.get('/ping', function (req, res) {
 		res.end();
 	});

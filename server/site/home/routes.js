@@ -9,15 +9,15 @@ module.exports = function (app, db) {
 			var regexp = new RegExp("^"+ req.body.username),
 				friends = req.session.account.friends.map(function(v){return v._id.toString();});
 			Account.find({ username: regexp}, function (err, accounts) {
-				var acc = accounts.map(function(v){
-
+				var acc = _.compact(accounts.map(function(v){
+					if(v.username === req.session.account.username)return;
 					return {
 						username : v.username, 
 						id : v._id, 
 						status : v.status,
 						alreadyFriend : _.contains(friends, v._id.toString())
 					};
-				});
+				}));
 				res.send(acc);
 			});
 		}
@@ -35,5 +35,12 @@ module.exports = function (app, db) {
 	app.post('/remove-friend', function (req, res) {
 		db.removeFriend(req, req.body.user);
 	});
+
+	app.get('/chat-box', function (req, res) {
+		res.render('views/site/partials/chat');
+	});
+	app.get('/friends-list', function (req, res) {
+		res.render('views/site/partials/friends');
+	})
 
 };

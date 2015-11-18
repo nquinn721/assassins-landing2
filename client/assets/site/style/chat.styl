@@ -1,0 +1,90 @@
+
+
+.chat-box 
+    width 210px 
+    height 260px
+    position absolute
+    border 1px solid #282828
+    bottom 0
+    background-color #111
+    box-shadow 0px 10px 23px 0px black
+    .chat-header 
+        height 30px
+        background-color #181818
+        border-bottom 1px solid black
+        .name
+            padding 5px
+            cursor pointer
+            width 90%
+            height 100%
+            color #777
+        > div 
+            float left
+            height 100%
+
+        .controls 
+            width 10%
+            > div 
+                cursor pointer
+                height 100%
+                text-align center
+                padding-top 3px
+                &:hover
+                    background-color #250A0A
+            
+           
+
+
+    .chat-body 
+        height 194px
+        padding 5px
+        overflow-y auto
+        
+        .right-msg, .left-msg 
+            background-color #232323
+            border-radius 5px 
+            position relative
+            margin-bottom 5px
+            max-width 150px
+            word-wrap break-word
+                
+
+
+        .right-msg 
+            padding 5px 15px 5px 10px
+            margin-right 5px
+            float right
+            background-color #224052
+            .msg-user
+                color #569AE7
+        .arrow
+            width 0
+            height 0
+            border-bottom 7px solid transparent
+            border-top 7px solid transparent
+            position absolute
+            bottom 5px
+        .right-arrow 
+            border-left 7px solid #224052
+            right -6px
+        .left-arrow
+            border-right 7px solid #61121E
+            left -6px
+        .left-msg 
+            padding 5px 10px 5px 15px
+            margin-left 5px
+            float left
+            background-color #61121E
+            .msg-user
+                color #EA6060
+
+
+    .chat-footer input 
+        background-color #222
+        color white
+        border none
+        outline  none
+        border-top 1px solid #222
+        width 100% 
+        height 100%
+        padding 5px

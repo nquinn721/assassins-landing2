@@ -1,6 +1,5 @@
 var app = angular.module('site', ['ngRoute', 'ngSanitize', 'ng-context-menu']);
 
-
 app.config(function ($routeProvider) {
 	$routeProvider
 		.when('/', {

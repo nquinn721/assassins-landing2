@@ -1,0 +1,23 @@
+.chat-box(ng-click="focused = true")
+	.chat-header(ng-click="minimizeChat()", ng-class="{waiting : focused}")
+		.name 
+			span(class="{{status}}", ng-class="status{{chatUserId}}")
+			| {{chatUser}}
+		.controls
+			//- div(title="Minimize", ng-click="minimizeChat()", data-toggle="tooltip") _
+			div(title="Close", ng-click="destroy()", data-toggle="tooltip"): i.fa.fa-close
+	.chat-body
+		.msg-body
+			.msg(ng-repeat="msg in messages")
+				.right-msg(ng-if="msg.dir === 'right'")
+					.msg-user {{msg.user}}
+					.msg-msg {{msg.msg}}
+					.right-arrow.arrow
+				.left-msg(ng-if="msg.dir === 'left'")
+					.msg-user {{msg.user}}
+					.msg-msg {{msg.msg}}
+					.left-arrow.arrow
+				.clear
+	.chat-footer
+		.msg-input
+			input(ng-enter="sendMessage()", ng-model="msg", placeholder="Type to {{chatUser}}...")

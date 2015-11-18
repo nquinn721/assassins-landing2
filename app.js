@@ -70,17 +70,18 @@ require('./server/admin/index')(app);
 require('./server/admin/map-creator-routes')(app);
 require('./server/admin/user-routes')(app);
 /**
+ * Chat Routes
+ */
+require('./server/chat/chat-routes')(app, db, io);
+/**
  * Sockets
  */
+
 io.use(socketCookieParser());
 io.on('connection', function (socket) {
 	var cookie = socket.request.cookies.al;
-	
 	db.addSocketIdToSession(cookie, socket.id);
 
-	// socket.on('join', function (port) {
-	// 	socket.join(port);
-	// });
 	require('./server/chat/chat')(socket, io, cookie, db);
 	require('./server/site/home/sockets')(socket, io, cookie, db);
 });

@@ -46,4 +46,8 @@ module.exports = function (app, db, io) {
 		}, 1000 * 60 * 30);
 		next();
 	});
+	// app.use(function (req, res, next) {
+	// 	if(req.session)req.session.save();
+	// 	next();
+	// });
 }
