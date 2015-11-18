@@ -21,6 +21,9 @@
     "socket.io-cookie-parser": "^1.0.0",
     "underscore": "^1.8.3"
   },
+  "scripts" : {
+        "deploy" : "./deploy.py"
+    },
   "devDependencies": {
     "chai": "^3.2.0",
     "del": "^2.0.0",
