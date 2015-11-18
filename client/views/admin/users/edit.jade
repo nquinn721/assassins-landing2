@@ -85,7 +85,7 @@ block content
 	script.
 		var account = "#{userAccount._id}",
 			session = "#{userSession ? userSession._id : ''}";
-		$('.account-table').on('keyup', 'input', function(e){
+		$('.account-table').on('keyup', 'input, textarea', function(e){
 			if(e.keyCode === 13){
 				var obj = {acc : account},
 					prop = $(this).attr('id').split('-')[1],
@@ -95,7 +95,7 @@ block content
 				success('.account-success');
 			}
 		});
-		$('.session-table').on('keyup', 'input', function(e){
+		$('.session-table').on('keyup', 'input, textarea', function(e){
 			if(e.keyCode === 13){
 				var obj = {session : session},
 					prop = $(this).attr('id').split('-')[1],

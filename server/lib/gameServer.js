@@ -16,7 +16,6 @@ var express = require('express'),
 	socketCookieParser = require('socket.io-cookie-parser'),
 	bodyParser = require('body-parser');
 
-
 app.use(express.static(process.cwd() + '/client/assets'));
 app.use(express.static(process.cwd() + '/main'));
 app.use(bodyParser.urlencoded({extended : true}));

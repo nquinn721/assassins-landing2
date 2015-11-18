@@ -2,22 +2,35 @@ extends ../layout
 
 block content
 	.container(ng-controller="manageSessions")
+		h3 Servers
+		div(ng-if="servers.length === 0") No Servers started
+		table.table.table-striped(ng-if="servers.length > 0")
+			thead
+				tr
+					th PID
+					th Instance
+					th Total Players
+			tbody
+				tr(ng-repeat="server in servers")
+					td {{server.pid}}
+					td {{server.instance}}
+					td {{server.totalPlayers}}
 		h3 Sessions
-			table.table.table-striped
-				thead
-					tr
-						th Username
-						th Instance
-						th Session
-						th
-				tbody
-					tr.animated.fadeIn(ng-hide="session{{session._id}}", ng-repeat="session in sessions")
-						td {{session.account.username}}
-						td {{session.instance || 'Not joined yet'}}
-						td: pre {{session.pretty}}
-						td.edit-delete
-							.delete
-								i.fa.fa-trash(ng-click="deleteSession(session._id)")
+		table.table.table-striped
+			thead
+				tr
+					th Username
+					th Instance
+					th Session
+					th
+			tbody
+				tr.animated.fadeIn(ng-hide="session{{session._id}}", ng-repeat="session in sessions")
+					td {{session.account.username}}
+					td {{session.instance || 'Not joined yet'}}
+					td: pre {{session.pretty}}
+					td.edit-delete
+						.delete.delete-only
+							i.fa.fa-trash(ng-click="deleteSession(session._id)")
 	script(src="/admin/main.js")
 	script(src="/admin/sessions/js/session.js")
 	script(src="/admin/angulario.js")

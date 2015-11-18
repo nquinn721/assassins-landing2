@@ -6,6 +6,10 @@ ADMIN.controller('manageUser', ['$scope', '$http', '$document', 'socket', functi
 		$http.post('/delete-user', {user : id});
 		$scope['user' + id] = true;
 	}
+	$scope.online = function(user) {
+		if(user)
+		   return user.status === 'active' ? -1 : user.status === 'away' ? 0 : 1;
+	};
 
 	$scope.addUser = function () {
 		$http.post('/create-user', {
@@ -22,9 +26,7 @@ ADMIN.controller('manageUser', ['$scope', '$http', '$document', 'socket', functi
 			$scope.password = '';
 		});
 	}
-	$scope.orderOnline = function(user) {
-	   return user.status === 'online';
-	};
+	
 
 	$scope.toggleAdmin = function (id, admin) {
 		$http.post('/update-user', {_id : id, admin : !admin}).then(function () {

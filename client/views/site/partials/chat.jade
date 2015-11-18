@@ -1,11 +1,11 @@
 .chat-box(ng-click="focused = true")
-	.chat-header(ng-click="minimizeChat()", ng-class="{waiting : focused}")
-		.name 
+	.chat-header(ng-class="{waiting : focused}")
+		.name(ng-click="minimizeChat()")
 			span(class="{{status}}", ng-class="status{{chatUserId}}")
 			| {{chatUser}}
-		.controls
-			//- div(title="Minimize", ng-click="minimizeChat()", data-toggle="tooltip") _
+		.controls 
 			div(title="Close", ng-click="destroy()", data-toggle="tooltip"): i.fa.fa-close
+			div(ng-if="isFriend"): i.fa.fa-user-plus(title="Add Friend", ng-click="addFriend(chatUserId)")
 	.chat-body
 		.msg-body
 			.msg(ng-repeat="msg in messages")

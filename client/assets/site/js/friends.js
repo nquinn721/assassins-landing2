@@ -7,11 +7,27 @@ app.directive('friends', ['$http', 'io', '$compile', '$rootScope', 'chatService'
 			$scope.chat = chatService;
 
 
+			$scope.online = function(user) {
+				if(user)
+				   return user.status === 'active' ? -1 : user.status === 'away' ? 0 : 1;
+			};
 			$scope.addFriend = function (user) {
-				$scope['removed-friend-' + user.id] = false;
-				user.alreadyFriend = true;
-				$http.post('/add-friend', {user : user.id}).then(function (user) {
-					$scope.friends.push(user.data);
+				id = user.id || user;
+
+				if(typeof user === 'object') 
+					user.alreadyFriend = true;
+
+				$scope['removed-friend-' + id] = false;
+
+				$http.post('/add-friend', {user : id}).then(function (user) {
+					var found;
+					for(var i = 0; i < $scope.friends.length; i++){
+						console.log($scope.friends[i]._id, user.data._id);
+						if($scope.friends[i]._id == user.data.id)found = true;
+					}
+
+					if(!found)$scope.friends.push(user.data);
+					console.log($scope.friends);
 				});
 			};
 			$scope.removeFriend = function (user, username) {
@@ -22,6 +38,7 @@ app.directive('friends', ['$http', 'io', '$compile', '$rootScope', 'chatService'
 
 					for(var i = 0; i < $scope.friends.length; i++)
 						if($scope.friends[i].id === user)$scope.friends.splice(i,1);
+					$rootScope.$broadcast('removeFriend', user);
 				});
 			};
 			$scope.searchUsers = function (search) {
@@ -65,7 +82,14 @@ app.directive('friends', ['$http', 'io', '$compile', '$rootScope', 'chatService'
 			$('.add-friend').on('click', function () {
 				$('.search-users input').focus();
 			});
+			$http.get('/get-friends-list').then(function (friends) {
+				$scope.friends = friends.data;
+			});
+			$scope.$on('addFriend', function (e, data) {
+				console.log('add friend', data);
+				$scope.addFriend(data);
+			});
 		},
 		templateUrl : '/friends-list'
 	}
-}])
+}]);

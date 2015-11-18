@@ -32,6 +32,9 @@ module.exports = function (app, db) {
 			res.send(obj);
 		});
 	});
+	app.get('/get-friends-list', function (req, res) {
+		res.send(req.session.account.friends);
+	});
 	app.post('/remove-friend', function (req, res) {
 		db.removeFriend(req, req.body.user);
 	});

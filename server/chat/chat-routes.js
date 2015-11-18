@@ -26,14 +26,21 @@ module.exports = function (app, db, io) {
 			time = req.body.time;
 
 		db.getSessionAndAccountByUserId(user, function (acc, session) {
-			var obj = {
-				id : req.session.accountId,
-				msg : msg,
-				time : time,
-				user : req.session.account.username,
-				status : 'active',
-				room : room
-			};
+			var isFriend = 'no',
+				obj = {
+					id : req.session.accountId,
+					msg : msg,
+					time : time,
+					user : req.session.account.username,
+					status : 'active',
+					room : room
+				};
+
+			for(var i = 0; i < acc.friends.length; i++)
+				if(acc.friends[i] && acc.friends[i]._id == req.session.accountId)isFriend = 'yes';
+			
+			obj.isFriend = isFriend;
+
 			if(session){
 				io.sockets.connected[session.socketId].emit('message', obj);
 				io.sockets.connected[session.socketId].emit('message-' + room, obj);
@@ -51,34 +58,28 @@ module.exports = function (app, db, io) {
 	app.get('/messages-waiting', function (req, res) {
 		var user = req.session.accountId;
 		db.getAccountByUserId(user, function (acc) {
-			if(acc.messagesWaiting.length > 0){
-				var userIds = [],
-					status = {},
-					statuses = 0;
+			if(acc.messagesWaiting[0] && Object.keys(acc.messagesWaiting[0]).length > 0){
+				var statuses = 0,
+					messages = {};
 
 				acc.messagesWaiting.forEach(function (v) {
-					if(userIds.indexOf(v.id) < 0)userIds.push(v.id);
+					if(!messages[v.id])messages[v.id] = [];
+					messages[v.id].push(v);
 				});
-				for(var i = 0; i < userIds.length; i++){
-					(function (id) {
-						db.getAccountByUserId(id, function (acc) {
-							status[id] = acc.status;
-							statuses++;
-							if(statuses === userIds.length)send();
-						});
-					}(userIds[i]))
-				}
-				function send(){
-					var obj = {};
-					acc.messagesWaiting.map(function (v) {
-						v.status = status[v.id];
-						if(!obj[v.id])obj[v.id] = [];
+				for(var i in messages){
 
-						obj[v.id].push(v);
-					});
+					(function (i, id) {
+						db.getAccountByUserId(id, function (useracc) {
+							messages[i].status = useracc.status;
+							statuses++;
+							if(statuses === Object.keys(messages).length)send();
+						});
+					}(i, messages[i][0].id));
+				}				
+				function send(){
 					acc.messagesWaiting = [];
 					acc.save();
-					res.send(obj);
+					res.send(messages);
 				}
 			}
 

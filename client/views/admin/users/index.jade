@@ -37,7 +37,7 @@ block content
 					th isAdmin
 					th
 			tbody
-				tr.animated.fadeIn(ng-hide="user{{user._id}}", ng-repeat="user in users")
+				tr.animated.fadeIn(ng-hide="user{{user._id}}", ng-repeat="user in users | orderBy:online")
 					td {{user.username}}
 					td {{user.firstName}}
 					td {{user.lastName}}

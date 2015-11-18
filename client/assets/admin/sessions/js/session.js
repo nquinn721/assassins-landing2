@@ -1,4 +1,6 @@
 ADMIN.controller('manageSessions', ['$scope', '$http', '$document', 'adminSocket', function ($scope, $http, $document, adminSocket) {
+	$scope.servers = [];
+
 	$http.get('/all-sessions').then(function (sessions) {
 		sessions.data.forEach(function (v) {
 			v.pretty = JSON.stringify(v, null, 2);
@@ -26,6 +28,9 @@ ADMIN.controller('manageSessions', ['$scope', '$http', '$document', 'adminSocket
 	adminSocket.on('leftInstance', function (obj) {
 		var session = getSession('cookie', obj.cookie);
 		session.instance = undefined;
+	});
+	adminSocket.on('serverStarted', function (pid) {
+		$scope.servers.push(pid);
 	});
 
 	function getSession (key, value) {

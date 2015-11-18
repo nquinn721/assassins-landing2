@@ -18,6 +18,8 @@ app.directive('chat', ['$http', 'io', '$rootScope', 'session', function ($http, 
 			$scope.chatUserId = chatUserId;
 			$scope.status = $attrs.status;
 			$scope.messages = [];
+			$scope.isFriend = $attrs.isfriend === 'no' ? true : false;
+
 
 			if(firstMessage && firstMessage.indexOf('{') > -1){
 				firstMessage = JSON.parse(firstMessage);
@@ -45,7 +47,6 @@ app.directive('chat', ['$http', 'io', '$rootScope', 'session', function ($http, 
 			$scope.sendMessage = function () {
 				var obj = createMessage($scope.msg, Date.now());
 				messagesSent++;
-				console.log('send');
 				$http.post('/send-message', {
 					room : room,
 					user : chatUserId,
@@ -57,6 +58,9 @@ app.directive('chat', ['$http', 'io', '$rootScope', 'session', function ($http, 
 			io.on('message-' + room, function (obj) {
 				createMessage(obj.msg, obj.time, obj.user);
 			});
+			io.on('message-' + '/chat-' + (room.split('-').slice(1).reverse().join('-')), function (obj) {
+				createMessage(obj.msg, obj.time, obj.user);
+			})
 
 			function createMessage (msg, time, username) {
 				var obj = {
@@ -77,7 +81,10 @@ app.directive('chat', ['$http', 'io', '$rootScope', 'session', function ($http, 
 				return obj;
 			}
 
-
+			$scope.addFriend = function (friend) {
+				$rootScope.$broadcast('addFriend', friend);
+				$scope.isFriend = false;
+			}
 
 			$scope.destroy = function () {
 				$scope.$destroy();
@@ -87,12 +94,12 @@ app.directive('chat', ['$http', 'io', '$rootScope', 'session', function ($http, 
 				$rootScope.$broadcast('destroyed-chat-' + room);
 				$el.remove();
 			});
-
+			$scope.$on('removeFriend', function (friend) {
+				$scope.isFriend = true;
+			});
 
 			io.on('active', function (acc) {
-
 				$scope['status' + acc.id] = 'active-important';
-				console.log($scope);
 			});
 			io.on('offline', function (acc) {
 				$scope['status' + acc.id] = 'offline-important';

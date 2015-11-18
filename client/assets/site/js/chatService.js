@@ -1,14 +1,27 @@
 app.factory('chatService', ['$rootScope', 'session', '$compile', '$http', 'io', function ($rootScope, session, $compile, $http, socket) {
-	var totalChats = 0,
-		chatsOpen = [],
+	var chatsOpen = [],
 		closedChats = [],
 		chatService = {
+			checkOpen : function (to, from) {
+				if( chatsOpen.indexOf('/chat-' + to + '-' + from) > -1 ||
+					chatsOpen.indexOf('/chat-' + from + '-' + to) > -1 ||
+					chatsOpen.length >= 5)return false;
+				return true;
+			},
+			checkClosed : function (room) {
+				var to = room.split('-')[1],
+					from = room.split('-')[2];
+				if( closedChats.indexOf('/chat-' + to + '-' + from) > -1 ||
+					closedChats.indexOf('/chat-' + from + '-' + to) > -1){
+					return false;
+				}
+				return true;
+			},
 			startChat : function (to, msg, time) {
-				var from = session.get()._id,
+				var from = session.get().account._id,
 					self = this;
 
-				if(chatsOpen.indexOf('chat-' + from + '-' + to) > -1 || chatsOpen.length >= 5)return;
-
+				if(!this.checkOpen(to, from))return;
 
 				$http.get('/start-chat/' + from + '/' + to).then(function (chatSession) {
 					var chatData = chatSession.data,
@@ -19,31 +32,34 @@ app.factory('chatService', ['$rootScope', 'session', '$compile', '$http', 'io', 
 				});
 			},
 			startReceivingChat : function (chatSession) {
-				if(chatsOpen.indexOf(chatSession.room) > -1)return;
+				var to = chatSession.room.split('-')[1],
+					from = chatSession.room.split('-')[2];
+
+				if(!this.checkOpen(to, from))return;
 				this.createChat(
 					chatSession.id,
 					chatSession.room, 
 					chatSession.user,
 					chatSession.status, 
 					chatSession.time,
-					(closedChats.indexOf(chatSession.room) < 0 ? chatSession.msg : null),
-					true
+					(this.checkClosed(chatSession.room) ? chatSession.msg : null),
+					true,
+					chatSession.isFriend
 				);
 			},
-			createChat : function (chatUserId, room, username, status, time, msg, receiving) {
-				totalChats++;
+			createChat : function (chatUserId, room, username, status, time, msg, receiving, isFriend) {
 				chatsOpen.push(room);
-				if(totalChats >= 5)return;
-
+				if(chatsOpen.length >= 5)return;
 				var chat = $compile("<chat " +
 					"room='" + room + "'" +
 					"userid='" + chatUserId + "'" +
 					"user='" + username + "'" +
-					"total-chats='" + totalChats + "'" + 
+					"total-chats='" + chatsOpen.length + "'" + 
 					"status='" + status + "'" +
 					(time ? "time='" + time + "'" : "") +
 					(msg ? "msg='" + msg + "'" : "") +
 					(receiving ? "receiving='true'" : "") +
+					(isFriend ? "isFriend='" + isFriend + "'" : "") +
 					"></chat>")($rootScope);
 
 				$('.body').append(chat);
@@ -51,7 +67,6 @@ app.factory('chatService', ['$rootScope', 'session', '$compile', '$http', 'io', 
 				$rootScope.$on('destroyed-chat-' + room, function () {
 					chatsOpen.splice(chatsOpen.indexOf(room),1);
 					closedChats.push(room);
-					totalChats--;
 					$('.chat-box').each(function () {
 						if(parseInt($(this).css('right')) > 50)
 							$(this).animate({right : '-=228px'});
