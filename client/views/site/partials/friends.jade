@@ -7,7 +7,7 @@
 				div: span(class="#{friend.status}", ng-class="status#{friend._id}")
 				div #{friend.username}
 				div 
-					i.fa.fa-user-times(ng-click="removeFriend('#{friend._id}')")
+					i.fa.fa-user-times(ng-click="removeFriend('#{friend._id}', '#{friend.username}')")
 					i.fa.fa-comment-o(ng-click="chat.startChat('#{friend._id}')")
 
 		.more-friends
@@ -15,7 +15,7 @@
 				div: span(class="{{friend.status}}", ng-class="status{{friend.id}}")
 				div {{friend.username}}
 				div
-					i.fa.fa-user-times(ng-click="removeFriend(friend.id)")
+					i.fa.fa-user-times(ng-click="removeFriend(friend.id, friend.username)")
 					i.fa.fa-comment-o(ng-click="chat.startChat(friend.id)")
 	
 	.found-users.animated(ng-class="{fadeInUp : searchingUsers, fadeOutDown : !searchingUsers}", ng-show="showUsersFoundBox")

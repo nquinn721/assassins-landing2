@@ -1,11 +1,11 @@
-.message.animated.fadeIn(ng-show="showMessage", ng-controller="messageCtrl as msg")
-	.message-box.animated.bounceInDown()
-		.message-area {{message || "You are in a game instance, are you sure you want to leave this page?"}}
+.message.animated(ng-show="showMessage", ng-controller="messageCtrl as msg", ng-class="showHideMessageSplash", ng-click="msg.hideMessage()")
+	.message-box.animated(ng-class="showHideMessageBox")
+		.message-area(ng-bind-html="message")
 		.message-button-area
 			.ok(ng-if="messageType === 'ok'"): input.btn.btn-primary(type='button', value="Ok")
 			.ok-cancel(ng-if="messageType === 'okcancel'")
-				input.btn.btn-primary(type="button", value="Ok")
-				input.btn.btn-danger(type="button", value="Cancel")
+				input.btn.btn-primary(type="button", value="Ok", ng-click="msg.confirmMessage()")
+				input.btn.btn-danger(type="button", value="Cancel", ng-click="msg.hideMessage()")
 			.yes-no(ng-if="!messageType")
 				input.btn.btn-primary(type="button", value="Yes", ng-click="msg.hideMessage()")
 				input.btn.btn-danger(type="button", value="No", ng-click="msg.hideMessage()")

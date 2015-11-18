@@ -6,7 +6,7 @@
 	.body
 		.main
 			.user-info
-				.title #{account.username}
+				.title #{account.username.substr(0,1).toUpperCase() + account.username.substr(1)}
 				div 
 					span XP 
 					span #{account.xp}
