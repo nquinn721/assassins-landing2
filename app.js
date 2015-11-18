@@ -80,7 +80,6 @@ io.on('connection', function (socket) {
 	var cookie = socket.request.cookies.al;
 	db.addSocketIdToSession(cookie, socket.id);
 
-	require('./server/chat/chat')(socket, io, cookie, db);
 	require('./server/site/home/sockets')(socket, io, cookie, db);
 });
 db.on('setAccountActive', function (acc) {

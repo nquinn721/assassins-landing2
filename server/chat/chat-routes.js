@@ -8,7 +8,8 @@ module.exports = function (app, db, io) {
 		db.getSessionAndAccountByUserId(to, function (acc, session) {
 			var room = '/chat-' + from + '-' + to;
 			if(session)
-				io.sockets.connected[session.socketId].emit('startChat', room);
+				if(session.socketId && io.sockets.connected[session.socketId])
+					io.sockets.connected[session.socketId].emit('startChat', room);
 				res.send({
 					id : acc._id,
 					room : room,

@@ -1,4 +1,4 @@
-app.directive('friends', ['$http', 'io', '$compile', '$rootScope', 'chatService', function ($http, io, $compile, $rootScope, chatService) {
+app.directive('friends', ['$http', 'io', '$compile', '$rootScope', 'chatService', 'message', function ($http, io, $compile, $rootScope, chatService, message) {
 	return {
 		restrict : 'E',
 		link : function ($scope, $el, $attrs) {
@@ -14,13 +14,15 @@ app.directive('friends', ['$http', 'io', '$compile', '$rootScope', 'chatService'
 					$scope.friends.push(user.data);
 				});
 			};
-			$scope.removeFriend = function (user) {
-				$scope['removed-friend-' + user] = true;
-				$http.post('/remove-friend', {user : user});
+			$scope.removeFriend = function (user, username) {
+				message.confirm("Are you sure you want to unfriend <b>" + username + "</b>?", function () {
+					$scope['removed-friend-' + user] = true;
+					$http.post('/remove-friend', {user : user});
 
 
-				for(var i = 0; i < $scope.friends.length; i++)
-					if($scope.friends[i].id === user)$scope.friends.splice(i,1);
+					for(var i = 0; i < $scope.friends.length; i++)
+						if($scope.friends[i].id === user)$scope.friends.splice(i,1);
+				});
 			};
 			$scope.searchUsers = function (search) {
 				$scope.searchingUsers = true;
