@@ -12,7 +12,6 @@ var express = require('express'),
 	socketCookieParser = require('socket.io-cookie-parser'),
 	bodyParser = require('body-parser');
 
-
 // process.on('uncaughtException', function (a,b,c) {
 // 	console.log('Error: ' + a);
 // });
@@ -39,7 +38,6 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.set('view engine', 'jade');
 app.set('views', __dirname + '/client');
-
 
 // Database
 var DB = require(process.cwd() + '/lib/db/connection.js');
