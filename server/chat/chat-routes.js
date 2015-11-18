@@ -9,7 +9,7 @@ module.exports = function (app, db, io) {
 			var room = '/chat-' + from + '-' + to;
 			console.log(session);
 			if(session)
-				if(session.socketId)
+				if(session.socketId && io.sockets.connected[session.socketId])
 					io.sockets.connected[session.socketId].emit('startChat', room);
 				res.send({
 					id : acc._id,
