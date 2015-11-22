@@ -47,6 +47,7 @@ app.directive('chat', ['$http', 'io', '$rootScope', 'session', function ($http, 
 			$scope.sendMessage = function () {
 				var obj = createMessage($scope.msg, Date.now());
 				messagesSent++;
+				console.log('send message');
 				$http.post('/send-message', {
 					room : room,
 					user : chatUserId,
@@ -56,9 +57,11 @@ app.directive('chat', ['$http', 'io', '$rootScope', 'session', function ($http, 
 				$scope.msg = '';
 			}
 			io.on('message-' + room, function (obj) {
+				console.log('create message');
 				createMessage(obj.msg, obj.time, obj.user);
 			});
 			io.on('message-' + '/chat-' + (room.split('-').slice(1).reverse().join('-')), function (obj) {
+				console.log('create message');
 				createMessage(obj.msg, obj.time, obj.user);
 			})
 

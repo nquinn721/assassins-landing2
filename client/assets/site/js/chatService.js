@@ -28,7 +28,7 @@ app.factory('chatService', ['$rootScope', 'session', '$compile', '$http', 'io', 
 						room = chatData.room,
 						username = chatData.user,
 						status = chatData.status;
-					self.createChat(to, room, username, status);
+					self.createChat(to, room, username, status, false, false, false, chatData.isFriend);
 				});
 			},
 			startReceivingChat : function (chatSession) {

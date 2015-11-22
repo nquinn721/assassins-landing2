@@ -1,25 +1,32 @@
 module.exports = function (app, db, io) {
 	app.get('/start-chat/:from/:to', function (req, res) {
+		console.log('start chat');
 		var from = req.params.from,
 			to = req.params.to,
 			msg = req.params.msg,
 			time = req.params.time;
 
 		db.getSessionAndAccountByUserId(to, function (acc, session) {
-			var room = '/chat-' + from + '-' + to;
+			var room = '/chat-' + from + '-' + to,
+				isFriend = 'no';
 			if(session)
 				if(session.socketId && io.sockets.connected[session.socketId])
 					io.sockets.connected[session.socketId].emit('startChat', room);
-				res.send({
-					id : acc._id,
-					room : room,
-					user : acc.username,
-					status : acc.status
-				})
+
+			for(var i = 0; i < req.session.account.friends.length; i++)
+				if(req.session.account.friends[i]._id === acc._id)isFriend = 'yes';
+			res.send({
+				id : acc._id,
+				room : room,
+				user : acc.username,
+				status : acc.status,
+				isFriend : isFriend
+			})
 		});
 
 	});
 	app.post('/send-message', function (req, res) {
+		console.log('send message');
 		var user = req.body.user,
 			room = req.body.room,
 			msg = req.body.msg,
@@ -56,6 +63,7 @@ module.exports = function (app, db, io) {
 		});
 	});
 	app.get('/messages-waiting', function (req, res) {
+		console.log('messages waiting');
 		var user = req.session.accountId;
 		db.getAccountByUserId(user, function (acc) {
 			if(acc.messagesWaiting[0] && Object.keys(acc.messagesWaiting[0]).length > 0){
