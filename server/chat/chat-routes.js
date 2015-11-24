@@ -1,4 +1,6 @@
 module.exports = function (app, db, io) {
+	var _ = require('underscore');
+
 	app.get('/start-chat/:from/:to', function (req, res) {
 		console.log('start chat');
 		var from = req.params.from,
@@ -7,21 +9,26 @@ module.exports = function (app, db, io) {
 			time = req.params.time;
 
 		db.getSessionAndAccountByUserId(to, function (acc, session) {
+			if(!acc)return;
+
+			
 			var room = '/chat-' + from + '-' + to,
-				isFriend = 'no';
+				isFriend = 'no',
+				friends = _.pluck(req.session.account.friends, '_id');
 			if(session)
 				if(session.socketId && io.sockets.connected[session.socketId])
 					io.sockets.connected[session.socketId].emit('startChat', room);
 
-			for(var i = 0; i < req.session.account.friends.length; i++)
-				if(req.session.account.friends[i]._id === acc._id)isFriend = 'yes';
+			for(var i = 0; i < friends.length; i++)
+				if(friends[i].toString() == acc._id.toString())isFriend = 'yes';
+
 			res.send({
 				id : acc._id,
 				room : room,
 				user : acc.username,
 				status : acc.status,
 				isFriend : isFriend
-			})
+			});
 		});
 
 	});
