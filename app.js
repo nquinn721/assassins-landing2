@@ -10,11 +10,15 @@ var express = require('express'),
 	mongoose = require('mongoose'),
 	cookieParser = require('cookie-parser'),
 	socketCookieParser = require('socket.io-cookie-parser'),
-	bodyParser = require('body-parser');
+	bodyParser = require('body-parser'),
+	fs = require('fs');
 
-// process.on('uncaughtException', function (a,b,c) {
-// 	console.log('Error: ' + a);
-// });
+process.on('uncaughtException', function (a,b,c) {
+	fs.appendFile('error.txt', 'data to append', function (err) {
+	  if (err) throw err;
+	  console.log(a, ' ', b, ' ', c, '\n');
+	});
+});
 
 // Set global environment
 if(process.env.HOME.match(/\/Users\/nate/))
