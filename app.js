@@ -14,9 +14,8 @@ var express = require('express'),
 	fs = require('fs');
 
 process.on('uncaughtException', function (a,b,c) {
-	fs.appendFile('error.txt', 'data to append', function (err) {
+	fs.appendFile('error.txt', a, function (err) {
 	  if (err) throw err;
-	  console.log(a, ' ', b, ' ', c, '\n');
 	});
 });
 
