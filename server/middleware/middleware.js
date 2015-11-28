@@ -46,19 +46,19 @@ module.exports = function (app, db, io) {
 		}, 1000 * 60 * 30);
 		next();
 	});
-	app.use(function (req, res, next) {
-		req.flash = function(type, msg){
-			console.log(type, msg);
-			if(!req.flashObj)req.flashObj = {};
-			req.flashObj[type] = msg;
-			console.log(req.flashObj);
-		}
-		if(req.flashObj){
-			console.log(req.flashObj);
-			res.locals.flash = req.flashObj;
-		}
-		next();
-	})
+	// app.use(function (req, res, next) {
+	// 	req.flash = function(type, msg){
+	// 		console.log(type, msg);
+	// 		if(!req.flashObj)req.flashObj = {};
+	// 		req.flashObj[type] = msg;
+	// 		console.log(req.flashObj);
+	// 	}
+	// 	if(req.flashObj){
+	// 		console.log(req.flashObj);
+	// 		res.locals.flash = req.flashObj;
+	// 	}
+	// 	next();
+	// })
 	// app.use(function (req, res, next) {
 	// 	if(req.session)req.session.save();
 	// 	next();
