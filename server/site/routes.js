@@ -12,14 +12,14 @@ module.exports = function(app, db, instanceManager){
 		res.redirect('/login');
 	});
 	app.get('/login', function (req, res) {
-		req.flash('error', 'sufoiew');
+		// req.flash('error', 'sufoiew');
 		res.render('views/site/login');
 	});
 	app.post('/login', function (req, res) {
 		var obj = req.body;
 		db.login(obj.username, obj.password, function(account){
 			if(account === 'logged'){
-				req.flash('error', 'Account logged in already.');
+				// req.flash('error', 'Account logged in already.');
 				res.redirect('/login');
 			}else{
 				db.saveSession(req, account, function () {
